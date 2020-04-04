@@ -60,10 +60,11 @@ fun parseDuration(input: String): Long {
 
 fun getDisplayValue(ms: Long): String {
     val duration = Duration.ofMillis(ms)
-    val minutes = duration.toMinutes()
+    val hours = duration.toHours();
+    val minutes = duration.minusHours(hours).toMinutes()
     val seconds = duration.minusMinutes(minutes).seconds
 
-    return "$minutes minutes $seconds seconds"
+    return "$hours hours, $minutes minutes, $seconds seconds"
 }
 
 private fun getUnits(s: String): String {
