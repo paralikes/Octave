@@ -9,7 +9,6 @@ import xyz.gnarbot.gnar.commands.Command
 import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.commands.template.CommandTemplate
 import xyz.gnarbot.gnar.commands.template.annotations.Description
-import xyz.gnarbot.gnar.commands.template.parser.Parsers
 import xyz.gnarbot.gnar.utils.toDuration
 import java.lang.NumberFormatException
 import java.lang.RuntimeException
@@ -108,7 +107,13 @@ class MusicSettingsCommand : CommandTemplate() {
             return
         }
 
-        if(amount > config.durationLimit) {
+        var durationLimit = if(context.isGuildPremium) {
+            context.premiumGuild.songLengthQuota
+        } else {
+            config.durationLimit.toMillis()
+        }
+
+        if(amount.toMillis() > durationLimit) {
             context.send().error("This is too much. The limit is ${config.durationLimitText}.").queue()
             return
         }
@@ -140,8 +145,14 @@ class MusicSettingsCommand : CommandTemplate() {
             return
         }
 
-        if(amount > config.queueLimit) {
-            context.send().error("This is too much. The limit is ${config.queueLimit}.").queue()
+        var queueLimit = if(context.isGuildPremium) {
+            context.premiumGuild.queueSizeQuota
+        } else {
+            config.queueLimit
+        }
+
+        if(amount > queueLimit) {
+            context.send().error("This is too much. The limit is $queueLimit.").queue()
             return
         }
 

@@ -62,7 +62,7 @@ public class PremiumGuild extends ManagedObject {
     }
 
     @JsonIgnore
-    public long getSongSizeQuota() {
+    public long getSongLengthQuota() {
         double pledgeAmount = getRedeemer().getPledgeAmount();
         if (Bot.getInstance().getConfiguration().getAdmins().contains(Long.parseLong(getId()))) {
             return Integer.MAX_VALUE;

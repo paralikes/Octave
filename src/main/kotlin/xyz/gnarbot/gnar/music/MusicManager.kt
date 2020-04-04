@@ -188,21 +188,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                     }
                 }
 
-                val queueLimit = when {
-                    context.isGuildPremium -> {
-                        context.premiumGuild.queueSizeQuota
-                    }
-                    context.data.isPremium -> {
-                        500 //Keep key perks.
-                    }
-                    context.data.music.maxQueueSize == 0 -> {
-                        bot.configuration.queueLimit
-                    }
-                    else -> {
-                        context.data.music.maxQueueSize
-                    }
-                }
-
+                val queueLimit = queueLimit(context)
                 val queueLimitDisplay = when (queueLimit) {
                     Integer.MAX_VALUE -> "unlimited"
                     else -> queueLimit
@@ -214,33 +200,35 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                 }
 
                 if (track !is TwitchStreamAudioTrack && track !is BeamAudioTrack) {
+                    var invalidDuration = !context.isGuildPremium && (context.data.music.maxSongLength > bot.configuration.durationLimit.toMillis())
+
                     val durationLimit = when {
+                        context.data.music.maxSongLength != 0L && !invalidDuration -> {
+                            context.data.music.maxSongLength
+                        }
                         context.isGuildPremium -> {
-                            context.premiumGuild.songSizeQuota
+                            context.premiumGuild.songLengthQuota
                         }
                         context.data.isPremium -> {
                             TimeUnit.MINUTES.toMillis(360) //Keep key perks.
                         }
-                        context.data.music.maxSongLength == 0L -> {
-                            bot.configuration.durationLimit.toMillis()
-                        }
                         else -> {
-                            context.data.music.maxSongLength
+                            bot.configuration.durationLimit.toMillis()
                         }
                     }
 
                     val durationLimitText = when {
+                        context.data.music.maxSongLength != 0L && !invalidDuration -> {
+                            getDisplayValue(context.data.music.maxSongLength)
+                        }
                         context.isGuildPremium -> {
-                            getDisplayValue(context.premiumGuild.songSizeQuota)
+                            getDisplayValue(context.premiumGuild.songLengthQuota)
                         }
                         context.data.isPremium -> {
                             getDisplayValue(TimeUnit.MINUTES.toMillis(360)) //Keep key perks.
                         }
-                        context.data.music.maxSongLength == 0L -> {
-                            bot.configuration.durationLimitText
-                        }
                         else -> {
-                            getDisplayValue(context.data.music.maxSongLength)
+                            bot.configuration.durationLimitText
                         }
                     }
 
@@ -266,21 +254,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                     return
                 }
 
-                val queueLimit = when {
-                    context.isGuildPremium -> {
-                        context.premiumGuild.queueSizeQuota
-                    }
-                    context.data.isPremium -> {
-                        500 //Keep key perks.
-                    }
-                    context.data.music.maxQueueSize == 0 -> {
-                        bot.configuration.queueLimit
-                    }
-                    else -> {
-                        context.data.music.maxQueueSize
-                    }
-                }
-
+                val queueLimit = queueLimit(context)
                 val queueLimitDisplay = when (queueLimit) {
                     Integer.MAX_VALUE -> "unlimited"
                     else -> queueLimit
@@ -356,5 +330,24 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                 context.send().exception(e).queue()
             }
         })
+    }
+
+    fun queueLimit(context: Context): Int {
+        var invalidSize = !context.isGuildPremium && (context.data.music.maxQueueSize > bot.configuration.queueLimit)
+
+        return when {
+            context.data.music.maxQueueSize != 0 && !invalidSize -> {
+                context.data.music.maxQueueSize
+            }
+            context.isGuildPremium -> {
+                context.premiumGuild.queueSizeQuota
+            }
+            context.data.isPremium -> {
+                500 //Keep key perks.
+            }
+            else -> {
+                bot.configuration.queueLimit
+            }
+        }
     }
 }
