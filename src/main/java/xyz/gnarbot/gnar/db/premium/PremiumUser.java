@@ -63,19 +63,6 @@ public class PremiumUser extends ManagedObject {
     }
 
     @JsonIgnore
-    public long getSongSizeQuota() {
-        if (Bot.getInstance().getConfiguration().getAdmins().contains(Long.parseLong(getId()))) {
-            return Integer.MAX_VALUE;
-        } else if (pledgeAmount >= 10) {
-            return TimeUnit.MINUTES.toMillis(720);
-        } else if (pledgeAmount >= 5) {
-            return TimeUnit.MINUTES.toMillis(360);
-        } else {
-            return Bot.getInstance().getConfiguration().getDurationLimit().toMillis();
-        }
-    }
-
-    @JsonIgnore
     public boolean isPremium() {
         return pledgeAmount >= 5;
     }

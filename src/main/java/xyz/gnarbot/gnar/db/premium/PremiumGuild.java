@@ -9,6 +9,7 @@ import xyz.gnarbot.gnar.db.ManagedObject;
 import java.beans.ConstructorProperties;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 public class PremiumGuild extends ManagedObject {
     // The ID of the user that enabled premium for the guild.
@@ -59,6 +60,21 @@ public class PremiumGuild extends ManagedObject {
             return Bot.getInstance().getConfiguration().getQueueLimit();
         }
     }
+
+    @JsonIgnore
+    public long getSongSizeQuota() {
+        double pledgeAmount = getRedeemer().getPledgeAmount();
+        if (Bot.getInstance().getConfiguration().getAdmins().contains(Long.parseLong(getId()))) {
+            return Integer.MAX_VALUE;
+        } else if (pledgeAmount >= 10) {
+            return TimeUnit.MINUTES.toMillis(720);
+        } else if (pledgeAmount >= 5) {
+            return TimeUnit.MINUTES.toMillis(360);
+        } else {
+            return Bot.getInstance().getConfiguration().getDurationLimit().toMillis();
+        }
+    }
+
 
     @JsonIgnore
     public long getDaysSinceAdded() {

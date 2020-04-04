@@ -212,8 +212,8 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
 
                 if (track !is TwitchStreamAudioTrack && track !is BeamAudioTrack) {
                     val durationLimit = when {
-                        context.premiumUser.isPremium -> {
-                            context.premiumUser.songSizeQuota
+                        context.isGuildPremium -> {
+                            context.premiumGuild.songSizeQuota
                         }
                         context.data.music.maxSongLength == 0L -> {
                             bot.configuration.durationLimit.toMillis()
@@ -223,10 +223,16 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                         }
                     }
 
-                    val durationLimitText = if(context.data.music.maxSongLength == 0L) {
-                        bot.configuration.durationLimitText
-                    } else {
-                        getDisplayValue(context.data.music.votePlayDuration)
+                    val durationLimitText = when {
+                        context.isGuildPremium -> {
+                            getDisplayValue(context.premiumGuild.songSizeQuota)
+                        }
+                        context.data.music.maxSongLength == 0L -> {
+                            bot.configuration.durationLimitText
+                        }
+                        else -> {
+                            getDisplayValue(context.data.music.maxSongLength)
+                        }
                     }
 
                     if (track.duration > durationLimit) {
@@ -251,10 +257,16 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                     return
                 }
 
-                val queueLimit = if(context.data.music.maxQueueSize != 0) {
-                    context.data.music.maxQueueSize
-                } else {
-                    bot.configuration.queueLimit
+                val queueLimit = when {
+                    context.isGuildPremium -> {
+                        context.premiumGuild.queueSizeQuota
+                    }
+                    context.data.music.maxQueueSize == 0 -> {
+                        bot.configuration.queueLimit
+                    }
+                    else -> {
+                        context.data.music.maxQueueSize
+                    }
                 }
 
                 if (!getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
@@ -294,7 +306,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                         buildString {
                             append("Added `$added` tracks to queue from playlist `${playlist.name}`.\n")
                             if (ignored > 0) {
-                                append("Ignored `$ignored` songs as the queue can not exceed `${bot.configuration.queueLimit}` songs.")
+                                append("Ignored `$ignored` songs as the queue can not exceed `$queueLimit` songs.")
                             }
                         }
                     }
