@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import xyz.gnarbot.gnar.commands.*
 import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.utils.desc
+import xyz.gnarbot.gnar.utils.getDisplayValue
 import java.util.concurrent.TimeUnit
 
 @Command(
@@ -32,8 +33,14 @@ class VoteSkipCommand : MusicCommandExecutor(true, true, true) {
             context.data.music.voteSkipCooldown
         }
 
+        val voteSkipCooldownText = if(context.data.music.voteSkipCooldown == 0L) {
+            context.bot.configuration.voteSkipCooldownText
+        } else {
+            getDisplayValue(context.data.music.voteSkipCooldown)
+        }
+
         if (System.currentTimeMillis() - manager.lastVoteTime < voteSkipCooldown) {
-            context.send().issue("You must wait $voteSkipCooldown before starting a new vote.").queue()
+            context.send().issue("You must wait $voteSkipCooldownText before starting a new vote.").queue()
             return
         }
 
