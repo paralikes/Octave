@@ -12,7 +12,6 @@ import xyz.gnarbot.gnar.music.MusicManager
         id = 74,
         category = Category.MUSIC,
         scope = Scope.VOICE,
-        donor = true,
         djLock = true
 )
 class VolumeCommand : MusicCommandExecutor(false, false, true) {

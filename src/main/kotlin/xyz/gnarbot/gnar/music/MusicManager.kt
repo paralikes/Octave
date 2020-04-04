@@ -269,6 +269,12 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                     }
                 }
 
+                val queueLimitDisplay = when (queueLimit) {
+                    Integer.MAX_VALUE -> "unlimited"
+                    else -> queueLimit
+                }
+
+
                 if (!getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
                     if (!context.member.voiceState!!.inVoiceChannel()) {
                         context.send().issue("You left the channel before the track is loaded.").queue()
@@ -306,7 +312,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                         buildString {
                             append("Added `$added` tracks to queue from playlist `${playlist.name}`.\n")
                             if (ignored > 0) {
-                                append("Ignored `$ignored` songs as the queue can not exceed `$queueLimit` songs.")
+                                append("Ignored `$ignored` songs as the queue can not exceed `$queueLimitDisplay` songs.")
                             }
                         }
                     }
