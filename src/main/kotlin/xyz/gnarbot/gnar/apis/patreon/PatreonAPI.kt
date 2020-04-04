@@ -23,7 +23,7 @@ class PatreonAPI(var accessToken: String) {
     //var accessToken: String = ""
 
     init {
-        log.info("Initialising sweepy boi")
+        log.info("Initialising sweepy boi // SWEEPER! AW MAN!")
         scheduler.schedule(::sweep, 1, TimeUnit.DAYS)
     }
 
