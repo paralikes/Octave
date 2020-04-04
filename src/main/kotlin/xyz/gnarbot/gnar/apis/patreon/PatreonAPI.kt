@@ -5,8 +5,10 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.utils.RequestUtil
 import xyz.gnarbot.gnar.utils.extensions.buildUrl
+import xyz.gnarbot.gnar.utils.extensions.openPrivateChannelById
 import xyz.gnarbot.gnar.utils.extensions.url
 import java.net.URI
 import java.net.URLDecoder
@@ -19,6 +21,71 @@ class PatreonAPI(var accessToken: String) {
 // (val clientId: String, val clientSecret: String, val refreshToken: String) {
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
     //var accessToken: String = ""
+
+    init {
+        log.info("Initialising sweepy boi")
+        scheduler.schedule(::sweep, 1, TimeUnit.DAYS)
+    }
+
+    fun sweep(): CompletableFuture<SweepStats> {
+        val storedPledges = Bot.getInstance().db().premiumUsers
+
+        return fetchPledges().thenApply { pledges ->
+            val total = storedPledges.size
+            var changed = 0
+            var removed = 0
+
+            for (entry in storedPledges) {
+                val userId = entry.idLong
+                val pledge = pledges.firstOrNull { it.discordId != null && it.discordId == userId }
+
+                if (pledge == null || pledge.isDeclined) {
+                    Bot.getInstance().shardManager.openPrivateChannelById(userId)
+                        .flatMap {
+                            it.sendMessage("Your pledge was either declined or removed from Patreon. " +
+                                "As a result, your perks have been revoked. If you believe this was in error, " +
+                                "check your payment method. If not, we hope Octave exceeded your expectations, and " +
+                                "we hope to see you again soon!")
+                        }.queue()
+
+                    for (guild in entry.premiumGuildsList) {
+                        guild.delete()
+                    }
+
+                    entry.delete()
+                    removed++
+                    continue
+                }
+
+                val pledging = pledge.pledgeCents.toDouble() / 100
+
+                if (pledging < entry.pledgeAmount) { // User is pledging less than what we have stored.
+                    entry.setPledgeAmount(pledging).save()
+
+                    val entitledServers = entry.totalPremiumGuildQuota
+                    val activatedServers = entry.premiumGuildsList
+                    val exceedingLimitBy = activatedServers.size - entitledServers
+
+                    if (exceedingLimitBy > 0) {
+                        val remove = (0 until exceedingLimitBy)
+
+                        for (unused in remove) {
+                            activatedServers.firstOrNull()?.delete()
+                        }
+                        // Message about removed guilds? eh
+                    }
+
+                    changed++
+                }
+            }
+
+            SweepStats(total, changed, removed)
+        }
+        // Fetch pledges from database. Iterate through results from api.
+        // If no pledge, or pledge is declined; remove from DB. Purge premium servers.
+        // If pledgeAmount < stored, remove servers until quota is no longer exceeded.
+        // Those pledging more than stored, update amount?
+    }
 
     fun fetchPledges(campaignId: String = "754103") = fetchPledgesOfCampaign0(campaignId)
 
