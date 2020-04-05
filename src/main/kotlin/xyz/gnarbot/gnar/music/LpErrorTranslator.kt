@@ -9,7 +9,7 @@ object LpErrorTranslator {
         ex { contains("copyright") || contains("country") || contains("content") } to "This video is not playable in the bot's region.",
         ex { contains("403") } to "Access to the video was restricted.",
         ex { contains("supported formats") } to "This video cannot be streamed."
-        //ex { contains("timed out") || contains("connection reset") || contains("failed to respond") } to "<connection issues>"
+        //ex { contains("timed out") || contains("connection reset") || contains("connection refused") || contains("failed to respond") } to "<connection issues>"
     )
 
     fun rootCauseOf(exception: Throwable): Throwable {
