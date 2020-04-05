@@ -1,9 +1,11 @@
 package xyz.gnarbot.gnar.utils;
 
-import io.sentry.Sentry;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.gnarbot.gnar.Bot;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -13,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DiscordFM {
+    private static final Logger log = LoggerFactory.getLogger(DiscordFM.class);
     public static final String[] LIBRARIES = {
             "electro hub", "chill corner", "korean madness",
             "japanese lounge", "classical", "retro renegade",
@@ -25,16 +28,20 @@ public class DiscordFM {
     public DiscordFM() {
         for (String lib : LIBRARIES) {
             try (InputStream is = DiscordFM.class.getResourceAsStream("/dfm/" + lib + ".txt")) {
+                if (is == null) {
+                    log.warn("Playlist {} does not exist, skipping...", lib);
+                    continue;
+                }
+
                 List<String> collect = Arrays.stream(IOUtils.toString(is, StandardCharsets.UTF_8).split("\n"))
                         .parallel()
                         .filter(si -> si.startsWith("https://"))
                         .collect(Collectors.toList());
                 cache.put(lib, collect);
 
-                Bot.getLogger().info("(DiscordFM) Added " + collect.size() + " elements to playlist: " + lib);
-            } catch (Exception e) {
-                Sentry.capture(e);
-                e.printStackTrace();
+                log.info("Added {} tracks from playlist {}", collect.size(), lib);
+            } catch (IOException e) {
+                log.error("Failed to load playlist {}", lib, e);
             }
         }
     }

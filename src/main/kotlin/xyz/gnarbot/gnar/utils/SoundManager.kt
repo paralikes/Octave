@@ -1,21 +1,25 @@
 package xyz.gnarbot.gnar.utils
 
-import io.sentry.Sentry
+import org.slf4j.LoggerFactory
 import java.io.File
 
 class SoundManager {
     var map: HashMap<String, String> = HashMap()
 
     fun loadSounds() {
-        try {
-            for (s in File("/home/gnar/data/sounds").listFiles()) {
-                print(s)
-                map[s.name.replace(".mp3", "").replace("sounds\\", "")] = s.path
-            }
-        } catch (e: Exception) {
-            Sentry.capture(e)
-            e.printStackTrace()
+        val soundFiles = File("/home/gnar/data/sounds")
+
+        if (!soundFiles.exists()) {
+            log.info("Not loading sound files; directory does not exist.")
+        }
+
+        soundFiles.listFiles()?.forEach {
+            log.info("Loading sound {}", it.name)
+            map[it.name.replace(".mp3", "").replace("sounds\\", "")] = it.path
         }
     }
 
+    companion object {
+        private val log = LoggerFactory.getLogger(SoundManager::class.java)
+    }
 }
