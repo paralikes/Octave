@@ -64,7 +64,12 @@ fun getDisplayValue(ms: Long): String {
     val minutes = duration.minusHours(hours).toMinutes()
     val seconds = duration.minusMinutes(minutes).seconds
 
-    return "$hours hours, $minutes minutes, $seconds seconds"
+    return when {
+        hours > 0 -> "$hours hours, $minutes minutes and $seconds seconds"
+        minutes > 0 -> "$minutes minutes and $seconds seconds"
+        seconds > 0 -> "$seconds seconds"
+        else -> "$hours hours, $minutes minutes and $seconds seconds"
+    }
 }
 
 private fun getUnits(s: String): String {
