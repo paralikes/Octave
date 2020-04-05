@@ -17,14 +17,16 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 
-class PatreonAPI(var accessToken: String) {
+class PatreonAPI(var accessToken: String?) {
 // (val clientId: String, val clientSecret: String, val refreshToken: String) {
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
     //var accessToken: String = ""
 
     init {
-        log.info("Initialising sweepy boi // SWEEPER! AW MAN!")
-        scheduler.schedule(::sweep, 1, TimeUnit.DAYS)
+        if (accessToken?.isEmpty() == false) {
+            log.info("Initialising sweepy boi // SWEEPER! AW MAN!")
+            scheduler.schedule(::sweep, 1, TimeUnit.DAYS)
+        }
     }
 
     fun sweep(): CompletableFuture<SweepStats> {
@@ -171,7 +173,7 @@ class PatreonAPI(var accessToken: String) {
     private fun decode(s: String) = URLDecoder.decode(s, Charsets.UTF_8)
 
     private fun get(urlOpts: HttpUrl.Builder.() -> Unit): CompletableFuture<JSONObject> {
-        if (accessToken.isEmpty()) {
+        if (accessToken?.isNotEmpty() != true) {
             return CompletableFuture.failedFuture(IllegalStateException("Access token is empty!"))
         }
 
