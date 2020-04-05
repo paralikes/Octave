@@ -57,7 +57,14 @@ class PlayCommand : CommandExecutor() {
         }
 
         if(context.data.music.isVotePlay) {
-            startPlayVote(context, manager, args, false, "")
+            val newManager = try {
+                context.bot.players.get(context.guild)
+            } catch (e: MusicLimitException) {
+                e.sendToContext(context)
+                return
+            }
+
+            startPlayVote(context, newManager, args, false, "")
             return
         }
 
@@ -110,8 +117,8 @@ class PlayCommand : CommandExecutor() {
             }
         }
 
-        fun startPlayVote(context: Context, manager: MusicManager?, args: Array<String>, isSearchResult: Boolean, uri: String) {
-            if (manager!!.isVotingToPlay) {
+        fun startPlayVote(context: Context, manager: MusicManager, args: Array<String>, isSearchResult: Boolean, uri: String) {
+            if (manager.isVotingToPlay) {
                 context.send().issue("There is already a vote going on!").queue()
                 return
             }
