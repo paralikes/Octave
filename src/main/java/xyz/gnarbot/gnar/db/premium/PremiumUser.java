@@ -16,7 +16,7 @@ public class PremiumUser extends ManagedObject {
     // The ID of the user that enabled premium for the guild.
     @JsonSerialize
     @JsonDeserialize
-    private Double pledgeAmount;
+    private double pledgeAmount;
 
     @ConstructorProperties("id")
     public PremiumUser(String id) {
@@ -24,9 +24,14 @@ public class PremiumUser extends ManagedObject {
     }
 
     @JsonIgnore
-    public PremiumUser setPledgeAmount(Double pledgeAmount) {
+    public PremiumUser setPledgeAmount(double pledgeAmount) {
         this.pledgeAmount = pledgeAmount;
         return this;
+    }
+
+    @JsonIgnore
+    public long getIdLong() {
+        return Long.parseLong(getId());
     }
 
     @JsonIgnore

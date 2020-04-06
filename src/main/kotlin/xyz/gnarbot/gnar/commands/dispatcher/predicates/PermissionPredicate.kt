@@ -77,7 +77,7 @@ class PermissionPredicate : BiPredicate<CommandExecutor, Context> {
                 }
             }
 
-            append("`.")
+            append(".")
         }).queue()
         return false
     }

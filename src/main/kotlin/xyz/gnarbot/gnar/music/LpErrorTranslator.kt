@@ -6,9 +6,10 @@ object LpErrorTranslator {
     fun ex(c: String.() -> Boolean) = c
 
     private val errors = mapOf(
-        ex { contains("copyright") || contains("country") } to "This video is not playable in the bot's region.",
+        ex { contains("copyright") || contains("country") || contains("content") } to "This video is not playable in the bot's region.",
         ex { contains("403") } to "Access to the video was restricted.",
-        ex { contains("read timed out") } to "<connection issues>"
+        ex { contains("supported formats") } to "This video cannot be streamed."
+        //ex { contains("timed out") || contains("connection reset") || contains("connection refused") || contains("failed to respond") } to "<connection issues>"
     )
 
     fun rootCauseOf(exception: Throwable): Throwable {

@@ -76,14 +76,19 @@ public class Database {
     }
 
     public PremiumUser getPremiumUser(String id) {
-        if (!isOpen()) {
-            return null;
-        }
-
-        return r.table("premiumusers")
+        return !isOpen() ? null : r.table("premiumusers")
                 .get(id)
                 .default_(r.hashMap("id", id).with("pledgeAmount", "0.0"))
                 .run(conn, PremiumUser.class);
+    }
+
+    public List<PremiumUser> getPremiumUsers() {
+        if (!isOpen()) {
+            return List.of();
+        }
+
+        Cursor<PremiumUser> cursor = r.table("premiumusers").run(conn, PremiumUser.class);
+        return cursor.toList();
     }
 
     @Nullable
