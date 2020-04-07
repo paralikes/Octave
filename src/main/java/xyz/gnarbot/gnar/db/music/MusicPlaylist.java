@@ -49,12 +49,6 @@ public class MusicPlaylist extends ManagedObject {
 
     @JsonIgnore
     public void appendTracks(List<AudioTrack> tracks) {
-        tracks.forEach(track -> {
-            try {
-                PlaylistUtils.toBase64String(track);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        tracks.forEach(PlaylistUtils::toBase64String);
     }
 }

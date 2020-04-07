@@ -34,7 +34,10 @@ public class PlaylistUtils {
     }
 
     public static List<String> encodePlaylist(Queue<AudioTrack> playlist) {
-        return playlist.stream().map(PlaylistUtils::toBase64String).collect(Collectors.toList());
+        return playlist.stream()
+                .filter(Objects::nonNull)
+                .map(PlaylistUtils::toBase64String)
+                .collect(Collectors.toList());
     }
 
 
