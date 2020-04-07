@@ -137,12 +137,17 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
     fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int) : String {
         var index = 0
         val iterator = queue.iterator()
+        var value = "";
         while (iterator.hasNext() && index <= indexToRemove) {
-            iterator.next()
+            val currentValue = iterator.next()
             if (index == indexToRemove) {
+                value = currentValue
                 iterator.remove()
             }
+
             index++
         }
+
+        return value;
     }
 }
