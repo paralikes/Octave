@@ -5,6 +5,7 @@ import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Cursor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import redis.clients.jedis.JedisPool;
 import xyz.gnarbot.gnar.db.guilds.GuildData;
 import xyz.gnarbot.gnar.db.premium.PremiumGuild;
 import xyz.gnarbot.gnar.db.guilds.UserData;
@@ -18,6 +19,7 @@ import static com.rethinkdb.RethinkDB.r;
 public class Database {
     private static final Logger LOG = LoggerFactory.getLogger("Database");
     private final Connection conn;
+    private static JedisPool defaultJedisPool = new JedisPool("localhost", 6379);
 
     public Database(String name) {
         Connection conn = null;
@@ -106,5 +108,9 @@ public class Database {
     @Nullable
     public <T> T get(String table, String id, Class<T> cls) {
         return isOpen() ? r.table(table).get(id).run(conn, cls) : null;
+    }
+
+    public static JedisPool getDefaultJedisPool() {
+        return defaultJedisPool;
     }
 }
