@@ -133,4 +133,16 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
     }
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
+
+    fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int) : String {
+        var index = 0
+        val iterator = queue.iterator()
+        while (iterator.hasNext() && index <= indexToRemove) {
+            iterator.next()
+            if (index == indexToRemove) {
+                iterator.remove()
+            }
+            index++
+        }
+    }
 }

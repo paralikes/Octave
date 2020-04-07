@@ -22,18 +22,17 @@ class RemoveCommand : MusicCommandExecutor(true, false, false) {
     private val pattern = Pattern.compile("(\\d+)?\\s*?\\.\\.\\s*(\\d+)?")
 
     override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
-        //TODO: This probably won't work, even though it works when passing a Queue<T> instead
-        val queue = manager.scheduler.queue as LinkedList<String>
+        val queue = manager.scheduler.queue
 
         if (queue.isEmpty()) {
             context.send().error("The queue is empty.").queue()
             return
         }
 
-        val track = when (args.firstOrNull()) {
+        val track : String = when (args.firstOrNull()) {
             null -> return context.send().issue("You need to specify what to remove.").queue()
-            "first" -> queue.removeFirst()
-            "last" -> queue.removeLast()
+            "first" -> queue.remove() //Remove head
+            "last" -> manager.scheduler.removeQueueIndex(queue, queue.size)
             "all" -> {
                 queue.clear()
                 context.send().info("Cleared the music queue.").queue()
@@ -51,17 +50,17 @@ class RemoveCommand : MusicCommandExecutor(true, false, false) {
                     val start = matcher.group(1).let {
                         if (it == null) 1
                         else it.toIntOrNull()?.coerceAtLeast(1)
-                            ?: return context.send().error("Invalid start of range").queue()
+                                ?: return context.send().error("Invalid start of range").queue()
                     }
 
                     val end = matcher.group(2).let {
                         if (it == null) queue.size
                         else it.toIntOrNull()?.coerceAtMost(queue.size)
-                            ?: return context.send().error("Invalid end of range").queue()
+                                ?: return context.send().error("Invalid end of range").queue()
                     }
 
                     for (i in end downTo start) {
-                        queue.removeAt(i - 1)
+                        manager.scheduler.removeQueueIndex(queue, i - 1)
                     }
 
                     context.send().info("Removed tracks `$start-$end` from the queue.").queue()
@@ -69,10 +68,10 @@ class RemoveCommand : MusicCommandExecutor(true, false, false) {
                 }
 
                 val num = arg.toIntOrNull()
-                    ?.takeIf { it >= 1 && it <= queue.size }
-                    ?: return context.send().error("That is not a valid track number. Try `1`, `1..${queue.size}`, `first`, or `last`.").queue()
+                        ?.takeIf { it >= 1 && it <= queue.size }
+                        ?: return context.send().error("That is not a valid track number. Try `1`, `1..${queue.size}`, `first`, or `last`.").queue()
 
-                queue.removeAt(num - 1)
+                manager.scheduler.removeQueueIndex(queue, num - 1)
             }
         }
 
