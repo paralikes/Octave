@@ -50,14 +50,12 @@ public class PlaylistUtils {
     @Nullable
     public static String toBase64String(AudioTrack track) {
         AudioPlayerManager playerManager = Bot.getInstance().getPlayers().getPlayerManager();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-        try {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             playerManager.encodeTrack(new MessageOutput(baos), track);
+            return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch (IOException e) {
             return null;
         }
-
-        return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 }
