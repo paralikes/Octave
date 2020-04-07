@@ -57,9 +57,9 @@ public class PlaylistUtils {
     }
 
     public static String toBase64String(AudioTrack track) {
-        try {
-            AudioPlayerManager playerManager = Bot.getInstance().getPlayers().getPlayerManager();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        AudioPlayerManager playerManager = Bot.getInstance().getPlayers().getPlayerManager();
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             playerManager.encodeTrack(new MessageOutput(baos), track);
             return Base64.getEncoder().encodeToString(baos.toByteArray());
         } catch (Exception e) {
