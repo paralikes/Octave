@@ -3,6 +3,7 @@ package xyz.gnarbot.gnar.commands.music
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import xyz.gnarbot.gnar.commands.*
 import xyz.gnarbot.gnar.music.MusicManager
+import xyz.gnarbot.gnar.utils.PlaylistUtils
 import java.util.*
 import java.util.regex.Pattern
 
@@ -21,7 +22,8 @@ class RemoveCommand : MusicCommandExecutor(true, false, false) {
     private val pattern = Pattern.compile("(\\d+)?\\s*?\\.\\.\\s*(\\d+)?")
 
     override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
-        val queue = manager.scheduler.queue as LinkedList<AudioTrack>
+        //TODO: This probably won't work, even though it works when passing a Queue<T> instead
+        val queue = manager.scheduler.queue as LinkedList<String>
 
         if (queue.isEmpty()) {
             context.send().error("The queue is empty.").queue()
@@ -74,6 +76,7 @@ class RemoveCommand : MusicCommandExecutor(true, false, false) {
             }
         }
 
-        context.send().info("Removed __[${track.info.embedTitle}](${track.info.embedUri})__ from the queue.").queue()
+        val decodedTrack = PlaylistUtils.toAudioTrack(track)
+        context.send().info("Removed __[${decodedTrack.info.embedTitle}](${decodedTrack.info.embedUri})__ from the queue.").queue()
     }
 }

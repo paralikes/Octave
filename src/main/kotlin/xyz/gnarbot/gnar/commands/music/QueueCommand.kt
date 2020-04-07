@@ -3,6 +3,7 @@ package xyz.gnarbot.gnar.commands.music
 import com.jagrosh.jdautilities.paginator
 import xyz.gnarbot.gnar.commands.*
 import xyz.gnarbot.gnar.music.TrackContext
+import xyz.gnarbot.gnar.utils.PlaylistUtils
 import xyz.gnarbot.gnar.utils.Utils
 
 @Command(
@@ -30,22 +31,24 @@ class QueueCommand : CommandExecutor() {
             color { context.selfMember.color }
             empty { "**Empty queue.** Add some music with `${config.prefix}play url|YT search`." }
             for (track in queue) {
+                val decodedTrack = PlaylistUtils.toAudioTrack(track)
+
                 entry {
                     buildString {
-                        track.getUserData(TrackContext::class.java)?.requester?.let { it ->
+                        decodedTrack.getUserData(TrackContext::class.java)?.requester?.let { it ->
                             context.guild.getMemberById(it)?.let {
                                 append(it.asMention)
                                 append(' ')
                             }
                         }
 
-                        append("`[").append(Utils.getTimestamp(track.duration)).append("]` __[")
-                        append(track.info.embedTitle)
-                        append("](").append(track.info.embedUri).append(")__")
+                        append("`[").append(Utils.getTimestamp(decodedTrack.duration)).append("]` __[")
+                        append(decodedTrack.info.embedTitle)
+                        append("](").append(decodedTrack.info.embedUri).append(")__")
                     }
                 }
 
-                queueLength += track.duration
+                queueLength += decodedTrack.duration
             }
 
             field("Now Playing", false) {

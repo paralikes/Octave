@@ -1,9 +1,8 @@
 package xyz.gnarbot.gnar.commands.music
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import io.sentry.Sentry
 import xyz.gnarbot.gnar.commands.*
 import xyz.gnarbot.gnar.music.TrackContext
+import xyz.gnarbot.gnar.utils.PlaylistUtils.toAudioTrack
 
 @Command(
         aliases = ["cleanup", "cu"],
@@ -37,18 +36,24 @@ class CleanupCommand : CommandExecutor() {
         when (purge) {
             "left" -> {
                 // Return Boolean: True if track should be removed
-                val predicate: (AudioTrack) -> Boolean = check@{
-                    val req = context.guild.getMemberById(it.getUserData(TrackContext::class.java)!!.requester)
+                val predicate: (String) -> Boolean = check@{
+                    val track = toAudioTrack(it)
+
+                    val req = context.guild.getMemberById(track.getUserData(TrackContext::class.java)!!.requester)
                         ?: return@check true
 
                     return@check req.voiceState?.channel?.idLong != context.guild.selfMember.voiceState?.channel?.idLong
                 }
+
                 manager.scheduler.queue.removeIf(predicate)
             }
             "duplicates", "d", "dupes" -> {
                 val tracks = mutableSetOf<String>()
                 // Return Boolean: True if track should be removed (could not add to set: already exists).
-                val predicate: (AudioTrack) -> Boolean = { !tracks.add(it.identifier) }
+                val predicate: (String) -> Boolean = {
+                    val track = toAudioTrack(it)
+                    !tracks.add(track.identifier)
+                }
                 manager.scheduler.queue.removeIf(predicate)
             }
             "exceeds", "longerthan", "duration", "time" -> {
@@ -61,16 +66,25 @@ class CleanupCommand : CommandExecutor() {
                     3 -> { // Hours, Minutes, Seconds
                         val (hours, minutes, seconds) = parts
                         val durationMillis = (hours * 3600000) + (minutes * 60000) + (seconds * 1000)
-                        manager.scheduler.queue.removeIf { it.duration > durationMillis }
+                        manager.scheduler.queue.removeIf {
+                            val track = toAudioTrack(it)
+                            track.duration > durationMillis
+                        }
                     }
                     2 -> { // Minutes, Seconds
                         val (minutes, seconds) = parts
                         val durationMillis = (minutes * 60000) + (seconds * 1000)
-                        manager.scheduler.queue.removeIf { it.duration > durationMillis }
+                        manager.scheduler.queue.removeIf {
+                            val track = toAudioTrack(it)
+                            track.duration > durationMillis
+                        }
                     }
                     1 -> { // Seconds
                         val durationMillis = parts[0] * 1000
-                        manager.scheduler.queue.removeIf { it.duration > durationMillis }
+                        manager.scheduler.queue.removeIf {
+                            val track = toAudioTrack(it)
+                            track.duration > durationMillis
+                        }
                     }
                     else -> {
                         return context.send().error("The duration needs to be formatted as `00:00`. Examples:\n" +
@@ -83,7 +97,10 @@ class CleanupCommand : CommandExecutor() {
             else -> {
                 val userId = purge.toLongOrNull()
                     ?: return context.send().issue("You need to mention a user, or pass a user ID.").queue()
-                val predicate: (AudioTrack) -> Boolean = { it.getUserData(TrackContext::class.java)?.requester == userId }
+                val predicate: (String) -> Boolean = {
+                    val track = toAudioTrack(it)
+                    track.getUserData(TrackContext::class.java)?.requester == userId
+                }
                 manager.scheduler.queue.removeIf(predicate)
             }
         }

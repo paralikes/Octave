@@ -3,6 +3,9 @@ package xyz.gnarbot.gnar.db;
 import com.rethinkdb.gen.exc.ReqlDriverError;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Cursor;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
@@ -20,8 +23,13 @@ public class Database {
     private static final Logger LOG = LoggerFactory.getLogger("Database");
     private final Connection conn;
     private static JedisPool defaultJedisPool = new JedisPool("localhost", 6379);
+    private Config config = new Config();
+    private RedissonClient redisson;
 
     public Database(String name) {
+        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+        redisson = Redisson.create(config);
+
         Connection conn = null;
         try {
             Connection.Builder builder = r.connection().hostname("localhost").port(28015);
@@ -112,5 +120,9 @@ public class Database {
 
     public static JedisPool getDefaultJedisPool() {
         return defaultJedisPool;
+    }
+
+    public RedissonClient getRedisson() {
+        return redisson;
     }
 }
