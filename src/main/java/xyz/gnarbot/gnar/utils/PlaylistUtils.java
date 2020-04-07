@@ -7,12 +7,15 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
 import xyz.gnarbot.gnar.Bot;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 public class PlaylistUtils {
     public static BasicAudioPlaylist decodePlaylist(List<String> encodedTracks, String name) {
@@ -30,18 +33,11 @@ public class PlaylistUtils {
     }
 
     public static List<String> encodePlaylist(BasicAudioPlaylist playlist) {
-        List<AudioTrack> tracks = playlist.getTracks();
-        List<String> encodedPlaylist = new CopyOnWriteArrayList<>();
-
-        for(AudioTrack track : tracks) {
-            try {
-                encodedPlaylist.add(toBase64String(track));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        return encodedPlaylist;
+        return  playlist.getTracks()
+                .stream()
+                .map(PlaylistUtils::toBase64String)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public static AudioTrack toAudioTrack(String encoded) throws IOException {
@@ -51,10 +47,17 @@ public class PlaylistUtils {
         return playerManager.decodeTrack(new MessageInput(bais)).decodedTrack;
     }
 
-    public static String toBase64String(AudioTrack track) throws IOException {
+    @Nullable
+    public static String toBase64String(AudioTrack track) {
         AudioPlayerManager playerManager = Bot.getInstance().getPlayers().getPlayerManager();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        playerManager.encodeTrack(new MessageOutput(baos), track);
+
+        try {
+            playerManager.encodeTrack(new MessageOutput(baos), track);
+        } catch (IOException e) {
+            return null;
+        }
+
         return Base64.getEncoder().encodeToString(baos.toByteArray());
     }
 }
