@@ -1,7 +1,6 @@
 package xyz.gnarbot.gnar.commands.music
 
 import xyz.gnarbot.gnar.commands.*
-import xyz.gnarbot.gnar.music.MusicManager
 
 @Command(
         aliases = ["resume"],
@@ -13,8 +12,9 @@ import xyz.gnarbot.gnar.music.MusicManager
         scope = Scope.VOICE,
         djLock = true
 )
-class ResumeCommand : MusicCommandExecutor(false, false, false) {
-    override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
+class ResumeCommand : CommandExecutor() {
+    override fun execute(context: Context, label: String, args: Array<out String>) {
+        val manager = context.bot.players.get(context.guild)
         val scheduler = manager.scheduler
 
         if (scheduler.queue.isEmpty()) {
