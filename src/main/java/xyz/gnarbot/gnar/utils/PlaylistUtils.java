@@ -40,7 +40,6 @@ public class PlaylistUtils {
                 .collect(Collectors.toList());
     }
 
-
     public static List<String> encodePlaylist(BasicAudioPlaylist playlist) {
         Queue<AudioTrack> tracks = new LinkedList<>(playlist.getTracks());
         return encodePlaylist(tracks);
