@@ -160,19 +160,18 @@ public class PlayerRegistry {
             Map.Entry<Long, MusicManager> entry = iterator.next();
             try {
                 //Guild was long gone, dangling manager,
-                if(Bot.getInstance().getShardManager().getGuildById(entry.getValue().getGuildId()) == null) {
+                MusicManager musicManager = entry.getValue();
+                if(Bot.getInstance().getShardManager().getGuildById(musicManager.getGuildId()) == null) {
                     iterator.remove();
                     return;
                 }
 
-                if (entry.getValue() == null) {
-                    iterator.remove();
-                    LOG.warn("Null manager for id " + entry.getKey());
-                } else if (force
-                        || !entry.getValue().getGuild().getSelfMember().getVoiceState().inVoiceChannel()
-                        || entry.getValue().getPlayer().getPlayingTrack() == null) {
-                    LOG.debug("Cleaning player {}", entry.getValue().getGuild().getId());
-                    entry.getValue().destroy();
+                if (force || !musicManager.getGuild().getSelfMember().getVoiceState().inVoiceChannel()
+                        || musicManager.getPlayer().getPlayingTrack() == null) {
+                    LOG.debug("Cleaning player {}", musicManager.getGuild().getId());
+
+                    musicManager.getScheduler().getQueue().clear();
+                    musicManager.destroy();
                     iterator.remove();
                 }
             } catch (Exception e) {

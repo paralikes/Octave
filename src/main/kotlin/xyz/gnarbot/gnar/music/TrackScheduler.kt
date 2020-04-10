@@ -55,7 +55,6 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
         val decodedTrack = PlaylistUtils.toAudioTrack(track)
         player.startTrack(decodedTrack, false)
 
-        // fixme DI point
         if (bot.options.ofGuild(manager.getGuild()).music.announce) {
             announceNext(decodedTrack)
         }
