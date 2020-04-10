@@ -149,4 +149,11 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
 
         return value;
     }
+
+
+    companion object {
+        fun getQueueForGuild(guildId: String) : RQueue<String> {
+            return Bot.getInstance().db().redisson.getQueue("playerQueue:$guildId")
+        }
+    }
 }
