@@ -4,7 +4,7 @@ import xyz.gnarbot.gnar.commands.*
 import xyz.gnarbot.gnar.music.MusicManager
 
 @Command(
-        aliases = ["skip", "sk"],
+        aliases = ["skip", "sk", "s"],
         description = "Skip the current music track."
 )
 @BotInfo(
