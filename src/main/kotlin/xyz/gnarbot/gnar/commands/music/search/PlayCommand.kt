@@ -1,12 +1,16 @@
 package xyz.gnarbot.gnar.commands.music.search
 
+import com.jagrosh.jdautilities.menu.Selector
+import com.jagrosh.jdautilities.menu.SelectorBuilder
 import net.dv8tion.jda.api.EmbedBuilder
 import xyz.gnarbot.gnar.commands.*
 import xyz.gnarbot.gnar.music.MusicLimitException
 import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.music.TrackContext
+import xyz.gnarbot.gnar.music.TrackScheduler
 import xyz.gnarbot.gnar.utils.desc
 import xyz.gnarbot.gnar.utils.getDisplayValue
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 @Command(
@@ -56,19 +60,48 @@ class PlayCommand : CommandExecutor() {
             return
         }
 
-        if(context.data.music.isVotePlay) {
-            val newManager = try {
-                context.bot.players.get(context.guild)
-            } catch (e: MusicLimitException) {
-                e.sendToContext(context)
-                return
+        prompt(context, manager).whenComplete { _, _ ->
+            if(context.data.music.isVotePlay) {
+                val newManager = try {
+                    context.bot.players.get(context.guild)
+                } catch (e: MusicLimitException) {
+                    e.sendToContext(context)
+                    return@whenComplete
+                }
+
+                startPlayVote(context, newManager, args, false, "")
+            } else {
+                play(context, args, false, "")
             }
 
-            startPlayVote(context, newManager, args, false, "")
-            return
+        }
+    }
+
+    private fun prompt(context: Context, manager: MusicManager?) : CompletableFuture<Void> {
+        val future = CompletableFuture<Void>()
+
+        val oldQueue = TrackScheduler.getQueueForGuild(context.guild.id)
+        if(manager == null && !oldQueue.isEmpty()) {
+            SelectorBuilder(context.bot.eventWaiter)
+                    .setType(Selector.Type.MESSAGE)
+                    .title { "Would you like to keep your old queue?" }
+                    .addOption("Yes, keep it.") {
+                        future.completeAsync {
+                            context.send().info("Kept old queue. Playing new song first and continuing with your queue...").queue()
+                            null
+                        }
+                    }.addOption("No, start a new queue.") {
+                        future.completeAsync {
+                            oldQueue.clear()
+                            context.send().info("Scrapped old queue. A new queue will start.")
+                            null
+                        }
+                    }.build().display(context.textChannel)
+        } else {
+            future.completeAsync { null }
         }
 
-        play(context, args, false, "")
+        return future
     }
 
     companion object {

@@ -1,14 +1,10 @@
 package xyz.gnarbot.gnar.commands.music
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import xyz.gnarbot.gnar.commands.*
-import xyz.gnarbot.gnar.db.Database
-import xyz.gnarbot.gnar.music.MusicManager
-import xyz.gnarbot.gnar.utils.PlaylistUtils
 
 @Command(
         aliases = ["resume"],
-        description = "Resumes the queue from before the bot was restarted."
+        description = "Resume the music queue."
 )
 @BotInfo(
         id = 476,
@@ -16,38 +12,30 @@ import xyz.gnarbot.gnar.utils.PlaylistUtils
         scope = Scope.VOICE,
         djLock = true
 )
-class ResumeCommand : MusicCommandExecutor(true, false, true) {
-    var pool = Database.getDefaultJedisPool()
-    var objectMapper = ObjectMapper()
+class ResumeCommand : CommandExecutor() {
+    override fun execute(context: Context, label: String, args: Array<out String>) {
+        val manager = context.bot.players.get(context.guild)
+        val scheduler = manager.scheduler
 
-    override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
-        pool.resource.use {
-            val plId = "playlist:" + context.guild.id
-            val pl = it.get(plId)
-
-            if (pl.isNullOrEmpty()) {
-                context.send().error("There's no playlist to be seen here.").queue()
-                return
-            }
-
-            val scheduler = context.bot.players.get(context.guild).scheduler
-            val encodedPlaylist: ArrayList<String> = objectMapper.readValue(pl, ArrayList::class.javaObjectType) as ArrayList<String>
-            val playlist = PlaylistUtils.decodePlaylist(encodedPlaylist, "Processed Playlist");
-
-            val tracks = playlist.tracks
-            for (track in tracks)
-                scheduler.queue(track)
-
-            context.send().embed("Music Queue") {
-                desc {
-                    buildString {
-                        append("Added `${encodedPlaylist.size}` tracks to queue from playlist `${playlist.name}`.\n")
-                    }
-                }
-            }
-
-            //Delete the playlist from redis.
-            it.del(plId)
+        if(context.voiceChannel == null) {
+            context.send().error("You need to be in a voice channel.").queue()
+            return
         }
+
+        if (scheduler.queue.isEmpty()) {
+            context.send().issue("The queue is empty.\n$PLAY_MESSAGE").queue()
+            return
+        }
+
+        if (scheduler.lastTrack != null) {
+            context.send().error("There's nothing to resume as the player has been active here!").queue()
+            return
+        }
+
+        //Poll next from queue and force that track to play.
+        manager.openAudioConnection(context.voiceChannel, context)
+        scheduler.nextTrack()
+
+        context.send().info("Queue has been resumed.").queue()
     }
 }

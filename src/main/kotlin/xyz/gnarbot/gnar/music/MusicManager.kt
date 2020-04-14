@@ -87,6 +87,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
     var discordFMTrack: DiscordFMTrackContext? = null
 
     fun destroy() {
+        scheduler.queue.clear()
         player.destroy()
         dspFilter.clearFilters()
         closeAudioConnection()

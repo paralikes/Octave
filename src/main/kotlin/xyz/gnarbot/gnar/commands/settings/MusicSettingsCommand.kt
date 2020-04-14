@@ -163,7 +163,7 @@ class MusicSettingsCommand : CommandTemplate() {
 
         context.data.music.maxQueueSize = amount
         context.data.save()
-        context.send().info("Successfully set queue limit to $amount.")
+        context.send().info("Successfully set queue limit to $amount.").queue()
     }
 
     @Description("Enables the vote queue.")

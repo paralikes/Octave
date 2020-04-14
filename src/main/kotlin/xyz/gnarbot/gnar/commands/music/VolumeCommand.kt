@@ -30,11 +30,9 @@ class VolumeCommand : MusicCommandExecutor(false, false, true) {
 
                     val percent = (manager.player.volume.toDouble() / max).coerceIn(0.0, 1.0)
                     buildString {
-                        append("[")
                         for (i in 0 until totalBlocks) {
                             if ((percent * (totalBlocks - 1)).toInt() == i) {
-                                append("\u25AC")
-                                append("]()")
+                                append("__**\u25AC**__")
                             } else {
                                 append("\u2015")
                             }
@@ -74,13 +72,11 @@ class VolumeCommand : MusicCommandExecutor(false, false, true) {
             desc {
                 val percent = (amount.toDouble() / max).coerceIn(0.0, 1.0)
                 buildString {
-                    append("[")
                     for (i in 0 until totalBlocks) {
                         if ((percent * (totalBlocks - 1)).toInt() == i) {
-                            append("\u25AC")
-                            append("]()")
+                            append("__**\u25AC**__")
                         } else {
-                            append("\u25AC")
+                            append("\u2015")
                         }
                     }
                     append(" **%.0f**%%".format(percent * max))

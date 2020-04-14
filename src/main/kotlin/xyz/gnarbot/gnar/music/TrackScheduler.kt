@@ -6,14 +6,17 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import io.sentry.Sentry
+import org.redisson.api.RQueue
 import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.commands.music.embedTitle
 import xyz.gnarbot.gnar.commands.music.embedUri
+import xyz.gnarbot.gnar.utils.PlaylistUtils
 import xyz.gnarbot.gnar.utils.response.respond
 import java.util.*
 
 class TrackScheduler(private val bot: Bot, private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
-    val queue: Queue<AudioTrack> = LinkedList()
+    //Base64 encoded.
+    val queue: RQueue<String> = bot.db().redisson.getQueue("playerQueue:${manager.guildId}")
     var repeatOption = RepeatOption.NONE
     var lastTrack: AudioTrack? = null
         private set
@@ -25,7 +28,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
      */
     fun queue(track: AudioTrack) {
         if (!player.startTrack(track, true)) {
-            queue.offer(track)
+            queue.offer(PlaylistUtils.toBase64String(track))
         }
     }
 
@@ -39,7 +42,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
 
                 //This basically forces it to poll the next track immediately, they skipped it.
                 val track = queue.poll()
-                player.startTrack(track, false)
+                player.startTrack(PlaylistUtils.toAudioTrack(track), false)
 
                 return
             }
@@ -49,11 +52,11 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
         }
 
         val track = queue.poll()
-        player.startTrack(track, false)
+        val decodedTrack = PlaylistUtils.toAudioTrack(track)
+        player.startTrack(decodedTrack, false)
 
-        // fixme DI point
         if (bot.options.ofGuild(manager.getGuild()).music.announce) {
-            announceNext(track)
+            announceNext(decodedTrack)
         }
     }
 
@@ -68,7 +71,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
                 }
                 RepeatOption.QUEUE -> {
                     val newTrack = track.makeClone().also { it.userData = track.userData }
-                    queue.offer(newTrack)
+                    queue.offer(PlaylistUtils.toBase64String(newTrack))
                     nextTrack()
                 }
                 RepeatOption.NONE -> nextTrack()
@@ -129,4 +132,28 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
     }
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
+
+    fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int) : String {
+        var index = 0
+        val iterator = queue.iterator()
+        var value = "";
+        while (iterator.hasNext() && index <= indexToRemove) {
+            val currentValue = iterator.next()
+            if (index == indexToRemove) {
+                value = currentValue
+                iterator.remove()
+            }
+
+            index++
+        }
+
+        return value;
+    }
+
+
+    companion object {
+        fun getQueueForGuild(guildId: String) : RQueue<String> {
+            return Bot.getInstance().db().redisson.getQueue("playerQueue:$guildId")
+        }
+    }
 }

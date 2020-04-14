@@ -78,6 +78,7 @@ public class CommandRegistry {
             register(new RepeatCommand());
             register(new VoteSkipCommand());
             register(new VolumeCommand());
+            register(new ResumeCommand());
             register(new JumpCommand());
             register(new BassBoostedCommand());
             register(new DiscordFMCommand());
