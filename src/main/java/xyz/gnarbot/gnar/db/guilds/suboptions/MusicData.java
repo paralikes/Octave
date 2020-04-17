@@ -18,6 +18,7 @@ public class MusicData {
     private boolean isVotePlay;
     private long votePlayCooldown;
     private long votePlayDuration;
+    private String announcementChannel;
 
     @NotNull
     public final Set<String> getChannels() {
@@ -95,5 +96,13 @@ public class MusicData {
 
     public void setVotePlayDuration(long votePlayDuration) {
         this.votePlayDuration = votePlayDuration;
+    }
+
+    public String getAnnouncementChannel() {
+        return announcementChannel;
+    }
+
+    public void setAnnouncementChannel(String announcementChannel) {
+        this.announcementChannel = announcementChannel;
     }
 }

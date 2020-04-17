@@ -59,6 +59,8 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
     /** @return Wrapper around AudioPlayer to use it as an AudioSendHandler. */
     private val sendHandler: AudioPlayerSendHandler = AudioPlayerSendHandler(player)
 
+    private val dbAnnouncementChannel = bot.db().getGuildData(guildId)?.music?.announcementChannel;
+
     /**
      * @return Voting cooldown.
      */
@@ -79,6 +81,14 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                     ?.getUserData(TrackContext::class.java)
                     ?.requestedChannel
                     ?.let { it -> getGuild()?.getTextChannelById(it) }
+        }
+
+    val announcementChannel: TextChannel?
+        get() {
+            return when {
+                dbAnnouncementChannel != null -> getGuild()!!.getTextChannelById(dbAnnouncementChannel)
+                else -> currentRequestChannel
+            }
         }
 
     /**

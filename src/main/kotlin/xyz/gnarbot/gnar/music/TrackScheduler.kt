@@ -112,7 +112,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
     }
 
     private fun announceNext(track: AudioTrack) {
-        manager.currentRequestChannel?.let {
+        manager.announcementChannel?.let {
             it.respond().embed("Music Playback") {
                 desc {
                     buildString {

@@ -2,6 +2,7 @@ package xyz.gnarbot.gnar.commands.settings
 
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import xyz.gnarbot.gnar.commands.BotInfo
 import xyz.gnarbot.gnar.commands.Category
@@ -331,4 +332,21 @@ class MusicSettingsCommand : CommandTemplate() {
 
         context.send().info("Successfully reset DJ role name.").queue()
     }
+
+    @Description("Set the music announcement channel")
+    fun announcement_channel_set(context: Context, textChannel: TextChannel) {
+        context.data.music.announcementChannel = textChannel.id
+        context.data.save()
+
+        context.send().info("Succesfully set music announcement channel to ${textChannel.asMention}")
+    }
+
+    @Description("Reset the music announcement channel")
+    fun announcement_channel_reset(context: Context) {
+        context.data.music.announcementChannel = null
+        context.data.save()
+
+        context.send().info("Succesfully reset the music announcement channel.")
+    }
+
 }
