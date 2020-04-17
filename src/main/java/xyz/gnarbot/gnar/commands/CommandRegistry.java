@@ -73,6 +73,7 @@ public class CommandRegistry {
             register(new MoveCommand());
             register(new ShuffleCommand());
             register(new NowPlayingCommand());
+            register(new DMNowPlayingCommand());
             register(new QueueCommand());
             register(new RestartCommand());
             register(new RepeatCommand());
