@@ -6,6 +6,7 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioTrack
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioTrack
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
+import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import net.dv8tion.jda.api.Permission
@@ -16,6 +17,7 @@ import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.commands.music.embedTitle
 import xyz.gnarbot.gnar.commands.music.embedUri
+import xyz.gnarbot.gnar.music.sources.caching.CachingSourceManager
 import xyz.gnarbot.gnar.utils.getDisplayValue
 import xyz.gnarbot.gnar.utils.response.respond
 import java.util.concurrent.Future
@@ -193,6 +195,8 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
     fun loadAndPlay(context: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null) {
         playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
+                cache(trackUrl, track)
+
                 if (!getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
                     if (!openAudioConnection(context.voiceChannel, context)) {
                         return
@@ -260,6 +264,8 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
+                cache(trackUrl, playlist)
+
                 if (playlist.isSearchResult) {
                     trackLoaded(playlist.tracks.first())
                     return
@@ -360,5 +366,9 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                 bot.configuration.queueLimit
             }
         }
+    }
+
+    companion object {
+        fun cache(identifier: String, item: AudioItem) = CachingSourceManager.cache(identifier, item)
     }
 }

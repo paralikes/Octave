@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import xyz.gnarbot.gnar.Bot;
 import xyz.gnarbot.gnar.BotCredentials;
 import xyz.gnarbot.gnar.Configuration;
+import xyz.gnarbot.gnar.music.sources.caching.CachingSourceManager;
 import xyz.gnarbot.gnar.music.sources.spotify.SpotifyAudioSourceManager;
 
 import javax.annotation.Nonnull;
@@ -87,6 +88,7 @@ public class PlayerRegistry {
                 youtubeAudioSourceManager
         );
 
+        playerManager.registerSourceManager(new CachingSourceManager());
         playerManager.registerSourceManager(spotifyAudioSourceManager);
         playerManager.registerSourceManager(youtubeAudioSourceManager);
         playerManager.registerSourceManager(SoundCloudAudioSourceManager.createDefault());

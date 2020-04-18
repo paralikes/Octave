@@ -3,8 +3,11 @@ package xyz.gnarbot.gnar.utils;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput;
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import xyz.gnarbot.gnar.Bot;
 
 import java.io.ByteArrayInputStream;
@@ -21,6 +24,41 @@ public class PlaylistUtils {
             tracks.add(toAudioTrack(encodedTrack));
 
         return new BasicAudioPlaylist(name, tracks, tracks.get(0), false);
+    }
+
+    public static BasicAudioPlaylist decodePlaylist(String jsonString) {
+        JSONObject object = new JSONObject(jsonString);
+
+        String name = object.getString("name");
+        boolean isSearch = object.getBoolean("search");
+        int selectedIndex = object.getInt("selected");
+
+        JSONArray encodedTracks = object.getJSONArray("tracks");
+        List<AudioTrack> tracks = new ArrayList<>(encodedTracks.length());
+
+        for (Object encodedTrack : encodedTracks) {
+            tracks.add(toAudioTrack((String) encodedTrack));
+        }
+
+        AudioTrack selectedTrack = selectedIndex > -1
+                ? tracks.get(selectedIndex)
+                : null;
+
+        return new BasicAudioPlaylist(name, tracks, selectedTrack, isSearch);
+    }
+
+    public static String toJsonString(AudioPlaylist playlist) {
+        int selectedIndex = playlist.getSelectedTrack() != null
+                ? playlist.getTracks().indexOf(playlist.getSelectedTrack())
+                : -1;
+
+        JSONObject object = new JSONObject();
+        object.put("name", playlist.getName());
+        object.put("tracks", playlist.getTracks().stream().map(PlaylistUtils::toBase64String));
+        object.put("search", playlist.isSearchResult());
+        object.put("selected", selectedIndex);
+
+        return object.toString();
     }
 
     public static List<String> encodePlaylist(Queue<AudioTrack> playlist) {
