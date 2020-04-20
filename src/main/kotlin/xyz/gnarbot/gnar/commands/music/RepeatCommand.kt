@@ -2,7 +2,7 @@ package xyz.gnarbot.gnar.commands.music
 
 import xyz.gnarbot.gnar.commands.*
 import xyz.gnarbot.gnar.music.MusicManager
-import xyz.gnarbot.gnar.music.RepeatOption
+import xyz.gnarbot.gnar.music.settings.RepeatOption
 
 @Command(
         aliases = ["repeat", "loop"],

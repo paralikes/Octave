@@ -26,20 +26,13 @@ class DiscordFMTrackContext(
                 musicManager.scheduler.queue(track)
             }
 
-            override fun playlistLoaded(playlist: AudioPlaylist) {
-                trackLoaded(playlist.tracks.first())
-            }
+            override fun playlistLoaded(playlist: AudioPlaylist) = trackLoaded(playlist.tracks.first())
 
-            override fun noMatches() {
-                // Already confirmed that the list is empty.
-                bot.players.destroy(musicManager.getGuild())
-            }
+            override fun noMatches() = bot.players.destroy(musicManager.getGuild())
 
             override fun loadFailed(exception: FriendlyException) {
                 if (errorDepth >= errorTolerance) {
-                    // Already confirmed that the list is empty.
                     bot.players.destroy(musicManager.getGuild())
-                    return
                 } else {
                     nextDiscordFMTrack(musicManager, errorDepth + 1)
                 }

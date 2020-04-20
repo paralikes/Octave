@@ -1,4 +1,4 @@
-package xyz.gnarbot.gnar.music
+package xyz.gnarbot.gnar.music.settings
 
 enum class RepeatOption {
     QUEUE,

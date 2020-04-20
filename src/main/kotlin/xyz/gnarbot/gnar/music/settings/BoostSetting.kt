@@ -1,4 +1,4 @@
-package xyz.gnarbot.gnar.music
+package xyz.gnarbot.gnar.music.settings
 
 enum class BoostSetting(val band1: Float, val band2: Float) {
     OFF(0.0F, 0.0F),

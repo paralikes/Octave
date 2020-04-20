@@ -1,11 +1,11 @@
-package xyz.gnarbot.gnar.music
+package xyz.gnarbot.gnar.music.filters
 
 import com.sedmelluq.discord.lavaplayer.filter.AudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.FloatPcmAudioFilter
 import com.sedmelluq.discord.lavaplayer.filter.UniversalPcmAudioFilter
 import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
-import xyz.gnarbot.gnar.music.filters.*
+import xyz.gnarbot.gnar.music.settings.BoostSetting
 
 class DSPFilter(private val player: AudioPlayer) {
     // Equalizer properties

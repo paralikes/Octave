@@ -17,7 +17,9 @@ import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.commands.music.embedTitle
 import xyz.gnarbot.gnar.commands.music.embedUri
+import xyz.gnarbot.gnar.music.filters.DSPFilter
 import xyz.gnarbot.gnar.music.sources.caching.CachingSourceManager
+import xyz.gnarbot.gnar.utils.extensions.friendlierMessage
 import xyz.gnarbot.gnar.utils.getDisplayValue
 import xyz.gnarbot.gnar.utils.response.respond
 import java.util.concurrent.Future
@@ -50,7 +52,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
 
     /** @return Audio player for the guild. */
     val player: AudioPlayer = playerManager.createPlayer().also {
-        it.volume = bot.options.ofGuild(getGuild()).music.volume
+        it.volume = bot.options.ofGuild(guild).music.volume
     }
 
     val dspFilter = DSPFilter(player)
@@ -82,16 +84,19 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
             return (player.playingTrack ?: scheduler.lastTrack)
                     ?.getUserData(TrackContext::class.java)
                     ?.requestedChannel
-                    ?.let { it -> getGuild()?.getTextChannelById(it) }
+                    ?.let { it -> guild?.getTextChannelById(it) }
         }
 
     val announcementChannel: TextChannel?
         get() {
             return when {
-                dbAnnouncementChannel != null -> getGuild()!!.getTextChannelById(dbAnnouncementChannel)
+                dbAnnouncementChannel != null -> guild!!.getTextChannelById(dbAnnouncementChannel)
                 else -> currentRequestChannel
             }
         }
+
+    val guild: Guild?
+        get() = Bot.getInstance().shardManager.getGuildById(guildId)
 
     /**
      * @return If the user is listening to DiscordFM
@@ -109,25 +114,27 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
         when {
             !bot.configuration.musicEnabled -> {
                 context.send().error("Music is disabled.").queue()
-                playerRegistry.destroy(getGuild())
+                playerRegistry.destroy(guild)
                 return false
             }
-            !getGuild()?.selfMember!!.hasPermission(channel, Permission.VOICE_CONNECT) -> {
+            !guild?.selfMember!!.hasPermission(channel, Permission.VOICE_CONNECT) -> {
                 context.send().issue("The bot can't connect to this channel due to a lack of permission.").queue()
-                playerRegistry.destroy(getGuild())
+                playerRegistry.destroy(guild)
                 return false
             }
 
             channel.userLimit != 0
-                    && getGuild()?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
+                    && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
                     && channel.members.size >= channel.userLimit -> {
                 context.send().issue("The bot can't join due to the user limit.").queue()
-                playerRegistry.destroy(getGuild())
+                playerRegistry.destroy(guild)
                 return false
             }
             else -> {
-                getGuild()?.audioManager!!.sendingHandler = sendHandler
-                getGuild()?.audioManager!!.openAudioConnection(channel)
+                guild?.audioManager?.apply {
+                    openAudioConnection(channel)
+                    sendingHandler = sendHandler
+                }
 
                 context.send().embed("Music Playback") {
                     desc { "Joining channel `${channel.name}`." }
@@ -138,14 +145,14 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
     }
 
     fun moveAudioConnection(channel: VoiceChannel) {
-        getGuild()?.let {
-            if (!getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
+        guild?.let {
+            if (!it.selfMember.voiceState!!.inVoiceChannel()) {
                 throw IllegalStateException("Bot is not in a voice channel")
             }
 
-            if (!getGuild()?.selfMember!!.hasPermission(channel, Permission.VOICE_CONNECT)) {
+            if (!it.selfMember.hasPermission(channel, Permission.VOICE_CONNECT)) {
                 currentRequestChannel?.respond()?.issue("I don't have permission to join `${channel.name}`.")?.queue()
-                playerRegistry.destroy(getGuild())
+                playerRegistry.destroy(it)
                 return
             }
 
@@ -160,21 +167,13 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
     }
 
     fun closeAudioConnection() {
-        getGuild()?.let {
-            it.audioManager.closeAudioConnection()
-            it.audioManager.sendingHandler = null
+        guild?.audioManager?.apply {
+            closeAudioConnection()
+            sendingHandler = null
         }
     }
 
-    fun isAlone(): Boolean {
-        return getGuild()?.selfMember!!.voiceState!!.channel?.members?.let {
-            it.size == 1 && it[0] == getGuild()?.selfMember
-        } != false
-    }
-
-    fun getGuild(): Guild? {
-        return Bot.getInstance().shardManager.getGuildById(guildId)
-    }
+    fun isAlone() = guild?.selfMember?.voiceState?.channel?.members?.none { !it.user.isBot } ?: true
 
     fun queueLeave() {
         leaveTask?.cancel(false)
@@ -189,7 +188,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
     }
 
     private fun createLeaveTask() = playerRegistry.executor.schedule({
-        playerRegistry.destroy(getGuild())
+        playerRegistry.destroy(guild)
     }, 30, TimeUnit.SECONDS)
 
     fun loadAndPlay(context: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null) {
@@ -197,7 +196,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
             override fun trackLoaded(track: AudioTrack) {
                 cache(trackUrl, track)
 
-                if (!getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
+                if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) { // wtf is this mess
                     if (!openAudioConnection(context.voiceChannel, context)) {
                         return
                     }
@@ -214,8 +213,8 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                     return
                 }
 
-                if (track !is TwitchStreamAudioTrack && track !is BeamAudioTrack) {
-                    var invalidDuration = !context.isGuildPremium && (context.data.music.maxSongLength > bot.configuration.durationLimit.toMillis())
+                if (!track.info.isStream) {
+                    val invalidDuration = !context.isGuildPremium && (context.data.music.maxSongLength > bot.configuration.durationLimit.toMillis())
 
                     val durationLimit = when {
                         context.data.music.maxSongLength != 0L && !invalidDuration -> {
@@ -248,13 +247,11 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                     }
 
                     if (track.duration > durationLimit) {
-                        context.send().issue("The track can not exceed $durationLimitText.").queue()
-                        return
+                        return context.send().issue("The track can not exceed $durationLimitText.").queue()
                     }
                 }
 
                 track.userData = trackContext
-
                 scheduler.queue(track)
 
                 context.send().embed("Music Queue") {
@@ -278,14 +275,14 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                 }
 
 
-                if (!getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
+                if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
                     if (!context.member.voiceState!!.inVoiceChannel()) {
                         context.send().issue("You left the channel before the track is loaded.").queue()
 
                         // Track is not supposed to load and the queue is empty
                         // destroy player
                         if (scheduler.queue.isEmpty()) {
-                            playerRegistry.destroy(getGuild())
+                            playerRegistry.destroy(guild)
                         }
                         return
                     }
@@ -328,7 +325,7 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                 // No track found and queue is empty
                 // destroy player
                 if (player.playingTrack == null && scheduler.queue.isEmpty()) {
-                    playerRegistry.destroy(getGuild())
+                    playerRegistry.destroy(guild)
                 }
                 context.send().issue("Nothing found by `$trackUrl`.").queue()
             }
@@ -342,15 +339,16 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                 }
 
                 if (player.playingTrack == null && scheduler.queue.isEmpty()) {
-                    playerRegistry.destroy(getGuild())
+                    playerRegistry.destroy(guild)
                 }
-                context.send().exception(e).queue()
+
+                context.send().issue(e.friendlierMessage()).queue()
             }
         })
     }
 
     fun queueLimit(context: Context): Int {
-        var invalidSize = !context.isGuildPremium && (context.data.music.maxQueueSize > bot.configuration.queueLimit)
+        val invalidSize = !context.isGuildPremium && (context.data.music.maxQueueSize > bot.configuration.queueLimit)
 
         return when {
             context.data.music.maxQueueSize != 0 && !invalidSize -> {

@@ -18,7 +18,7 @@ class VoiceListener(private val bot: Bot) : ListenerAdapter() {
             val guild = event.guild
 
             bot.players.getExisting(guild.idLong)?.let {
-                if (!it.getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
+                if (!it.guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
                     bot.players.destroy(guild.idLong)
                 } else if (it.isAlone()) {
                     it.queueLeave()
@@ -40,7 +40,7 @@ class VoiceListener(private val bot: Bot) : ListenerAdapter() {
             val guild = event.guild
 
             bot.players.getExisting(guild.idLong)?.let {
-                if (!it.getGuild()?.selfMember!!.voiceState!!.inVoiceChannel()) {
+                if (!it.guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
                     bot.players.destroy(guild.idLong)
                 } else if (it.isAlone()) {
                     it.queueLeave()

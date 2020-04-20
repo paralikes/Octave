@@ -10,7 +10,9 @@ import org.redisson.api.RQueue
 import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.commands.music.embedTitle
 import xyz.gnarbot.gnar.commands.music.embedUri
+import xyz.gnarbot.gnar.music.settings.RepeatOption
 import xyz.gnarbot.gnar.utils.PlaylistUtils
+import xyz.gnarbot.gnar.utils.extensions.friendlierMessage
 import xyz.gnarbot.gnar.utils.response.respond
 import java.util.*
 
@@ -43,11 +45,10 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
                 //This basically forces it to poll the next track immediately, they skipped it.
                 val track = queue.poll()
                 player.startTrack(PlaylistUtils.toAudioTrack(track), false)
-
                 return
             }
 
-            manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.getGuild()) }
+            manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.guild) }
             return
         }
 
@@ -55,7 +56,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
         val decodedTrack = PlaylistUtils.toAudioTrack(track)
         player.startTrack(decodedTrack, false)
 
-        if (bot.options.ofGuild(manager.getGuild()).music.announce) {
+        if (bot.options.ofGuild(manager.guild).music.announce) {
             announceNext(decodedTrack)
         }
     }
@@ -80,11 +81,13 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long, stackTrace: Array<out StackTraceElement>) {
-        track.getUserData(TrackContext::class.java).requestedChannel.let {
-            manager.getGuild()?.getTextChannelById(it)
-        }?.respond()?.error(
-                "The track ${track.info.embedTitle} is stuck longer than ${thresholdMs}ms threshold."
-        )?.queue()
+        track.getUserData(TrackContext::class.java)
+            ?.requestedChannel?.let {
+                manager.guild?.getTextChannelById(it)
+            }
+            ?.respond()
+            ?.error("The track ${track.info.embedTitle} is stuck longer than ${thresholdMs}ms threshold.")
+            ?.queue()
 
         val exc = buildString {
             append("AudioTrack (${track.info.identifier}) stuck >=${thresholdMs}ms\n")
@@ -104,11 +107,13 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
         if (exception.toString().contains("decoding")) {
             return
         }
-        track.getUserData(TrackContext::class.java).requestedChannel.let {
-            manager.getGuild()?.getTextChannelById(it)
-        }?.respond()?.exception(exception)?.queue()
 
         Sentry.capture(exception)
+        val channel = track.getUserData(TrackContext::class.java)?.requestedChannel?.let {
+            manager.guild?.getTextChannelById(it)
+        } ?: return
+
+        channel.respond().issue(exception.friendlierMessage()).queue()
     }
 
     private fun announceNext(track: AudioTrack) {
@@ -119,7 +124,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
                         append("Now playing __**[").append(track.info.embedTitle)
                         append("](").append(track.info.embedUri).append(")**__")
 
-                        track.getUserData(TrackContext::class.java)?.requester?.let { manager.getGuild()?.getMemberById(it) }?.let {
+                        track.getUserData(TrackContext::class.java)?.requester?.let { manager.guild?.getMemberById(it) }?.let {
                             append(" requested by ")
                             append(it.asMention)
                         }
@@ -136,7 +141,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
     fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int) : String {
         var index = 0
         val iterator = queue.iterator()
-        var value = "";
+        var value = ""
         while (iterator.hasNext() && index <= indexToRemove) {
             val currentValue = iterator.next()
             if (index == indexToRemove) {
@@ -147,7 +152,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
             index++
         }
 
-        return value;
+        return value
     }
 
 

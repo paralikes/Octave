@@ -1,7 +1,6 @@
 package xyz.gnarbot.gnar.commands.music
 
 import xyz.gnarbot.gnar.commands.*
-import xyz.gnarbot.gnar.music.BoostSetting
 import xyz.gnarbot.gnar.music.MusicManager
 
 @Command(
