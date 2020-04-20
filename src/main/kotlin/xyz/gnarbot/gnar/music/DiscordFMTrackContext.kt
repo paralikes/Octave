@@ -28,11 +28,11 @@ class DiscordFMTrackContext(
 
             override fun playlistLoaded(playlist: AudioPlaylist) = trackLoaded(playlist.tracks.first())
 
-            override fun noMatches() = bot.players.destroy(musicManager.getGuild())
+            override fun noMatches() = bot.players.destroy(musicManager.guild)
 
             override fun loadFailed(exception: FriendlyException) {
                 if (errorDepth >= errorTolerance) {
-                    bot.players.destroy(musicManager.getGuild())
+                    bot.players.destroy(musicManager.guild)
                 } else {
                     nextDiscordFMTrack(musicManager, errorDepth + 1)
                 }
