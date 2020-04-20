@@ -52,9 +52,14 @@ public class PlaylistUtils {
                 ? playlist.getTracks().indexOf(playlist.getSelectedTrack())
                 : -1;
 
+        JSONArray tracks = new JSONArray();
+        playlist.getTracks().stream()
+                .map(PlaylistUtils::toBase64String)
+                .forEach(tracks::put);
+
         JSONObject object = new JSONObject();
         object.put("name", playlist.getName());
-        object.put("tracks", playlist.getTracks().stream().map(PlaylistUtils::toBase64String));
+        object.put("tracks", tracks);
         object.put("search", playlist.isSearchResult());
         object.put("selected", selectedIndex);
 
