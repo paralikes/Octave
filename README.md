@@ -6,7 +6,7 @@ Octave provides various features including music playback, fun and moderation co
 
 ## The Official Octave
 Click the following [link](https://discordapp.com/oauth2/authorize?client_id=201492375653056512&scope=bot&permissions=8) and add Octave to a server, provided that you have the
-    `Manage Server` permission. The official website for Octave can be founded [here](https://octave.gg/).
+    `Manage Server` permission. The official website for Octave can be found [here](https://octave.gg/).
 
 ## Self-hosting Octave-bot
 - Though we do not disallow user-hosted versions of Octave, we will not provide **any** support for it.
