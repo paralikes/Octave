@@ -338,7 +338,7 @@ class MusicSettingsCommand : CommandTemplate() {
         context.data.music.announcementChannel = textChannel.id
         context.data.save()
 
-        context.send().info("Succesfully set music announcement channel to ${textChannel.asMention}")
+        context.send().info("Succesfully set music announcement channel to ${textChannel.asMention}").queue()
     }
 
     @Description("Reset the music announcement channel")
@@ -346,7 +346,7 @@ class MusicSettingsCommand : CommandTemplate() {
         context.data.music.announcementChannel = null
         context.data.save()
 
-        context.send().info("Succesfully reset the music announcement channel.")
+        context.send().info("Succesfully reset the music announcement channel.").queue()
     }
 
 }
