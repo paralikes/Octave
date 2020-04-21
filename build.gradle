@@ -44,7 +44,6 @@ dependencies {
     compile 'com.github.natanbc:lavadsp:0.5.2'
     compile 'com.sedmelluq:lavaplayer-ext-youtube-rotator:0.2.3'
     compile 'com.sedmelluq:jda-nas:1.1.0'
-    //compile 'com.jagrosh:jda-utilities:3.0.2'
 
     // Stats
     compile 'com.datadoghq:java-dogstatsd-client:2.9.0'
