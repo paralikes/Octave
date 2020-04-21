@@ -327,7 +327,8 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
                 if (player.playingTrack == null && scheduler.queue.isEmpty()) {
                     playerRegistry.destroy(guild)
                 }
-                context.send().issue("Nothing found by `$trackUrl`.").queue()
+
+                context.send().issue("Nothing found by `$trackUrl`").queue()
             }
 
             override fun loadFailed(e: FriendlyException) {
