@@ -44,7 +44,6 @@ class DMNowPlayingCommand : MusicCommandExecutor(false, true, true) {
                         "**[${track.info.embedTitle}](${track.info.embedUri})**\n" +
                                 "Track URL: ${track.info.uri}"
                     }
-                    .field()
                     .field("Repeating", true, manager.scheduler.repeatOption.name.toLowerCase().capitalize())
                     .field("Volume", true, "${manager.player.volume}%")
                     .field("Bass Boost", true, manager.dspFilter.bassBoost.name.toLowerCase().capitalize())

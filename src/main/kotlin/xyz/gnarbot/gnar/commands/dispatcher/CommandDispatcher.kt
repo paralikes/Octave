@@ -98,8 +98,7 @@ class CommandDispatcher(private val bot: Bot, private val commandRegistry: Comma
             context.send().error("The bot lacks the permission `${e.permission.getName()}` required to perform this command.").queue()
         } catch (e: MusicLimitException) {
             e.sendToContext(context)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             context.send().exception(e).queue()
             e.printStackTrace()
         }
