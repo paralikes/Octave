@@ -10,7 +10,6 @@ import xyz.gnarbot.gnar.db.ManagedObject;
 import javax.annotation.Nullable;
 import java.beans.ConstructorProperties;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class PremiumUser extends ManagedObject {
     // The ID of the user that enabled premium for the guild.
