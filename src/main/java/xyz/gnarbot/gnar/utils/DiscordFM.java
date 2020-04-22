@@ -49,7 +49,7 @@ public class DiscordFM {
     public String getRandomSong(String library) {
         try {
             List<String> urls = cache.get(library);
-            return urls.get((int) (Math.random() * urls.size()));
+            return urls.get((int) (Math.random() * urls.size())).trim();
         } catch (Exception e) {
             Bot.getLogger().error("DiscordFM Error", e);
             return "https://www.youtube.com/watch?v=D7npse9n-Yw"; //Technical Difficulties video
