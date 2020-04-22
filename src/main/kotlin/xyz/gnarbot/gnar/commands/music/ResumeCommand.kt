@@ -32,6 +32,9 @@ class ResumeCommand : CommandExecutor() {
             return
         }
 
+        //Reset expire time if play has been called.
+        manager.scheduler.queue.clearExpire()
+
         //Poll next from queue and force that track to play.
         manager.openAudioConnection(context.voiceChannel, context)
         scheduler.nextTrack()

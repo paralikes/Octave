@@ -114,6 +114,9 @@ class PlayCommand : CommandExecutor() {
                 return
             }
 
+            //Reset expire time if play has been called.
+            manager.scheduler.queue.clearExpire()
+
             if ("https://" in args[0] || "http://" in args[0]) {
                 val link = args[0].removePrefix("<").removeSuffix(">")
 
