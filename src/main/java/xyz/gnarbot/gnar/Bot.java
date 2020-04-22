@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.JDAInfo;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.RestAction;
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder;
 import net.dv8tion.jda.api.sharding.ShardManager;
 import net.dv8tion.jda.api.utils.MiscUtil;
@@ -58,6 +59,8 @@ public class Bot {
 
     public static void main(String[] args) throws LoginException {
         new Bot(new BotCredentials(new File("credentials.conf")), () -> new Configuration(new File("bot.conf")));
+
+        RestAction.setPassContext(false);
     }
 
     public Bot(BotCredentials credentials, Supplier<Configuration> configurationGenerator) throws LoginException {
