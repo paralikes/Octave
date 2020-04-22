@@ -1,5 +1,6 @@
 package xyz.gnarbot.gnar.music;
 
+import com.sedmelluq.discord.lavaplayer.format.AudioDataFormat;
 import com.sedmelluq.discord.lavaplayer.format.StandardAudioDataFormats;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.track.playback.MutableAudioFrame;
@@ -9,7 +10,8 @@ import java.nio.ByteBuffer;
 
 public class AudioPlayerSendHandler implements AudioSendHandler {
     private final AudioPlayer audioPlayer;
-    private MutableAudioFrame lastFrame;
+    private final MutableAudioFrame lastFrame;
+    private final ByteBuffer frameBuffer;
 
     /**
      * @param audioPlayer Audio player to wrap.
@@ -17,8 +19,9 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
     public AudioPlayerSendHandler(AudioPlayer audioPlayer) {
         this.audioPlayer = audioPlayer;
         this.lastFrame = new MutableAudioFrame();
-        this.lastFrame.setFormat(StandardAudioDataFormats.DISCORD_OPUS);
-        this.lastFrame.setBuffer(ByteBuffer.allocate(this.lastFrame.getFormat().maximumChunkSize()));
+        this.frameBuffer = ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize());
+
+        this.lastFrame.setBuffer(frameBuffer);
     }
 
     @Override
@@ -28,7 +31,7 @@ public class AudioPlayerSendHandler implements AudioSendHandler {
 
     @Override
     public ByteBuffer provide20MsAudio() {
-        return ByteBuffer.wrap(lastFrame.getData());
+        return frameBuffer.flip();
     }
 
     @Override
