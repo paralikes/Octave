@@ -7,6 +7,7 @@ import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.music.TrackContext
 import xyz.gnarbot.gnar.utils.Utils
+import java.util.concurrent.TimeUnit
 
 @Command(
         aliases = ["nowplaying", "np", "playing"],
@@ -21,6 +22,8 @@ class NowPlayingCommand : MusicCommandExecutor(false, true, true) {
 
     override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
         val track = manager.player.playingTrack
+        //Reset expire time if np has been called.
+        manager.scheduler.queue.clearExpireAsync()
 
         context.send().embed("Now Playing") {
             desc {
