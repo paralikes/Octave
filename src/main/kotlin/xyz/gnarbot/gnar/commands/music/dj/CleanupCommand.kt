@@ -1,6 +1,7 @@
-package xyz.gnarbot.gnar.commands.music
+package xyz.gnarbot.gnar.commands.music.dj
 
 import xyz.gnarbot.gnar.commands.*
+import xyz.gnarbot.gnar.commands.music.PLAY_MESSAGE
 import xyz.gnarbot.gnar.music.TrackContext
 import xyz.gnarbot.gnar.utils.PlaylistUtils.toAudioTrack
 

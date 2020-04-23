@@ -1,6 +1,7 @@
-package xyz.gnarbot.gnar.commands.music
+package xyz.gnarbot.gnar.commands.music.dj
 
 import xyz.gnarbot.gnar.commands.*
+import xyz.gnarbot.gnar.commands.music.PLAY_MESSAGE
 import xyz.gnarbot.gnar.commands.template.CommandTemplate
 import xyz.gnarbot.gnar.commands.template.annotations.Description
 import xyz.gnarbot.gnar.utils.Utils

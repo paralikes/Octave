@@ -4,8 +4,7 @@ import xyz.gnarbot.gnar.Bot;
 import xyz.gnarbot.gnar.commands.admin.*;
 import xyz.gnarbot.gnar.commands.general.*;
 import xyz.gnarbot.gnar.commands.music.*;
-import xyz.gnarbot.gnar.commands.music.dj.MoveCommand;
-import xyz.gnarbot.gnar.commands.music.dj.StopCommand;
+import xyz.gnarbot.gnar.commands.music.dj.*;
 import xyz.gnarbot.gnar.commands.music.search.DiscordFMCommand;
 import xyz.gnarbot.gnar.commands.music.search.PlayCommand;
 import xyz.gnarbot.gnar.commands.music.search.SoundcloudCommand;
@@ -69,6 +68,8 @@ public class CommandRegistry {
             register(new PauseCommand());
             register(new StopCommand());
             register(new SkipCommand());
+            register(new SkipToCommand());
+            register(new ClearQueueCommand());
             register(new RemoveCommand());
             register(new MoveCommand());
             register(new ShuffleCommand());

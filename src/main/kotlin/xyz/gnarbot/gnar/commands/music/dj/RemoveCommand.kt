@@ -1,10 +1,11 @@
-package xyz.gnarbot.gnar.commands.music
+package xyz.gnarbot.gnar.commands.music.dj
 
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import xyz.gnarbot.gnar.commands.*
+import xyz.gnarbot.gnar.commands.music.MusicCommandExecutor
+import xyz.gnarbot.gnar.commands.music.embedTitle
+import xyz.gnarbot.gnar.commands.music.embedUri
 import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.utils.PlaylistUtils
-import java.util.*
 import java.util.regex.Pattern
 
 @Command(
