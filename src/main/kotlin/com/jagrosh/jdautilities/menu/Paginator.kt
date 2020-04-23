@@ -145,7 +145,7 @@ class Paginator(waiter: EventWaiter,
                         }
                     }
                 }.timeout(timeout, unit) {
-                    finally(message)
+                    //finally(message)
                 }
             }
     }

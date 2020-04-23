@@ -30,6 +30,8 @@ class QueueCommand : CommandExecutor() {
             title { "Music Queue" }
             color { context.selfMember.color }
             empty { "**Empty queue.** Add some music with `${config.prefix}play url|YT search`." }
+            finally { message -> message!!.delete().queue() }
+
             for (track in queue) {
                 val decodedTrack = PlaylistUtils.toAudioTrack(track)
 

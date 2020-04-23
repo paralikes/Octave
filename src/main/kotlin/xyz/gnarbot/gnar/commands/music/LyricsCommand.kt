@@ -59,6 +59,7 @@ class LyricsCommand : CommandTemplate() {
                 setUser(ctx.user)
                 setEmptyMessage("There should be something here 👀")
                 setItemsPerPage(1)
+                finally { message -> message!!.delete().queue() }
                 title { "Lyrics for $fullTitle" }
 
                 for (page in pages) {
