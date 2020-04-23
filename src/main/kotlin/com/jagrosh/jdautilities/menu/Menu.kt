@@ -15,4 +15,5 @@ abstract class Menu(val waiter: EventWaiter,
                     val fields: List<MessageEmbed.Field>,
                     val timeout: Long,
                     val unit: TimeUnit,
-                    val finally: (Message?) -> Unit)
+                    val finally: (Message?) -> Unit
+)
