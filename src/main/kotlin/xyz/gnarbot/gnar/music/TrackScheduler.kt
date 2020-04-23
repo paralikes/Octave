@@ -6,6 +6,10 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import io.sentry.Sentry
+import io.sentry.event.Event
+import io.sentry.event.EventBuilder
+import io.sentry.event.interfaces.ExceptionInterface
+import io.sentry.event.interfaces.StackTraceInterface
 import org.redisson.api.RQueue
 import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.commands.music.embedTitle
@@ -89,17 +93,21 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
             ?.error("The track ${track.info.embedTitle} is stuck longer than ${thresholdMs}ms threshold.")
             ?.queue()
 
-        val exc = buildString {
-            append("AudioTrack (${track.info.identifier}) stuck >=${thresholdMs}ms\n")
-            for (line in stackTrace) {
-                val trace = line.toString().split('/').last() // java.base@<version>/<info>
-                append(trace)
-                append("\n")
-            }
-        }
+        val eventBuilder = EventBuilder().withMessage("AudioTrack stuck longer than ${thresholdMs}ms")
+            .withLevel(Event.Level.ERROR)
+            .withSentryInterface(StackTraceInterface(stackTrace))
 
-        print(exc)
-        Sentry.capture(exc)
+        Sentry.capture(eventBuilder)
+
+//        val exc = buildString {
+//            append("AudioTrack (${track.info.identifier}) stuck >=${thresholdMs}ms\n")
+//            for (line in stackTrace) {
+//                val trace = line.toString().split('/').last() // java.base@<version>/<info>
+//                append(trace)
+//                append("\n")
+//            }
+//        }
+
         nextTrack()
     }
 
