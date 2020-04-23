@@ -39,7 +39,7 @@ public class GuildInfoCommand extends CommandExecutor {
                 .field("Creation Time", true, guild.getTimeCreated().format(DateTimeFormatter.RFC_1123_DATE_TIME))
 
                 .field("Owner", true, guild.getOwner() == null ? "No Owner" : guild.getOwner().getAsMention())
-                .field("Members", true, guild.getMemberCache().size())
+                .field("Members", true, guild.getMemberCount())
 
                 .field("Text Channels", true, guild.getTextChannelCache().size())
                 .field("Voice Channels", true, guild.getVoiceChannelCache().size())
