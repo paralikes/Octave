@@ -23,6 +23,6 @@ class StopCommand : MusicCommandExecutor(false, false, false) {
         context.guild.audioManager.closeAudioConnection()
         context.bot.players.destroy(context.guild.idLong)
 
-        context.send().info("Playback has been completely stopped. If you want to clear the queue run `_queue clear` or `_stop clear`").queue()
+        context.send().info("Playback has been completely stopped. If you want to clear the queue run `${context.bot.configuration.prefix}clearqueue` or `${context.bot.configuration.prefix}stop clear`").queue()
     }
 }
