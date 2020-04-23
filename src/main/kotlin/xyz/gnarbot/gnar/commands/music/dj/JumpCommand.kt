@@ -1,15 +1,17 @@
 package xyz.gnarbot.gnar.commands.music.dj
 
 import xyz.gnarbot.gnar.commands.*
+import xyz.gnarbot.gnar.commands.music.MusicCommandExecutor
 import xyz.gnarbot.gnar.commands.music.PLAY_MESSAGE
 import xyz.gnarbot.gnar.commands.template.CommandTemplate
 import xyz.gnarbot.gnar.commands.template.annotations.Description
+import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.utils.Utils
 import java.time.Duration
 
 @Command(
         aliases = ["jump", "seek"],
-        usage = "(to|forward|backward) (time)",
+        usage = "(time)",
         description = "Set the time marker of the music playback."
 )
 @BotInfo(
@@ -18,66 +20,91 @@ import java.time.Duration
         scope = Scope.VOICE,
         djLock = true
 )
-class JumpCommand : CommandTemplate() {
-    @Description("Set the time marker of the player.")
-    fun to(context: Context, duration: Duration) {
-        val manager = context.bot.players.getExisting(context.guild)!!
-
-        manager.player.playingTrack.position = duration.toMillis().coerceIn(0, manager.player.playingTrack.duration)
-
-        context.send().info("The position of the track has been set to ${Utils.getTimestamp(manager.player.playingTrack.position)}.").queue()
-    }
-
-    @Description("Move the time marker forward.")
-    fun forward(context: Context, duration: Duration) {
-        val manager = context.bot.players.getExisting(context.guild)!!
-
-        manager.player.playingTrack.position = (manager.player.playingTrack.position + duration.toMillis())
-                .coerceIn(0, manager.player.playingTrack.duration)
-
-        context.send().info("The position of the track has been set to ${Utils.getTimestamp(manager.player.playingTrack.position)}.").queue()
-    }
-
-    @Description("Move the time marker backward.")
-    fun backward(context: Context, duration: Duration) {
-        val manager = context.bot.players.getExisting(context.guild)!!
-
-        manager.player.playingTrack.position = (manager.player.playingTrack.position - duration.toMillis())
-                .coerceIn(0, manager.player.playingTrack.duration)
-
-        context.send().embed("Jump Backward") {
-            desc { "The position of the track has been set to ${Utils.getTimestamp(manager.player.playingTrack.position)}." }
-        }.action().queue()
-    }
-
-    override fun execute(context: Context, label: String, args: Array<out String>) {
-        val manager = context.bot.players.getExisting(context.guild)
-        if (manager == null) {
-            context.send().issue("There's no music player in this guild.\n$PLAY_MESSAGE").queue()
-            return
-        }
-
-        val botChannel = context.selfMember.voiceState?.channel
-        if (botChannel == null) {
-            context.send().issue("The bot is not currently in a channel.\n$PLAY_MESSAGE").queue()
-            return
-        }
-
-        if (context.voiceChannel != botChannel) {
-            context.send().issue("You're not in the same channel as the context.bot.").queue()
-            return
-        }
-
-        if (manager.player.playingTrack == null) {
-            context.send().issue("The player is not playing anything.").queue()
-            return
-        }
-
+class JumpCommand : MusicCommandExecutor(true, true, true) {
+    override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
         if (!manager.player.playingTrack.isSeekable) {
-            context.send().issue("You can't change the time marker on this track.").queue()
-            return
+            return context.send().issue("The current track doesn't support seeking.").queue()
         }
 
-        super.execute(context, label, args)
+        if (args.isEmpty()) {
+            return context.send().issue(
+                "You need to specify how many seconds to seek by, or a timestamp.\n" +
+                    "**Examples:**\n" +
+                    "`${context.bot.configuration.prefix}$label 30` (Jump ahead by 30 seconds)\n" +
+                    "`${context.bot.configuration.prefix}$label -30` (Jump back by 30 seconds)\n" +
+                    "`${context.bot.configuration.prefix}$label 02:29` (Jump to exactly 2:29)\n" +
+                    "`${context.bot.configuration.prefix}$label 1m45s` (Jump ahead by 1 minute and 45 seconds)"
+            ).queue()
+        }
+
+        val seconds = args[0].toLongOrNull()
+
+        when {
+            seconds != null -> seekByMilliseconds(context, manager, seconds * 1000)
+            ':' in args[0] -> seekByTimestamp(context, manager, args[0])
+            args[0].matches(timeFormat) -> seekByTimeShorthand(context, manager, args[0])
+            else -> return context.send().issue(
+                "You didn't specify a valid time format!\n" +
+                    "Run the command without arguments to see usage examples."
+            ).queue()
+        }
+    }
+
+    fun seekByMilliseconds(ctx: Context, manager: MusicManager, milliseconds: Long) {
+        val currentTrack = manager.player.playingTrack
+        val position = (currentTrack.position + milliseconds).coerceIn(0, currentTrack.duration)
+        currentTrack.position = position
+
+        ctx.send().info("Seeked to **${Utils.getTimestamp(position)}**.").queue()
+    }
+
+    fun seekByTimestamp(ctx: Context, manager: MusicManager, timestamp: String) {
+        val parts = timestamp.split(':').mapNotNull(String::toLongOrNull)
+
+        val millis = when (parts.size) {
+            2 -> { // mm:ss
+                val (minutes, seconds) = parts
+                (minutes * 60000) + (seconds * 1000)
+            }
+            3 -> { // hh:mm:ss
+                val (hours, minutes, seconds) = parts
+                (hours * 3600000) + (minutes * 60000) + (seconds * 1000)
+            }
+            else -> return ctx.send().issue("You need to format the timestamp as `hours:minutes:seconds` or `minutes:seconds`.").queue()
+        }
+
+        val currentTrack = manager.player.playingTrack
+        val absolutePosition = millis.coerceIn(0, currentTrack.duration)
+        currentTrack.position = absolutePosition
+
+        ctx.send().info("Seeked to **${Utils.getTimestamp(absolutePosition)}**.").queue()
+    }
+
+    fun seekByTimeShorthand(ctx: Context, manager: MusicManager, shorthand: String) {
+        val segments = timeSegment.findAll(shorthand).map(MatchResult::value)
+        val milliseconds = segments.map(::parseSegment).sum()
+
+        val currentTrack = manager.player.playingTrack
+        val absolutePosition = (currentTrack.position + milliseconds).coerceIn(0, currentTrack.duration)
+        currentTrack.position = absolutePosition
+
+        ctx.send().info("Seeked to **${Utils.getTimestamp(absolutePosition)}**.").queue()
+    }
+
+    private fun parseSegment(segment: String): Long {
+        val unit = segment.last()
+        val time = segment.take(segment.length - 1).toLong()
+
+        return when (unit) {
+            's' -> time * 1000
+            'm' -> time * 60000
+            'h' -> time * 3600000
+            else -> 0
+        }
+    }
+
+    companion object {
+        private val timeSegment = "(\\d+[smh])".toRegex()
+        private val timeFormat = "(\\d+[smh])+".toRegex()
     }
 }
