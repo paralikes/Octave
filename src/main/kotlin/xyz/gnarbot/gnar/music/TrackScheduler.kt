@@ -8,7 +8,6 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
 import io.sentry.Sentry
 import io.sentry.event.Event
 import io.sentry.event.EventBuilder
-import io.sentry.event.interfaces.ExceptionInterface
 import io.sentry.event.interfaces.StackTraceInterface
 import org.redisson.api.RQueue
 import xyz.gnarbot.gnar.Bot
