@@ -15,6 +15,7 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.util.EntityUtils
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import xyz.gnarbot.gnar.music.sources.spotify.loaders.SpotifyAlbumLoader
 import xyz.gnarbot.gnar.music.sources.spotify.loaders.SpotifyPlaylistLoader
 import xyz.gnarbot.gnar.music.sources.spotify.loaders.SpotifyTrackLoader
 import java.io.DataInput
@@ -174,8 +175,9 @@ class SpotifyAudioSourceManager(
         private val log = LoggerFactory.getLogger(SpotifyAudioSourceManager::class.java)
 
         private val loaders = listOf(
-            SpotifyTrackLoader(),
-            SpotifyPlaylistLoader()
+            SpotifyAlbumLoader(),
+            SpotifyPlaylistLoader(),
+            SpotifyTrackLoader()
         )
     }
 
