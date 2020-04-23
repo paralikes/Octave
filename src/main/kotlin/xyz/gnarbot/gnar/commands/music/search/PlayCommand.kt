@@ -85,6 +85,7 @@ class PlayCommand : CommandExecutor() {
             SelectorBuilder(context.bot.eventWaiter)
                     .setType(Selector.Type.MESSAGE)
                     .title { "Would you like to keep your old queue?" }
+                    .description { "Thanks for using Octave!" }
                     .addOption("Yes, keep it.") {
                         future.completeAsync {
                             context.send().info("Kept old queue. Playing new song first and continuing with your queue...").queue()
