@@ -118,7 +118,7 @@ class PlayCommand : CommandExecutor() {
             //Reset expire time if play has been called.
             manager.scheduler.queue.clearExpire()
 
-            if ("https://" in args[0] || "http://" in args[0]) {
+            if ("https://" in args[0] || "http://" in args[0] || args[0].startsWith("spotify:")) {
                 val link = args[0].removePrefix("<").removeSuffix(">")
 
                 manager.loadAndPlay(

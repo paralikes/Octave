@@ -33,7 +33,7 @@ class RemoveCommand : MusicCommandExecutor(true, false, false) {
         val track : String = when (args.firstOrNull()) {
             null -> return context.send().issue("You need to specify what to remove.").queue()
             "first" -> queue.remove() //Remove head
-            "last" -> manager.scheduler.removeQueueIndex(queue, queue.size)
+            "last" -> manager.scheduler.removeQueueIndex(queue, queue.size - 1)
             "all" -> {
                 queue.clear()
                 context.send().info("Cleared the music queue.").queue()

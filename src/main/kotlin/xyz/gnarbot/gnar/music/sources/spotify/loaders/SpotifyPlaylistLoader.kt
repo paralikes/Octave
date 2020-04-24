@@ -17,7 +17,7 @@ class SpotifyPlaylistLoader : Loader {
     override fun pattern() = PLAYLIST_PATTERN
 
     override fun load(manager: DefaultAudioPlayerManager, sourceManager: SpotifyAudioSourceManager, matcher: Matcher): AudioItem {
-        val playlistId = matcher.group(1)
+        val playlistId = matcher.group(2)
         val playlistInfo = fetchPlaylistInfo(sourceManager, playlistId)
         val playlistTracks = fetchPlaylistTracks(manager, sourceManager, playlistId)
         val playlistName = playlistInfo.optString("name")
@@ -78,7 +78,9 @@ class SpotifyPlaylistLoader : Loader {
     }
 
     companion object {
-        private val PLAYLIST_PATTERN = "^https?://(?:open\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+)".toPattern()
+//        private val PLAYLIST_PATTERN = "^https?://(?:open\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+)".toPattern()
+        private const val URL_PATTERN = "https?://(?:open\\.)?spotify\\.com(?:/user/[a-zA-Z0-9_]+)?"
+        private val PLAYLIST_PATTERN = "^(?:$URL_PATTERN|spotify)([/:])playlist\\1([a-zA-Z0-9]+)".toPattern()
     }
 
 }
