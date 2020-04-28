@@ -12,7 +12,7 @@ inline operator fun ConfigurationNode.get(vararg nodes: Any): ConfigurationNode 
 }
 
 fun Member.hasAnyRoleNamed(name: String) = roles.any { it.name == name }
-fun Member.hasAnyRoleId(id: String) = if (id == guild.publicRole.id) true else roles.any { it.id == id }
+fun Member.hasAnyRoleId(id: String) = id == guild.publicRole.id || roles.any { it.id == id }
 
 fun String.toDuration(): Duration {
     return Duration.ofNanos(parseDuration(this))
