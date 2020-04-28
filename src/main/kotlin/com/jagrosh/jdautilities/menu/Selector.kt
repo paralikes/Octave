@@ -54,7 +54,7 @@ class Selector(waiter: EventWaiter,
                 buildString {
                     append(description).append('\n').append('\n')
                     options.forEachIndexed { index, (name) ->
-                        append("${'\u0030' + index}\u20E3 $name\n")
+                        append("${'\u0030' + (index + 1)}\u20E3 $name\n")
                     }
                 }
             }
@@ -62,7 +62,7 @@ class Selector(waiter: EventWaiter,
             field("Select an Option") {
                 when (type) {
                     Type.REACTIONS -> "Pick a reaction corresponding to the options."
-                    Type.MESSAGE -> "Type a number corresponding to the options. ie: `0` or `cancel`"
+                    Type.MESSAGE -> "Type a number corresponding to the options. ie: `1` or `cancel`"
                 }
             }
 
@@ -76,7 +76,7 @@ class Selector(waiter: EventWaiter,
             when (type) {
                 Type.REACTIONS -> {
                     options.forEachIndexed { index, _ ->
-                        it.addReaction("${'\u0030' + index}\u20E3").queue()
+                        it.addReaction("${'\u0030' + (index + 1)}\u20E3").queue()
                     }
                     it.addReaction(cancel).queue()
                 }
@@ -111,7 +111,8 @@ class Selector(waiter: EventWaiter,
                                 true
                             } else {
                                 val value = it.reaction.reactionEmote.name[0] - '\u0030'
-                                if (value in 0 until options.size) {
+
+                                if (value - 1 in options.indices) {
                                     true
                                 } else {
                                     it.reaction.removeReaction(it.user!!).queue()
@@ -134,7 +135,7 @@ class Selector(waiter: EventWaiter,
 
                     val value = content.toIntOrNull() ?: return@waitFor
                     it.channel.retrieveMessageById(it.messageIdLong).queue {
-                        options[value].action(it)
+                        options[value - 1].action(it)
                     }
                     finally(message)
                 }.predicate {
@@ -149,7 +150,10 @@ class Selector(waiter: EventWaiter,
                                 true
                             } else {
                                 val value = content.toIntOrNull() ?: return@predicate false
-                                value in 0 until options.size
+                                if(value == 0)
+                                    return@predicate false //Else we'll hit out of bounds, lol.
+
+                                value - 1 in options.indices
                             }
                         }
                     }
