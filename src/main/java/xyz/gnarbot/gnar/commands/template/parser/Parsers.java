@@ -84,7 +84,7 @@ public class Parsers {
             return list.isEmpty() ? null : list.get(0);
         }
     });
-    private static final Pattern rolePattern = Pattern.compile("<@&(\\d+)>");
+    private static final Pattern rolePattern = Pattern.compile("(?:<@&)?(\\d+)>?");
     public static final Parser<Role> ROLE = new Parser<>("@role", "Role mention or name", (c, s) -> {
         Matcher matcher = rolePattern.matcher(s);
         if (matcher.find()) {
