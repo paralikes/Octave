@@ -87,19 +87,15 @@ class PlayCommand : CommandExecutor() {
                     .title { "Would you like to keep your old queue?" }
                     .description { "Thanks for using Octave!" }
                     .addOption("Yes, keep it.") {
-                        future.completeAsync {
-                            context.send().info("Kept old queue. Playing new song first and continuing with your queue...").queue()
-                            null
-                        }
+                        context.send().info("Kept old queue. Playing new song first and continuing with your queue...").queue()
+                        future.complete(null)
                     }.addOption("No, start a new queue.") {
-                        future.completeAsync {
-                            oldQueue.clear()
-                            context.send().info("Scrapped old queue. A new queue will start.")
-                            null
-                        }
+                        oldQueue.clear()
+                        context.send().info("Scrapped old queue. A new queue will start.")
+                        future.complete(null)
                     }.build().display(context.textChannel)
         } else {
-            future.completeAsync { null }
+            future.complete(null)
         }
 
         return future
