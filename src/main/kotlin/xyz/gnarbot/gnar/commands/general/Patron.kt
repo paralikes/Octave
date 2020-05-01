@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.db.premium.PremiumGuild
 import xyz.gnarbot.gnar.db.premium.PremiumUser
+import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.db
 import xyz.gnarbot.gnar.utils.extensions.shardManager
 import java.time.Instant
@@ -28,11 +29,7 @@ class Patron : Cog {
     )
 
     @Command(description = "Link/manage Patron membership.")
-    fun patron(ctx: Context, subcommand: String?) {
-        // send subcomm help
-        val comm = ctx.invokedCommand as CommandFunction
-        return ctx.send("`${ctx.trigger}${comm.name} <link/servers/status>`")
-    }
+    fun patron(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
     @SubCommand
     fun status(ctx: Context, user: Long?) {
