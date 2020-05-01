@@ -25,9 +25,9 @@ class GuildInfoCommand : CommandExecutor() {
             thumbnail { context.guild.iconUrl }
             field("Name", false, guild.name)
             field("ID", false, guild.id)
+            //This will add it to the cache, so it'll only be complete()'d once.
             field("Owner", false, if (guild.owner == null) guild.retrieveOwner(false).complete().asMention else guild.owner!!.asMention)
             field("Region", true, guild.region.getName())
-            //This will add it to the cache, so it'll only be complete()'d once.
             field("Members", true, guild.memberCount)
             field("Text Channels", true, guild.textChannelCache.size())
             field("Voice Channels", true, guild.voiceChannelCache.size())
