@@ -26,7 +26,7 @@ class GuildInfoCommand : CommandExecutor() {
             field("Name", false, guild.name)
             field("ID", false, guild.id)
             //This will add it to the cache, so it'll only be complete()'d once.
-            field("Owner", false, if (guild.owner == null) guild.retrieveOwner(false).complete().asMention else guild.owner!!.asMention)
+            field("Owner", false, (guild.owner ?: guild.retrieveOwner(false).complete()).asMention)
             field("Region", true, guild.region.getName())
             field("Members", true, guild.memberCount)
             field("Text Channels", true, guild.textChannelCache.size())
