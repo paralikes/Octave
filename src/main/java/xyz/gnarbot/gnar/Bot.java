@@ -28,7 +28,6 @@ import xyz.gnarbot.gnar.listeners.VoiceListener;
 import xyz.gnarbot.gnar.music.PlayerRegistry;
 import xyz.gnarbot.gnar.sharding.BucketedController;
 import xyz.gnarbot.gnar.utils.DiscordFM;
-import xyz.gnarbot.gnar.utils.MyAnimeListAPI;
 import xyz.gnarbot.gnar.utils.SoundManager;
 
 import javax.security.auth.login.LoginException;
@@ -45,7 +44,6 @@ public class Bot {
     private final Database database;
     private final OptionsRegistry optionsRegistry;
     private final PlayerRegistry playerRegistry;
-    private final MyAnimeListAPI myAnimeListAPI;
     private final DiscordFM discordFM;
     private final PatreonAPI patreon;
     private final CommandRegistry commandRegistry;
@@ -104,7 +102,7 @@ public class Bot {
                 .setBulkDeleteSplittingEnabled(false)
                 .build();
 
-        LOG.info("The bot is now connecting to Discord. Bucket factor: " + configuration.getBucketFactor());
+        LOG.info("The bot is now connecting to Discord. Bucket factor: {}", configuration.getBucketFactor());
 
         optionsRegistry = new OptionsRegistry(this);
         playerRegistry = new PlayerRegistry(this, Executors.newSingleThreadScheduledExecutor());
@@ -114,8 +112,6 @@ public class Bot {
 
         patreon = new PatreonAPI(credentials.getPatreonAccessToken());
         LOG.info("Patreon Established.");
-
-        myAnimeListAPI = new MyAnimeListAPI(credentials.getMalUsername(), credentials.getMalPassword());
 
         statsPoster = new StatsPoster("201503408652419073"); // Config option? @Kodehawa
         statsPoster.postEvery(30, TimeUnit.MINUTES);
@@ -148,10 +144,6 @@ public class Bot {
 
     public Guild getGuildById(long id) {
         return getJDA(MiscUtil.getShardForGuild(id, credentials.getTotalShards())).getGuildById(id);
-    }
-
-    public MyAnimeListAPI getMyAnimeListAPI() {
-        return myAnimeListAPI;
     }
 
     public DiscordFM getDiscordFM() {
