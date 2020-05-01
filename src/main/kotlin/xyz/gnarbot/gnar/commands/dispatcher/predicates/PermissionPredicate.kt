@@ -1,6 +1,7 @@
 package xyz.gnarbot.gnar.commands.dispatcher.predicates
 
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import xyz.gnarbot.gnar.commands.CommandExecutor
 import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.commands.Scope
@@ -19,16 +20,9 @@ class PermissionPredicate : BiPredicate<CommandExecutor, Context> {
         }
 
         if(cmd.botInfo.djLock || context.data.command.isDjOnlyMode) {
-            val memberSize = context.selfMember.voiceState?.channel?.members?.size
-            val djRole = context.data.command.djRole
-
-            val djRolePresent = if(djRole != null) context.member.hasAnyRoleId(djRole) else false
-            val memberAmount = if(memberSize != null) memberSize <= 2 else false
-            val admin = context.member.permissions.contains(Permission.MANAGE_SERVER)
-
-            if(context.member.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount || admin) {
+            //Don't return here if it's false because it's handled down there. God knows why lol
+            if(isDJ(context) || context.data.music.isDisableDj)
                 return true
-            }
         }
 
         if (context.member.hasAnyRoleNamed(cmd.botInfo.roleRequirement)
@@ -81,5 +75,22 @@ class PermissionPredicate : BiPredicate<CommandExecutor, Context> {
             append(".")
         }).queue()
         return false
+    }
+
+    companion object {
+        fun isDJ(context: Context): Boolean {
+            val memberSize = context.selfMember.voiceState?.channel?.members?.size
+            val djRole = context.data.command.djRole
+
+            val djRolePresent = if(djRole != null) context.member.hasAnyRoleId(djRole) else false
+            val memberAmount = if(memberSize != null) memberSize <= 2 else false
+            val admin = context.member.permissions.contains(Permission.MANAGE_SERVER) || context.member.permissions.contains(Permission.ADMINISTRATOR)
+
+            if(context.member.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount || admin) {
+                return true
+            }
+
+            return false;
+        }
     }
 }

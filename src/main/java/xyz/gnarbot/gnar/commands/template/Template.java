@@ -70,8 +70,7 @@ public interface Template {
             }
 
             builder.append("`");
-            builder.append("\n").append(current.getValue().description());
-            builder.append("\n\n");
+            builder.append("\n").append(current.getValue().description()).append("\n");
         }
 
         EmbedMaker eb = new EmbedMaker();

@@ -9,7 +9,6 @@ import xyz.gnarbot.gnar.commands.music.search.DiscordFMCommand;
 import xyz.gnarbot.gnar.commands.music.search.PlayCommand;
 import xyz.gnarbot.gnar.commands.music.search.SoundcloudCommand;
 import xyz.gnarbot.gnar.commands.music.search.YoutubeCommand;
-import xyz.gnarbot.gnar.commands.polls.PollCommand;
 import xyz.gnarbot.gnar.commands.settings.SettingsDelegateCommand;
 
 import java.util.LinkedHashMap;
@@ -39,17 +38,11 @@ public class CommandRegistry {
         register(new BotInfoCommand());
         register(new DonateCommand());
         register(new RedeemCommand());
-        register(new IAmCommand());
-        register(new QuoteCommand());
         //End General Commands
 
         //Mod Commands
         register(new SettingsDelegateCommand());
         //End Mod Commands
-
-        //Poll Commands
-        register(new PollCommand());
-        //End Poll Commands
 
         // Administrator commands
         register(new RestartShardsCommand());

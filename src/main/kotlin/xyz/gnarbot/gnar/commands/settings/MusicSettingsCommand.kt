@@ -65,32 +65,6 @@ class MusicSettingsCommand : CommandTemplate() {
         context.send().info("${channel.name} is no longer a designated music channel.").queue()
     }
 
-    @Description("List all settings, their description and their values.")
-    fun list(context: Context) {
-        context.send().embed("Music Settings") {
-            field("Announcements") {
-                buildString {
-                    append("Music announcements are __")
-                    append(if (context.data.music.announce) "enabled" else "disabled")
-                    append("__, toggle with `_music toggle announcements`.")
-                }
-            }
-
-            field("Music Channels") {
-                buildString {
-                    append("If this is not empty, Octave will only play music in these voice channels.\n\n")
-                    context.data.music.channels.let {
-                        if (it.isEmpty()) append("None.")
-
-                        it.mapNotNull(context.guild::getVoiceChannelById)
-                                .map(VoiceChannel::getName)
-                                .forEach { append("• ").append(it).append('\n') }
-                    }
-                }
-            }
-        }.action().queue()
-    }
-
     @Description("Set the maximum song length")
     fun song_length(context: Context, content: String) {
         if (content == "reset") {
@@ -349,4 +323,34 @@ class MusicSettingsCommand : CommandTemplate() {
         context.send().info("Succesfully reset the music announcement channel.").queue()
     }
 
+    @Description("Disable DJ requirement for all commands.")
+    fun djrequirement_disable(context: Context) {
+        context.data.music.isDisableDj = true
+        context.data.save()
+
+        context.send().info("Now no commands will require DJ to be ran.").queue()
+    }
+
+    @Description("Re-enable DJ requirement for DJ commands.")
+    fun djrequirement_enable(context: Context) {
+        if(!context.data.music.isDisableDj)
+            return context.send().error("DJ mode isn't disabled here").queue()
+
+        context.data.music.isDisableDj = false
+        context.data.save()
+
+        context.send().info("Now DJ commands will require DJ to be ran.").queue()
+    }
+
+    @Description("Enable DJ Only mode.")
+    fun djonly_enable(context: Context) {
+        context.data.command.isDjOnlyMode = true
+        context.send().info("Enabled DJ-only mode.").queue()
+    }
+
+    @Description("Disable DJ Only mode.")
+    fun djonly_disable(context: Context) {
+        context.data.command.isDjOnlyMode = false
+        context.send().info("Disabled DJ-only mode.").queue()
+    }
 }

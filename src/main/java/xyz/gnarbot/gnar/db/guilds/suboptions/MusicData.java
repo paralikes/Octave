@@ -19,6 +19,7 @@ public class MusicData {
     private long votePlayCooldown;
     private long votePlayDuration;
     private String announcementChannel;
+    private boolean disableDj;
 
     @NotNull
     public final Set<String> getChannels() {
@@ -104,5 +105,13 @@ public class MusicData {
 
     public void setAnnouncementChannel(String announcementChannel) {
         this.announcementChannel = announcementChannel;
+    }
+
+    public boolean isDisableDj() {
+        return disableDj;
+    }
+
+    public void setDisableDj(boolean disableDj) {
+        this.disableDj = disableDj;
     }
 }

@@ -16,13 +16,11 @@ import xyz.gnarbot.gnar.commands.*
 class SettingsDelegateCommand : CommandExecutor() {
     val map = mapOf(
             "autorole" to AutoRoleCommand(),
-            "selfroles" to SelfRoleCommand(),
             "ignore" to IgnoreCommand(),
             "commands" to ManageCommandsCommand(),
             "autodelete" to AutoDeleteCommand(),
             "music" to MusicSettingsCommand(),
-            "prefix" to PrefixCommand(),
-            "djonly" to DJOnlyCommand()
+            "prefix" to PrefixCommand()
     )
 
     override fun execute(context: Context, label: String, args: Array<String>) {

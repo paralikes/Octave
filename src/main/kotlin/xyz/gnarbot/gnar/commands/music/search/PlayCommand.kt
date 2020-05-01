@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.menu.Selector
 import com.jagrosh.jdautilities.menu.SelectorBuilder
 import net.dv8tion.jda.api.EmbedBuilder
 import xyz.gnarbot.gnar.commands.*
+import xyz.gnarbot.gnar.commands.dispatcher.predicates.PermissionPredicate
 import xyz.gnarbot.gnar.music.MusicLimitException
 import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.music.TrackContext
@@ -61,7 +62,7 @@ class PlayCommand : CommandExecutor() {
         }
 
         prompt(context, manager).whenComplete { _, _ ->
-            if(context.data.music.isVotePlay) {
+            if(context.data.music.isVotePlay && !PermissionPredicate.isDJ(context)) {
                 val newManager = try {
                     context.bot.players.get(context.guild)
                 } catch (e: MusicLimitException) {
