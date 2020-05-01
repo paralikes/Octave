@@ -1,29 +1,24 @@
 package xyz.gnarbot.gnar.commands.admin
 
-import com.google.common.collect.Lists
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.entities.Cog
+import me.devoxin.flight.internal.utils.TextSplitter
 import net.dv8tion.jda.api.JDA
-import xyz.gnarbot.gnar.commands.*
+import xyz.gnarbot.gnar.Bot
 
-@Command(
-        aliases = ["shards", "shard", "shardinfo"],
-        description = "Get shard information."
-)
-@BotInfo(
-        id = 48,
-        admin = true,
-        category = Category.NONE
-)
-class ShardInfoCommand : CommandExecutor() {
-    override fun execute(context: Context, label: String, args: Array<String>) {
-        context.send().text("```prolog\n ID |    STATUS |    PING | GUILDS |  USERS | REQUESTS |  VC\n```").queue()
+class ShardInfoCommand : Cog {
+    @Command(aliases = ["shards", "shard"], description = "View shard information.", developerOnly = true)
+    suspend fun shardinfo(ctx: Context) {
+        val status = ctx.jda.shardManager!!.shards.joinToString("\n", transform = ::formatInfo)
+        val pages = TextSplitter.split(status, 1920)
 
-        Lists.partition(context.bot.shardManager.shards, 20).forEach {
-            val page = it.joinToString("\n", prefix = "```prolog\n", postfix = "```") { shard -> formatInfo(context, shard) }
-            context.send().text(page).queue()
+        for (page in pages) {
+            ctx.sendAsync("```prolog\n ID |    STATUS |    PING | GUILDS |  USERS | REQUESTS |  VC\n$page```")
         }
     }
 
-    private fun formatInfo(ctx: Context, jda: JDA): String {
+    private fun formatInfo(jda: JDA): String {
         val shardId = jda.shardInfo.shardId
         val totalShards = jda.shardInfo.shardTotal
 
@@ -33,12 +28,11 @@ class ShardInfoCommand : CommandExecutor() {
             "${jda.gatewayPing}ms",
             jda.guildCache.size(),
             jda.userCache.size(),
-            ctx.bot.players.registry.values.count { getShardIdForGuild(it.guildId, totalShards) == shardId }
+            Bot.getInstance().players.registry.values.count { getShardIdForGuild(it.guildId, totalShards) == shardId }
         )
     }
 
     private fun getShardIdForGuild(guildId: String, shardCount: Int): Int {
         return ((guildId.toLong() shr 22) % shardCount).toInt()
     }
-
 }
