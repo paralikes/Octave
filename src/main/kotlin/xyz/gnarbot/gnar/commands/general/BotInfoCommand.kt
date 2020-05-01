@@ -62,7 +62,7 @@ class BotInfoCommand : CommandExecutor() {
                 }
             }
 
-            footer { "${Thread.activeCount()} threads" }
+            footer { "${Thread.activeCount()} threads | Current Shard: ${context.jda.shardInfo.shardId}" }
         }.action().queue()
     }
 }

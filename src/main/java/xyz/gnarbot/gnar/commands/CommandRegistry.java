@@ -32,9 +32,6 @@ public class CommandRegistry {
         register(new PingCommand());
         register(new SupportCommand());
         register(new VoteCommand());
-        register(new UptimeCommand());
-        register(new WhoIsCommand());
-        register(new GuildInfoCommand());
         register(new BotInfoCommand());
         register(new DonateCommand());
         register(new RedeemCommand());
