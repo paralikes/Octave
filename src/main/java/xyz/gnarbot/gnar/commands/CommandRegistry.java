@@ -52,10 +52,8 @@ public class CommandRegistry {
         //End Poll Commands
 
         // Administrator commands
-        register(new ShutdownCommand());
         register(new RestartShardsCommand());
         register(new EvalCommand());
-        register(new UpdateBotAvatarCommand());
         //register(new UpdatePatreonTokenCommand());
         register(new ShardInfoCommand());
         register(new ThrowError());
