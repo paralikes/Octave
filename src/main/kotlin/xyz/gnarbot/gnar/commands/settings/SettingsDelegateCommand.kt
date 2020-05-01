@@ -15,7 +15,6 @@ import xyz.gnarbot.gnar.commands.*
 )
 class SettingsDelegateCommand : CommandExecutor() {
     val map = mapOf(
-            "autorole" to AutoRoleCommand(),
             "ignore" to IgnoreCommand(),
             "commands" to ManageCommandsCommand(),
             "autodelete" to AutoDeleteCommand(),
