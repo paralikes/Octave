@@ -17,7 +17,7 @@ import xyz.gnarbot.gnar.utils.extensions.data
 import kotlin.reflect.KFunction
 
 class Settings : Cog {
-    @Command(aliases = ["config", "set"], userPermissions = [Permission.MANAGE_SERVER])
+    @Command(aliases = ["setting", "set", "config", "configuration", "configure", "opts", "options"], userPermissions = [Permission.MANAGE_SERVER])
     fun settings(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
     @SubCommand(description = "Resets the settings for the guild.")
