@@ -7,16 +7,12 @@ import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.HashMap
 
 class DiscordFM {
     fun getRandomSong(library: String): String {
-        return try {
-            val urls = cache[library]!!
-            urls[(Math.random() * urls.size).toInt()].trim { it <= ' ' }
-        } catch (e: Exception) {
-            Bot.getLogger().error("DiscordFM Error", e)
-            "https://www.youtube.com/watch?v=D7npse9n-Yw" //Technical Difficulties video
-        }
+        return cache[library]?.random()?.trim { it <= ' ' }
+                ?: "https://www.youtube.com/watch?v=D7npse9n-Yw"
     }
 
     companion object {
@@ -26,7 +22,7 @@ class DiscordFM {
                 "japanese lounge", "classical", "retro renegade",
                 "metal mix", "hip hop", "electro swing", "christmas", "halloween",
                 "purely pop", "rock n roll", "coffee house jazz", "funk")
-        private val cache: MutableMap<String, List<String>> = HashMap(LIBRARIES.size)
+        private val cache = HashMap<String, List<String>>(LIBRARIES.size)
     }
 
     init {
@@ -35,16 +31,16 @@ class DiscordFM {
                 DiscordFM::class.java.getResourceAsStream("/dfm/$lib.txt").use {
                     if (it == null) {
                         log.warn("Playlist {} does not exist, skipping...", lib)
-                    } else {
-                        val collect = Arrays
-                                .stream(IOUtils.toString(it, StandardCharsets.UTF_8).split("\n").toTypedArray())
-                                .parallel()
-                                .filter { si: String -> si.startsWith("https://") }
-                                .collect(Collectors.toList())
-
-                        cache[lib] = collect
-                        log.info("Added {} tracks from playlist {}", collect.size, lib)
+                        return@use
                     }
+
+                    val collect = IOUtils.toString(it, Charsets.UTF_8)
+                            .split('\n')
+                            .filter { s -> s.startsWith("https://") }
+
+                    cache[lib] = collect
+
+                    log.info("Added {} tracks from playlist {}", collect.size, lib)
                 }
             } catch (e: IOException) {
                 log.error("Failed to load playlist {}", lib, e)
