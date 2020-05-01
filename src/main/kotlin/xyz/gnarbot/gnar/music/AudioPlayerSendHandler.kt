@@ -7,23 +7,10 @@ import net.dv8tion.jda.api.audio.AudioSendHandler
 import java.nio.ByteBuffer
 
 class AudioPlayerSendHandler(private val audioPlayer: AudioPlayer) : AudioSendHandler {
-    private val lastFrame: MutableAudioFrame = MutableAudioFrame()
-    private val frameBuffer: ByteBuffer = ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
+    private val frameBuffer = ByteBuffer.allocate(StandardAudioDataFormats.DISCORD_OPUS.maximumChunkSize())
+    private val lastFrame = MutableAudioFrame().apply { setBuffer(frameBuffer) }
 
-    init {
-        lastFrame.setBuffer(frameBuffer)
-    }
-    
-    override fun canProvide(): Boolean {
-        return audioPlayer.provide(lastFrame)
-    }
-
-    override fun provide20MsAudio(): ByteBuffer? {
-        return frameBuffer.flip()
-    }
-
-    override fun isOpus(): Boolean {
-        return true
-    }
-
+    override fun canProvide() = audioPlayer.provide(lastFrame)
+    override fun provide20MsAudio() = frameBuffer.flip()
+    override fun isOpus() = true
 }

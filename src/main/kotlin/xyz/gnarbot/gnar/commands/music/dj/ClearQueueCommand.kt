@@ -19,9 +19,8 @@ class ClearQueueCommand : CommandExecutor() {
         val manager = context.bot.players.get(context.guild)
         val queue = manager.scheduler.queue
 
-        if(queue.isEmpty()) {
-            context.send().info("There's nothing to clear.").queue()
-            return
+        if (queue.isEmpty()) {
+            return context.send().info("There's nothing to clear.").queue()
         }
 
         queue.clear()
