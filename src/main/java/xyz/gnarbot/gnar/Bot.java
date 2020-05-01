@@ -96,7 +96,7 @@ public class Bot {
                 .setMaxReconnectDelay(32)
                 .setShardsTotal(credentials.getTotalShards())
                 .setShards(credentials.getShardStart(), credentials.getShardEnd() - 1)
-                .setAudioSendFactory(new NativeAudioSendFactory(800))
+                .setAudioSendFactory(new NativeAudioSendFactory(1000))
                 .addEventListeners(eventWaiter, new BotListener(this), new VoiceListener(this), new PatreonListener(this))
                 .setActivityProvider(i -> Activity.playing(String.format(configuration.getGame(), i)))
                 .setBulkDeleteSplittingEnabled(false)
