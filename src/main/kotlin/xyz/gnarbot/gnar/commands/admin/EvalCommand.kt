@@ -3,9 +3,7 @@ package xyz.gnarbot.gnar.commands.admin
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
 import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.commands.*
-import xyz.gnarbot.gnar.utils.DiscordBotsVotes
 import java.util.concurrent.CompletableFuture
-import javax.script.*
 
 @Command(
         aliases = ["eval"],
