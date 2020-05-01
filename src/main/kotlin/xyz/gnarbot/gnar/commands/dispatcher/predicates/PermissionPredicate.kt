@@ -18,14 +18,15 @@ class PermissionPredicate : BiPredicate<CommandExecutor, Context> {
             return true
         }
 
-        if(cmd.botInfo.djLock) {
+        if(cmd.botInfo.djLock || context.data.command.isDjOnlyMode) {
             val memberSize = context.selfMember.voiceState?.channel?.members?.size
             val djRole = context.data.command.djRole
 
             val djRolePresent = if(djRole != null) context.member.hasAnyRoleId(djRole) else false
             val memberAmount = if(memberSize != null) memberSize <= 2 else false
+            val admin = context.member.permissions.contains(Permission.MANAGE_SERVER)
 
-            if(context.member.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount) {
+            if(context.member.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount || admin) {
                 return true
             }
         }

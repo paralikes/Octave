@@ -11,6 +11,7 @@ public class CommandData {
     private String djRole;
     private boolean autoDelete = false;
     private boolean adminBypass = false;
+    private boolean djOnlyMode;
 
     @JsonSerialize(keyAs = Integer.class, contentAs = CommandOptions.class)
     private Map<Integer, CommandOptions> options;
@@ -64,5 +65,13 @@ public class CommandData {
             categoryOptions = new HashMap<>();
         }
         return categoryOptions;
+    }
+
+    public boolean isDjOnlyMode() {
+        return djOnlyMode;
+    }
+
+    public void setDjOnlyMode(boolean djOnlyMode) {
+        this.djOnlyMode = djOnlyMode;
     }
 }
