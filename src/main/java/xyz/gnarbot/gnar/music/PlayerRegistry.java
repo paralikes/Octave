@@ -99,7 +99,6 @@ public class PlayerRegistry {
         playerManager.registerSourceManager(new VimeoAudioSourceManager());
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
         playerManager.registerSourceManager(new BeamAudioSourceManager());
-        //playerManager.registerSourceManager(new HttpAudioSourceManager(MediaContainerRegistry.DEFAULT_REGISTRY));
     }
 
     public ScheduledExecutorService getExecutor() {

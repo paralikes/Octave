@@ -1,10 +1,7 @@
 package xyz.gnarbot.gnar.utils;
 
 import io.sentry.Sentry;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -18,10 +15,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Utils {
+    public static final OkHttpClient httpClient = new OkHttpClient.Builder().build();
     private static final Pattern TIME_PATTERN =
             Pattern.compile("(-?\\d+)\\s*((?:d(?:ay(?:s)?)?)|(?:h(?:our(?:s)?)?)|(?:m(?:in(?:ute(?:s)?)?)?)|(?:s(?:ec(?:ond(?:s)?)?)?))?");
 
-    // https://regex101.com/r/VXEl27/1/
+    //https://regex101.com/r/VXEl27/1/
     private static final Pattern ARGUMENT_PATTERN = Pattern.compile("`{3}(?:\\w+\\n)?([\\s\\S]*?)`{3}|`([^`]+)`|(\\S+)");
 
     public static String getTime(long ms) {
@@ -114,7 +112,7 @@ public class Utils {
                 .post(RequestBody.create(null, content))
                 .build();
 
-        try (Response response = HttpUtils.CLIENT.newCall(request).execute()) {
+        try (Response response = httpClient.newCall(request).execute()) {
             ResponseBody body = response.body();
             if (body == null) return null;
 

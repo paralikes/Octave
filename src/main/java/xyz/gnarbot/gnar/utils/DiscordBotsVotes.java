@@ -28,7 +28,7 @@ public class DiscordBotsVotes {
                     .build();
 
             executor.scheduleAtFixedRate(() -> {
-                try (Response response = HttpUtils.CLIENT.newCall(request).execute()) {
+                try (Response response = Utils.httpClient.newCall(request).execute()) {
                     ResponseBody body = response.body();
                     if (body == null) return;
 
