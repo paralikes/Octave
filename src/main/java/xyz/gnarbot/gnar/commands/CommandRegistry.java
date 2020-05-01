@@ -56,7 +56,6 @@ public class CommandRegistry {
         register(new EvalCommand());
         //register(new UpdatePatreonTokenCommand());
         register(new ShardInfoCommand());
-        register(new ThrowError());
         register(new PremiumKeyCommand());
         register(new SudoCommand());
 
