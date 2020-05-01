@@ -14,9 +14,17 @@ import xyz.gnarbot.gnar.music.MusicManager
     scope = Scope.VOICE,
     djLock = true
 )
-class ClearQueueCommand : MusicCommandExecutor(false, false, false) {
-    override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
-        manager.scheduler.queue.clear()
+class ClearQueueCommand : CommandExecutor() {
+    override fun execute(context: Context, label: String, args: Array<String>) {
+        val manager = context.bot.players.get(context.guild)
+        val queue = manager.scheduler.queue
+
+        if(queue.isEmpty()) {
+            context.send().info("There's nothing to clear.").queue()
+            return
+        }
+
+        queue.clear()
         context.send().info("Queue cleared.").queue()
     }
 }
