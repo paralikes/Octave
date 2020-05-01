@@ -20,30 +20,26 @@ import java.util.*
 class PremiumKeyCommand : CommandTemplate() {
     @Description("Generate a premium key.")
     fun gen(context: Context, number: Int, type: PremiumKey.Type?, durationTxt: String?) {
-        val duration = Utils.parseTime(durationTxt)
-        if (duration < 0) {
-            context.send().error("Why is negative duration a check you have in an admin command").queue()
-            return
-        }
-        val builder = StringBuilder()
-        for (i in 0 until number) {
-            val key = PremiumKey(UUID.randomUUID().toString(), type, duration)
-            builder.append(key.id).append('\n')
-            key.save()
+        val duration = Utils.parseTime(durationTxt).takeIf { it >= 0 }
+                ?: return context.send().error("Why is negative duration a check you have in an admin command" ).queue()
+
+        val builder = buildString {
+            (0 until number)
+                    .map { PremiumKey(UUID.randomUUID().toString(), type, duration).apply(PremiumKey::save).id }
+                    .forEach { appendln(it) }
         }
 
-        context.user.openPrivateChannel().queue { it.sendMessage("```\n$builder```").queue() }
+        context.user.openPrivateChannel()
+                .flatMap { it.sendMessage("```\n$builder```") }
+                .queue()
     }
 
     @Description("Revoke a premium key.")
     fun revoke(context: Context, idString: String) {
-        val ids = idString.split(",\\s*|\n").toTypedArray()
+        val ids = idString.split(",\\s*|\n").filterNot(String::isEmpty)
         val joiner = StringJoiner("\n")
 
         for (id in ids) {
-            if (id.isEmpty())
-                continue
-
             val key = context.bot.db().getPremiumKey(id)
             joiner.add("**Key** `$id`")
             if (key == null) {
