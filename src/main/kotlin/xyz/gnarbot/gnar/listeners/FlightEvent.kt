@@ -10,15 +10,11 @@ import net.dv8tion.jda.api.Permission
 import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.utils.commands.helpers.DJ
 import xyz.gnarbot.gnar.utils.commands.helpers.MusicCog
-import xyz.gnarbot.gnar.utils.commands.helpers.PermissionRequirement
-import xyz.gnarbot.gnar.utils.commands.helpers.RoleRequirement
 import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.selfMember
 import xyz.gnarbot.gnar.utils.getDisplayValue
 import xyz.gnarbot.gnar.utils.hasAnyRoleId
 import xyz.gnarbot.gnar.utils.hasAnyRoleNamed
-import javax.management.relation.Role
-import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 class FlightEvent : DefaultCommandEventAdapter() {
@@ -81,16 +77,6 @@ class FlightEvent : DefaultCommandEventAdapter() {
 
         if(command.method.hasAnnotation<DJ>() || ctx.data.command.isDjOnlyMode) {
             return isDJ(ctx) || ctx.data.music.isDisableDj
-        }
-
-        if(command.method.hasAnnotation<RoleRequirement>()) {
-            val requirement = command.method.findAnnotation<RoleRequirement>()!!.role
-            return ctx.member!!.hasAnyRoleNamed(requirement)
-        }
-
-        if(command.method.hasAnnotation<PermissionRequirement>()) {
-            val permission = command.method.findAnnotation<PermissionRequirement>()!!.permission
-            return ctx.member!!.hasPermission(permission)
         }
 
         if (command.cog is MusicCog) {
