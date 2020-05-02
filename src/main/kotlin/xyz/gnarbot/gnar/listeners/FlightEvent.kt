@@ -7,6 +7,7 @@ import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
 import net.dv8tion.jda.api.Permission
 import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.utils.extensions.MusicCog
 
 class FlightEvent : DefaultCommandEventAdapter() {
 
@@ -27,7 +28,10 @@ class FlightEvent : DefaultCommandEventAdapter() {
         if (ctx.guild == null) {
             return false
         }
-        // TODO: DJ CHECK?
+
+        if(command.cog is MusicCog)
+            return (command.cog as MusicCog).check(ctx)
+
         return super.onCommandPreInvoke(ctx, command)
     }
 
