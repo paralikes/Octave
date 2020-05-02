@@ -39,4 +39,6 @@ class RestartShards : Cog {
             }
         }
     }
+
+    // TODO: Subcommands
 }

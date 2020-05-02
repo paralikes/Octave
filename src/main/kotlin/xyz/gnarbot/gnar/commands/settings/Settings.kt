@@ -10,10 +10,13 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
+import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.premiumGuild
 import xyz.gnarbot.gnar.utils.toDuration
+import java.lang.NumberFormatException
 import java.lang.RuntimeException
+import java.time.Duration
 
 class Settings : Cog {
     @Command(aliases = ["setting", "set", "config", "configuration", "configure", "opts", "options"],
@@ -122,12 +125,11 @@ class Settings : Cog {
             return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
         }
 
-        val config = Bot.getInstance().configuration
         val premiumGuild = ctx.premiumGuild
-        val durationLimit = premiumGuild?.songLengthQuota ?: config.durationLimit.toMillis()
+        val durationLimit = premiumGuild?.songLengthQuota ?: ctx.config.durationLimit.toMillis()
 
         if (duration.toMillis() > durationLimit) {
-            return ctx.send("This is too much. The limit is ${config.durationLimitText}.")
+            return ctx.send("This is too much. The limit is ${ctx.config.durationLimitText}.")
         }
 
         if (duration.toMinutes() < 1) {
@@ -163,5 +165,61 @@ class Settings : Cog {
             ?: "Successfully reset the DJ role to default."
 
         ctx.send(out)
+    }
+
+    @SubCommand(aliases = ["qs"], description = "Sets the maximum queue size for the server. Omit to reset.")
+    fun queuesize(ctx: Context, limit: Int?) {
+        val data = ctx.data
+
+        if (limit == null) {
+            data.music.maxQueueSize = 0
+            data.save()
+            return ctx.send("Queue limit reset.")
+        }
+
+        val premiumGuild = ctx.premiumGuild
+        val totalLimit = premiumGuild?.queueSizeQuota ?: ctx.config.queueLimit
+        val qLimit = limit.takeIf { it in 2..totalLimit }
+            ?: return ctx.send("The limit needs to be between 1-$totalLimit.")
+
+        ctx.data.let {
+            it.music.maxQueueSize = qLimit
+            it.save()
+        }
+
+        ctx.send("Successfully set queue limit to $qLimit.")
+    }
+
+    @SubCommand(aliases = ["vqc", "vpc"], description = "Sets the vote-play cooldown.")
+    fun votequeue_cooldown(ctx: Context, content: String) {
+        if (content == "reset") {
+            ctx.data.let {
+                it.music.votePlayCooldown = 0
+                it.save()
+            }
+
+            return ctx.send("Vote-play cooldown reset.")
+        }
+
+        val amount = try {
+            content.toDuration()
+        } catch (e: RuntimeException) {
+            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
+        }
+
+        if(amount > ctx.config.votePlayCooldown) {
+            return ctx.send("This is too much. The limit is ${ctx.config.votePlayCooldownText}.")
+        }
+
+        if(amount.toSeconds() < 10) {
+            return ctx.send("Has to be more than 10 seconds.")
+        }
+
+        ctx.data.let {
+            it.music.votePlayCooldown = amount.toMillis()
+            it.save()
+        }
+
+        ctx.send("Successfully set vote play cooldown to $content.")
     }
 }

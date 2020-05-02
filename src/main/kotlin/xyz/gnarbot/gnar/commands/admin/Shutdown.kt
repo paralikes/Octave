@@ -7,12 +7,10 @@ import xyz.gnarbot.gnar.Bot
 import kotlin.system.exitProcess
 
 class Shutdown : Cog {
-
     @Command(description = "Shuts down the bot.", developerOnly = true)
     fun shutdown(ctx: Context) {
         Bot.getInstance().players.shutdown()
         ctx.jda.shardManager?.shutdown() ?: ctx.jda.shutdown()
         exitProcess(21)
     }
-
 }
