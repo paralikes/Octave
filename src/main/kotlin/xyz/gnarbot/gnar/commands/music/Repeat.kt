@@ -3,7 +3,7 @@ package xyz.gnarbot.gnar.commands.music
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import xyz.gnarbot.gnar.music.settings.RepeatOption
-import xyz.gnarbot.gnar.utils.extensions.MusicCog
+import xyz.gnarbot.gnar.utils.commands.helpers.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 import java.lang.IllegalArgumentException
 

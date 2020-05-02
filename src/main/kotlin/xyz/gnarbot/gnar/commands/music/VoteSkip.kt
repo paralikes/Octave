@@ -8,6 +8,7 @@ import xyz.gnarbot.gnar.utils.description
 import xyz.gnarbot.gnar.utils.extensions.*
 import xyz.gnarbot.gnar.utils.field
 import xyz.gnarbot.gnar.utils.getDisplayValue
+import xyz.gnarbot.gnar.utils.commands.helpers.MusicCog
 import java.util.concurrent.TimeUnit
 
 class VoteSkip : MusicCog(true, true, true) {

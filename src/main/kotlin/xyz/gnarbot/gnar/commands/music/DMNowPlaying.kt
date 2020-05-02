@@ -5,7 +5,7 @@ import me.devoxin.flight.api.annotations.Command
 import net.dv8tion.jda.api.EmbedBuilder
 import xyz.gnarbot.gnar.utils.Utils
 import xyz.gnarbot.gnar.utils.desc
-import xyz.gnarbot.gnar.utils.extensions.MusicCog
+import xyz.gnarbot.gnar.utils.commands.helpers.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 import xyz.gnarbot.gnar.utils.field
 
