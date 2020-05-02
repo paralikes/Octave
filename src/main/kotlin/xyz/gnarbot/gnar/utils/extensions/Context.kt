@@ -5,7 +5,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.sharding.ShardManager
 import xyz.gnarbot.gnar.Bot
-import xyz.gnarbot.gnar.Configuration
+import xyz.gnarbot.gnar.entities.Configuration
 import xyz.gnarbot.gnar.db.Database
 import xyz.gnarbot.gnar.db.guilds.GuildData
 import xyz.gnarbot.gnar.db.premium.PremiumGuild

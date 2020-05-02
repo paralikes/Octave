@@ -23,11 +23,13 @@ import xyz.gnarbot.gnar.commands.CommandRegistry;
 import xyz.gnarbot.gnar.commands.dispatcher.CommandDispatcher;
 import xyz.gnarbot.gnar.db.Database;
 import xyz.gnarbot.gnar.db.OptionsRegistry;
+import xyz.gnarbot.gnar.entities.BotCredentials;
+import xyz.gnarbot.gnar.entities.Configuration;
 import xyz.gnarbot.gnar.listeners.BotListener;
 import xyz.gnarbot.gnar.listeners.PatreonListener;
 import xyz.gnarbot.gnar.listeners.VoiceListener;
 import xyz.gnarbot.gnar.music.PlayerRegistry;
-import xyz.gnarbot.gnar.sharding.BucketedController;
+import xyz.gnarbot.gnar.entities.sharding.BucketedController;
 import xyz.gnarbot.gnar.utils.DiscordFM;
 import xyz.gnarbot.gnar.utils.SoundManager;
 

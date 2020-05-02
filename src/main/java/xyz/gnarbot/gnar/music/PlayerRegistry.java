@@ -20,8 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.gnarbot.gnar.Bot;
-import xyz.gnarbot.gnar.BotCredentials;
-import xyz.gnarbot.gnar.Configuration;
+import xyz.gnarbot.gnar.entities.BotCredentials;
+import xyz.gnarbot.gnar.entities.Configuration;
 import xyz.gnarbot.gnar.music.sources.caching.CachingSourceManager;
 import xyz.gnarbot.gnar.music.sources.spotify.SpotifyAudioSourceManager;
 

@@ -1,4 +1,4 @@
-package xyz.gnarbot.gnar
+package xyz.gnarbot.gnar.entities
 
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import xyz.gnarbot.gnar.utils.get
@@ -6,7 +6,6 @@ import java.io.File
 
 class BotCredentials(file: File) {
     private val loader = HoconConfigurationLoader.builder().setFile(file).build()
-
     private val config = loader.load()
 
     /* Discord */
@@ -29,21 +28,11 @@ class BotCredentials(file: File) {
     val botsForDiscord: String? = config["server counts", "bfd"].string
     val botsOnDiscord: String? = config["server counts", "bod"].string
 
-    /* External APIs */
-    val cat: String? = config["cat"].string
-    val imgFlip: String? = config["imgflip"].string
-    val mashape: String? = config["mashape"].string
-    val weebSh: String? = config["weebsh"].string
-
     /* Patreon */
     val patreonClientId: String? = config["patreon", "clientid"].string
     val patreonClientSecret: String? = config["patreon", "clientsecret"].string
     val patreonRefreshToken: String? = config["patreon", "refresh"].string
     val patreonAccessToken: String? = config["patreon", "access"].string
-
-    /* MyAnimeList */
-    val malUsername: String? = config["mal credentials", "username"].string
-    val malPassword: String? = config["mal credentials", "password"].string
 
     /* Audio */
     val spotifyClientId: String? = config["spotify", "clientid"].string

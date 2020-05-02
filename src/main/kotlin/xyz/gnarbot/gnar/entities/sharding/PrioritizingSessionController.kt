@@ -1,4 +1,4 @@
-package xyz.gnarbot.gnar.sharding
+package xyz.gnarbot.gnar.entities.sharding
 
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode

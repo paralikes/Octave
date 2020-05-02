@@ -1,4 +1,4 @@
-package xyz.gnarbot.gnar
+package xyz.gnarbot.gnar.entities
 
 import com.google.common.reflect.TypeToken
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader
@@ -9,19 +9,34 @@ import java.time.Duration
 
 class Configuration(file: File) {
     private val loader = HoconConfigurationLoader.builder().setFile(file).build()
+    private val config = loader.load()
 
-    private var config = loader.load()
-
-    val name: String = config["bot", "name"].getString("Octave")
+    // +--------------+
+    // Command Settings
+    // +--------------+
     val prefix: String = config["commands", "prefix"].getString("_")
-    val game: String = config["bot", "game"].getString("${prefix}help | %d")
-
     val admins: List<Long> = config["commands", "administrators"].getList(TypeToken.of(Long::class.javaObjectType))
 
-    val musicEnabled: Boolean = config["music", "enabled"].getBoolean(true)
-    val searchEnabled: Boolean = config["music", "search"].getBoolean(true)
-    val queueLimit: Int = config["music", "queue limit"].getInt(20)
-    val musicLimit: Int = config["music", "limit"].getInt(500)
+    // +--------------+
+    // Bot Settings
+    // +--------------+
+    val name: String = config["bot", "name"].getString("Octave")
+    val game: String = config["bot", "game"].getString("${prefix}help | %d")
+
+    val ipv6Block: String = config["bot", "ipv6block"].getString(null)
+    val ipv6Exclude: String = config["bot", "ipv6Exclude"].getString(null)
+
+    val sentryDsn: String = config["bot", "sentry"].getString(null)
+    val bucketFactor: Int = config["bot", "bucketFactor"].getInt(8)
+
+    // +--------------+
+    // Music Settings
+    // +--------------+
+    val musicEnabled = config["music", "enabled"].getBoolean(true)
+    val searchEnabled = config["music", "search"].getBoolean(true)
+
+    val queueLimit = config["music", "queue limit"].getInt(20)
+    val musicLimit = config["music", "limit"].getInt(500)
 
     val durationLimitText: String = config["music", "duration limit"].getString("2 hours")
     val durationLimit: Duration = durationLimitText.toDuration()
@@ -37,12 +52,4 @@ class Configuration(file: File) {
 
     val votePlayDurationText: String = config["music", "vote play duration"].getString("20 seconds")
     val votePlayDuration: Duration = voteSkipDurationText.toDuration()
-
-
-    val ipv6Block: String = config["bot", "ipv6block"].getString(null)
-    val ipv6Exclude: String = config["bot", "ipv6Exclude"].getString(null)
-
-    val sentryDsn: String = config["bot", "sentry"].getString(null)
-
-    val bucketFactor: Int = config["bot", "bucketFactor"].getInt(8)
 }
