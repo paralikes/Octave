@@ -31,7 +31,7 @@ class Patron : Cog {
     @Command(description = "Link/manage Patron membership.")
     fun patron(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
-    @SubCommand
+    @SubCommand(description = "Checks premium status of you or another user.")
     fun status(ctx: Context, user: Long?) {
         val userId = user ?: ctx.author.idLong
 
@@ -52,7 +52,7 @@ class Patron : Cog {
         }
     }
 
-    @SubCommand
+    @SubCommand(description = "Link your Discord account to Patreon.")
     fun link(ctx: Context) {
         ctx.messageChannel.sendMessage("Looking for your pledge, this may take a minute...")
             .submit()
@@ -98,7 +98,7 @@ class Patron : Cog {
             }
     }
 
-    @SubCommand
+    @SubCommand(description = "Manage your premium servers.")
     fun servers(ctx: Context, @Greedy action: String?) {
         val remainingServers = ctx.db.getPremiumUser(ctx.author.id).remainingPremiumGuildQuota
 
