@@ -29,6 +29,7 @@ class FlightEvent : DefaultCommandEventAdapter() {
             return false
         }
 
+        //TODO pre-invoke checks (djlock, etc)
         if(command.cog is MusicCog)
             return (command.cog as MusicCog).check(ctx)
 
