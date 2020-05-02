@@ -14,17 +14,19 @@ import java.awt.Color
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
-class Paginator(waiter: EventWaiter,
-                user: User?,
-                title: String?,
-                description: String?,
-                color: Color?,
-                fields: List<MessageEmbed.Field>,
-                val emptyMessage: String?,
-                val list: List<List<String>>,
-                timeout: Long,
-                unit: TimeUnit,
-                finally: (Message?) -> Unit) : Menu(waiter, user, title, description, color, fields, timeout, unit, finally) {
+class Paginator(
+    waiter: EventWaiter,
+    user: User?,
+    title: String?,
+    description: String?,
+    color: Color?,
+    fields: List<MessageEmbed.Field>,
+    val emptyMessage: String?,
+    val list: List<List<String>>,
+    timeout: Long,
+    unit: TimeUnit,
+    finally: (Message?) -> Unit
+) : Menu(waiter, user, title, description, color, fields, timeout, unit, finally) {
     val LEFT = "\u25C0"
     val STOP = "\u23F9"
     val RIGHT = "\u25B6"

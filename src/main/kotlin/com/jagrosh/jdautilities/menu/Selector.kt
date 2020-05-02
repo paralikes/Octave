@@ -1,6 +1,7 @@
 package com.jagrosh.jdautilities.menu
 
 import com.jagrosh.jdautilities.waiter.EventWaiter
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -8,68 +9,55 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
-import xyz.gnarbot.gnar.utils.embed
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
-class Selector(waiter: EventWaiter,
-               user: User?,
-               title: String?,
-               description: String?,
-               color: Color?,
-               fields: List<MessageEmbed.Field>,
-               val type: Type,
-               val options: List<Entry>,
-               timeout: Long,
-               unit: TimeUnit,
-               finally: (Message?) -> Unit) : Menu(waiter, user, title, description, color, fields, timeout, unit, finally) {
+class Selector(
+    waiter: EventWaiter,
+    user: User?,
+    title: String?,
+    description: String?,
+    color: Color?,
+    fields: List<MessageEmbed.Field>,
+    val type: Type,
+    val options: List<Entry>,
+    timeout: Long,
+    unit: TimeUnit,
+    finally: (Message?) -> Unit
+) : Menu(waiter, user, title, description, color, fields, timeout, unit, finally) {
     enum class Type {
         REACTIONS,
         MESSAGE
     }
 
-    val cancel = "\u274C"
+    private val selectorPermissions = setOf(Permission.MESSAGE_EMBED_LINKS, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_MANAGE)
 
+    val cancel = "\u274C"
     var message: Message? = null
 
     fun display(channel: TextChannel) {
-        if (!channel.guild.selfMember.hasPermission(channel, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_MANAGE, Permission.MESSAGE_EMBED_LINKS)) {
-            channel.sendMessage(embed("Error") {
-                color { Color.RED }
-                desc {
-                    buildString {
-                        append("The bot requires the permission `${Permission.MESSAGE_ADD_REACTION.getName()}`, ")
-                        append("`${Permission.MESSAGE_MANAGE.getName()}` and ")
-                        append("`${Permission.MESSAGE_EMBED_LINKS.getName()}` for selection menus.")
-                    }
-                }
-            }.build()).queue()
-            finally(message)
-            return
+        if (!channel.guild.selfMember.hasPermission(channel, selectorPermissions)) {
+            val joined = selectorPermissions.joinToString("`, `", prefix = "`", postfix = "`")
+            channel.sendMessage("Error: The bot requires the permissions $joined for selection menus.").queue()
+            return finally(message)
         }
 
-        channel.sendMessage(embed(title) {
-            color { channel.guild.selfMember.color }
-            description {
-                buildString {
-                    append(description).append('\n').append('\n')
-                    options.forEachIndexed { index, (name) ->
-                        append("${'\u0030' + (index + 1)}\u20E3 $name\n")
-                    }
+        channel.sendMessage(EmbedBuilder().apply {
+            setColor(channel.guild.selfMember.color)
+            setTitle(title)
+            val embedDescription = buildString {
+                append(description).append('\n').append('\n')
+                options.forEachIndexed { index, (name) ->
+                    append("${'\u0030' + (index + 1)}\u20E3 $name\n")
                 }
             }
-
-            field("Select an Option") {
-                when (type) {
-                    Type.REACTIONS -> "Pick a reaction corresponding to the options."
-                    Type.MESSAGE -> "Type a number corresponding to the options. ie: `1` or `cancel`"
-                }
+            setDescription(description)
+            val optionType = when (type) {
+                Type.REACTIONS -> "Pick a reaction corresponding to the options."
+                Type.MESSAGE -> "Type a number corresponding to the options. ie: `1` or `cancel`"
             }
-
-            super.fields.forEach {
-                addField(it)
-            }
-
+            addField("Select an Option", optionType, false)
+            super.fields.forEach { addField(it) }
             setFooter("This selection will time out in $timeout ${unit.toString().toLowerCase()}.", null)
         }.build()).queue {
             message = it
@@ -89,8 +77,7 @@ class Selector(waiter: EventWaiter,
             Type.REACTIONS -> {
                 waiter.waitFor(MessageReactionAddEvent::class.java) {
                     if (it.reaction.reactionEmote.name == cancel) {
-                        finally(message)
-                        return@waitFor
+                        return@waitFor finally(message)
                     }
 
                     val value = it.reaction.reactionEmote.name[0] - '\u0030'
