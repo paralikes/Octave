@@ -1,10 +1,7 @@
 package xyz.gnarbot.gnar.music
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
-import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioTrack
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioTrack
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
@@ -14,9 +11,11 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.commands.music.embedTitle
 import xyz.gnarbot.gnar.commands.music.embedUri
+import xyz.gnarbot.gnar.db.OptionsRegistry
 import xyz.gnarbot.gnar.music.filters.DSPFilter
 import xyz.gnarbot.gnar.music.sources.caching.CachingSourceManager
 import xyz.gnarbot.gnar.utils.extensions.friendlierMessage
@@ -25,7 +24,7 @@ import xyz.gnarbot.gnar.utils.response.respond
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
-class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: PlayerRegistry, val playerManager: AudioPlayerManager) {
+class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: PlayerRegistry, val playerManager: AudioPlayerManager) {
     fun search(query: String, maxResults: Int = -1, callback: (results: List<AudioTrack>) -> Unit) {
         playerManager.loadItem(query, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) = callback(listOf(track))
@@ -51,19 +50,19 @@ class MusicManager(val bot: Bot, val guildId: String, val playerRegistry: Player
     private var leaveTask: Future<*>? = null
 
     /** @return Audio player for the guild. */
-    val player: AudioPlayer = playerManager.createPlayer().also {
-        it.volume = bot.options.ofGuild(guild).music.volume
+    val player = playerManager.createPlayer().also {
+        it.volume = OptionsRegistry.ofGuild(guildId).music.volume
     }
 
     val dspFilter = DSPFilter(player)
 
     /**  @return Track scheduler for the player.*/
-    val scheduler: TrackScheduler = TrackScheduler(bot, this, player).also(player::addListener)
+    val scheduler: TrackScheduler = TrackScheduler(this, player).also(player::addListener)
 
     /** @return Wrapper around AudioPlayer to use it as an AudioSendHandler. */
     private val sendHandler: AudioPlayerSendHandler = AudioPlayerSendHandler(player)
 
-    private val dbAnnouncementChannel = bot.db().getGuildData(guildId)?.music?.announcementChannel;
+    private val dbAnnouncementChannel = bot.db.getGuildData(guildId)?.music?.announcementChannel;
 
     /**
      * @return Voting cooldown.

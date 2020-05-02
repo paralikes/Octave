@@ -9,14 +9,13 @@ import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.db.PremiumKey
 import xyz.gnarbot.gnar.db.Redeemer
 import xyz.gnarbot.gnar.utils.Utils
+import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import java.util.*
 
 class Keys : Cog {
 
     @Command(aliases = ["keys"], description = "Manage keys.", developerOnly = true)
-    fun key(ctx: Context, subcommand: String?) {
-
-    }
+    fun key(ctx: Context, subcommand: String?) = DEFAULT_SUBCOMMAND(ctx)
 
     @SubCommand(aliases = ["generate"], description = "Generate a premium key.")
     fun gen(ctx: Context, quantity: Int, duration: String, type: PremiumKey.Type = PremiumKey.Type.PREMIUM) {
@@ -26,7 +25,7 @@ class Keys : Cog {
         val keys = buildString {
             (0 until quantity)
                 .map { PremiumKey(UUID.randomUUID().toString(), type, keyDuration).apply { save() }.id }
-                .forEach(::appendln)
+                .forEach { appendln(it) }
         }
 
         ctx.sendPrivate(keys)

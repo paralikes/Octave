@@ -20,6 +20,8 @@ import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.gnarbot.gnar.Bot;
+import xyz.gnarbot.gnar.Launcher;
+import xyz.gnarbot.gnar.db.OptionsRegistry;
 import xyz.gnarbot.gnar.entities.BotCredentials;
 import xyz.gnarbot.gnar.entities.Configuration;
 import xyz.gnarbot.gnar.music.sources.caching.CachingSourceManager;
@@ -41,11 +43,11 @@ public class PlayerRegistry {
 
     private final Map<Long, MusicManager> registry;
 
-    private final Bot bot;
+    private final Launcher bot;
     private final ScheduledExecutorService executor;
     private final AudioPlayerManager playerManager;
 
-    public PlayerRegistry(Bot bot, ScheduledExecutorService executor) {
+    public PlayerRegistry(Launcher bot, ScheduledExecutorService executor) {
         this.bot = bot;
         this.executor = executor;
 
@@ -110,7 +112,7 @@ public class PlayerRegistry {
         MusicManager manager = registry.get(guild.getIdLong());
 
         if (manager == null) {
-            if (size() >= bot.getConfiguration().getMusicLimit() && !bot.getOptions().ofGuild(guild).isPremium()) {
+            if (size() >= bot.getConfiguration().getMusicLimit() && !OptionsRegistry.INSTANCE.ofGuild(guild).isPremium()) {
                 throw new MusicLimitException();
             }
 

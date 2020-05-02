@@ -5,7 +5,7 @@ import me.devoxin.flight.api.annotations.Command
 import xyz.gnarbot.gnar.music.TrackContext
 import xyz.gnarbot.gnar.utils.Utils
 import xyz.gnarbot.gnar.utils.desc
-import xyz.gnarbot.gnar.utils.extensions.MusicCog
+import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.manager
 import xyz.gnarbot.gnar.utils.field

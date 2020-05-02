@@ -1,8 +1,11 @@
-package xyz.gnarbot.gnar.utils.extensions
+package xyz.gnarbot.gnar.entities.framework
 
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.entities.Cog
 import xyz.gnarbot.gnar.commands.music.PLAY_MESSAGE
+import xyz.gnarbot.gnar.utils.extensions.bot
+import xyz.gnarbot.gnar.utils.extensions.selfMember
+import xyz.gnarbot.gnar.utils.extensions.voiceChannel
 
 open class MusicCog(private val sameChannel: Boolean, private val requirePlayingTrack: Boolean, private val requirePlayer: Boolean) : Cog {
     fun check(ctx: Context): Boolean {

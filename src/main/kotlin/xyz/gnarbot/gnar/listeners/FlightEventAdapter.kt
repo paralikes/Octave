@@ -8,8 +8,7 @@ import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
 import net.dv8tion.jda.api.Permission
 import xyz.gnarbot.gnar.Bot
-import xyz.gnarbot.gnar.utils.Utils
-import xyz.gnarbot.gnar.utils.extensions.MusicCog
+import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.getDisplayValue
 
 class FlightEventAdapter : DefaultCommandEventAdapter() {

@@ -10,18 +10,19 @@ import io.sentry.event.Event
 import io.sentry.event.EventBuilder
 import io.sentry.event.interfaces.StackTraceInterface
 import org.redisson.api.RQueue
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.commands.music.embedTitle
 import xyz.gnarbot.gnar.commands.music.embedUri
+import xyz.gnarbot.gnar.db.OptionsRegistry
 import xyz.gnarbot.gnar.music.settings.RepeatOption
 import xyz.gnarbot.gnar.utils.PlaylistUtils
 import xyz.gnarbot.gnar.utils.extensions.friendlierMessage
 import xyz.gnarbot.gnar.utils.response.respond
 import java.util.*
 
-class TrackScheduler(private val bot: Bot, private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
+class TrackScheduler(private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
     //Base64 encoded.
-    val queue: RQueue<String> = bot.db().redisson.getQueue("playerQueue:${manager.guildId}")
+    val queue: RQueue<String> = Launcher.db.redisson.getQueue("playerQueue:${manager.guildId}")
     var repeatOption = RepeatOption.NONE
     var lastTrack: AudioTrack? = null
         private set
@@ -59,7 +60,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
         val decodedTrack = PlaylistUtils.toAudioTrack(track)
         player.startTrack(decodedTrack, false)
 
-        if (bot.options.ofGuild(manager.guild).music.announce) {
+        if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {
             announceNext(decodedTrack)
         }
     }
@@ -165,7 +166,7 @@ class TrackScheduler(private val bot: Bot, private val manager: MusicManager, pr
 
     companion object {
         fun getQueueForGuild(guildId: String) : RQueue<String> {
-            return Bot.getInstance().db().redisson.getQueue("playerQueue:$guildId")
+            return Launcher.db.redisson.getQueue("playerQueue:$guildId")
         }
     }
 }
