@@ -43,7 +43,7 @@ class Settings : Cog {
         ctx.send(send)
     }
 
-    @SubCommand(aliases = ["ta"])
+    @SubCommand(aliases = ["ta"], description = "Set the channel used for track announcements.")
     fun announcements(ctx: Context, toggle: Boolean) {
         ctx.data.let {
             it.music.announce = toggle
@@ -54,7 +54,7 @@ class Settings : Cog {
         ctx.send(send)
     }
 
-    @SubCommand
+    @SubCommand(description = "Toggles whether only DJs can use the bot.")
     fun djonly(ctx: Context, toggle: Boolean) {
         ctx.data.let {
             it.command.isDjOnlyMode = toggle
