@@ -1,7 +1,6 @@
 package xyz.gnarbot.gnar.commands.general
 
 import io.sentry.Sentry
-import me.devoxin.flight.api.CommandFunction
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
@@ -10,7 +9,7 @@ import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.db.premium.PremiumGuild
 import xyz.gnarbot.gnar.db.premium.PremiumUser
 import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
@@ -56,7 +55,7 @@ class Patron : Cog {
     fun link(ctx: Context) {
         ctx.messageChannel.sendMessage("Looking for your pledge, this may take a minute...")
             .submit()
-            .thenCompose { Bot.getInstance().patreon.fetchPledges() }
+            .thenCompose { Launcher.patreon.fetchPledges() }
             .thenAccept { pledges ->
                 val pledge = pledges.firstOrNull { it.discordId != null && it.discordId == ctx.author.idLong }
                     ?: return@thenAccept ctx.send(

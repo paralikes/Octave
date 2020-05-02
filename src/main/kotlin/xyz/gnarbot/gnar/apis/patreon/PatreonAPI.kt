@@ -2,14 +2,10 @@ package xyz.gnarbot.gnar.apis.patreon
 
 import okhttp3.HttpUrl
 import okhttp3.Request
-import okhttp3.RequestBody
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.utils.RequestUtil
-import xyz.gnarbot.gnar.utils.extensions.buildUrl
-import xyz.gnarbot.gnar.utils.extensions.openPrivateChannelById
-import xyz.gnarbot.gnar.utils.extensions.url
 import java.net.URI
 import java.net.URLDecoder
 import java.util.concurrent.CompletableFuture
@@ -30,7 +26,7 @@ class PatreonAPI(var accessToken: String?) {
     }
 
     fun sweep(): CompletableFuture<SweepStats> {
-        val storedPledges = Bot.getInstance().db().premiumUsers
+        val storedPledges = Launcher.db.premiumUsers
 
         return fetchPledges().thenApply { pledges ->
             val total = storedPledges.size
@@ -42,7 +38,7 @@ class PatreonAPI(var accessToken: String?) {
                 val pledge = pledges.firstOrNull { it.discordId != null && it.discordId == userId }
 
                 if (pledge == null || pledge.isDeclined) {
-                    Bot.getInstance().shardManager.openPrivateChannelById(userId)
+                    Launcher.shardManager.openPrivateChannel(userId)
                         .flatMap {
                             it.sendMessage("Your pledge was either declined or removed from Patreon. " +
                                 "As a result, your perks have been revoked. If you believe this was in error, " +

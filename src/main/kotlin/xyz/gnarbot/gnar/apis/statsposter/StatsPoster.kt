@@ -1,7 +1,7 @@
 package xyz.gnarbot.gnar.apis.statsposter
 
 import org.slf4j.LoggerFactory
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.apis.statsposter.websites.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -9,10 +9,10 @@ import java.util.concurrent.TimeUnit
 class StatsPoster(botId: String) {
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
     val websites = listOf(
-        BotsForDiscord(botId, Bot.getInstance().credentials.botsForDiscord ?: ""),
-        BotsGg(botId, Bot.getInstance().credentials.botsGg ?: ""),
-        BotsOnDiscord(botId, Bot.getInstance().credentials.botsOnDiscord ?: ""),
-        TopGg(botId, Bot.getInstance().credentials.topGg ?: "")
+        BotsForDiscord(botId, Launcher.credentials.botsForDiscord ?: ""),
+        BotsGg(botId, Launcher.credentials.botsGg ?: ""),
+        BotsOnDiscord(botId, Launcher.credentials.botsOnDiscord ?: ""),
+        TopGg(botId, Launcher.credentials.topGg ?: "")
     )
 
     fun update(count: Long) {
@@ -28,7 +28,7 @@ class StatsPoster(botId: String) {
 
     fun postEvery(time: Long, unit: TimeUnit) {
         scheduler.scheduleWithFixedDelay({
-            update(Bot.getInstance().shardManager.guildCache.size())
+            update(Launcher.shardManager.guildCache.size())
         }, time, time, unit)
     }
 

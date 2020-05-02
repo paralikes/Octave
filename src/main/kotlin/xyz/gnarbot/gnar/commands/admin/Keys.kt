@@ -5,15 +5,14 @@ import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
-import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.db.PremiumKey
 import xyz.gnarbot.gnar.db.Redeemer
 import xyz.gnarbot.gnar.utils.Utils
 import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
+import xyz.gnarbot.gnar.utils.extensions.db
 import java.util.*
 
 class Keys : Cog {
-
     @Command(aliases = ["keys"], description = "Manage keys.", developerOnly = true)
     fun key(ctx: Context, subcommand: String?) = DEFAULT_SUBCOMMAND(ctx)
 
@@ -38,7 +37,7 @@ class Keys : Cog {
         val result = buildString {
             for (id in ids) {
                 appendln("**Key** `$id`")
-                val key = Bot.getInstance().db().getPremiumKey(id)
+                val key = ctx.db.getPremiumKey(id)
 
                 if (key == null) {
                     appendln(" NOT FOUND\n")
@@ -52,7 +51,7 @@ class Keys : Cog {
                 } else {
                     when (redeemer.type) {
                         Redeemer.Type.GUILD -> {
-                            val guildData = Bot.getInstance().db().getGuildData(redeemer.id)
+                            val guildData = ctx.db.getGuildData(redeemer.id)
 
                             if (guildData != null) {
                                 guildData.premiumKeys.remove(key.id)
@@ -73,5 +72,4 @@ class Keys : Cog {
 
         ctx.send(result)
     }
-
 }

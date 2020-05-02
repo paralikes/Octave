@@ -5,7 +5,7 @@ import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
 import me.devoxin.flight.internal.utils.TextSplitter
 import net.dv8tion.jda.api.JDA
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 
 class ShardInfoCommand : Cog {
     @Command(aliases = ["shards", "shard"], description = "View shard information.", developerOnly = true)
@@ -28,7 +28,7 @@ class ShardInfoCommand : Cog {
             "${jda.gatewayPing}ms",
             jda.guildCache.size(),
             jda.userCache.size(),
-            Bot.getInstance().players.registry.values.count { getShardIdForGuild(it.guildId, totalShards) == shardId }
+            Launcher.players.registry.values.count { getShardIdForGuild(it.guildId, totalShards) == shardId }
         )
     }
 

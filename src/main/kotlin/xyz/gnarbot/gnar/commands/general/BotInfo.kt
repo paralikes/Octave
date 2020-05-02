@@ -5,7 +5,7 @@ import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.JDAInfo
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.utils.Capacity
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
@@ -42,7 +42,7 @@ class BotInfo : Cog {
             addField("RAM Usage", "$ramUsedFormatted${ramUsedCalculated.unit} (${ramUsedPercent}%)", true)
 
             addField("Guilds", guilds.toString(), true)
-            addField("Voice Connections", Bot.getInstance().players.size().toString(), true)
+            addField("Voice Connections", Launcher.players.size().toString(), true)
 
             addField("Cached Users", users.toString(), true)
             addField("Uptime", "${d}d ${h % 24}h ${m % 60}m ${s % 60}s", true)

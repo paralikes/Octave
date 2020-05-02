@@ -4,6 +4,7 @@ import com.jagrosh.jdautilities.paginator
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.music.TrackContext
 import xyz.gnarbot.gnar.utils.PlaylistUtils
 import xyz.gnarbot.gnar.utils.Utils
@@ -12,14 +13,14 @@ import xyz.gnarbot.gnar.utils.extensions.*
 class Queue : Cog {
     @Command(aliases = ["q"], description = "Shows the current queue.")
     fun queue(ctx: Context) {
-        val manager = ctx.bot.players.getExisting(ctx.guild)
+        val manager = Launcher.players.getExisting(ctx.guild)
                 ?: return ctx.send("There's no music player in this guild.\n$PLAY_MESSAGE")
 
         val queue = manager.scheduler.queue
         var queueLength = 0L
 
         ctx.textChannel?.let {
-            ctx.bot.eventWaiter.paginator {
+            Launcher.eventWaiter.paginator {
                 setUser(ctx.author)
                 title { "Music Queue" }
                 color { ctx.selfMember?.color }

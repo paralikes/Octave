@@ -3,9 +3,9 @@ package xyz.gnarbot.gnar.commands.general
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
+import xyz.gnarbot.gnar.db.OptionsRegistry
 import xyz.gnarbot.gnar.db.PremiumKey
 import xyz.gnarbot.gnar.db.Redeemer
-import xyz.gnarbot.gnar.utils.extensions.bot
 import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.db
 import xyz.gnarbot.gnar.utils.field
@@ -43,7 +43,7 @@ class Redeem : Cog {
 
             PremiumKey.Type.PREMIUM_OVERRIDE -> {
                 key.setRedeemer(Redeemer(Redeemer.Type.PREMIUM_OVERRIDE, ctx.author.id)).save()
-                ctx.bot.options.ofUser(ctx.author).addPremiumKey(key.id, key.duration).save()
+                OptionsRegistry.ofUser(ctx.author).addPremiumKey(key.id, key.duration).save()
 
                 ctx.send {
                     setTitle("Premium Code")

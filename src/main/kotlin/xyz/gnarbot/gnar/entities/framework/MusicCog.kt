@@ -2,14 +2,14 @@ package xyz.gnarbot.gnar.entities.framework
 
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.entities.Cog
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.commands.music.PLAY_MESSAGE
-import xyz.gnarbot.gnar.utils.extensions.bot
 import xyz.gnarbot.gnar.utils.extensions.selfMember
 import xyz.gnarbot.gnar.utils.extensions.voiceChannel
 
 open class MusicCog(private val sameChannel: Boolean, private val requirePlayingTrack: Boolean, private val requirePlayer: Boolean) : Cog {
     fun check(ctx: Context): Boolean {
-        val manager = ctx.bot.players.getExisting(ctx.guild)
+        val manager = Launcher.players.getExisting(ctx.guild)
 
         if (manager == null) {
             ctx.send("There's no music player in this server.\n$PLAY_MESSAGE")

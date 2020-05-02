@@ -8,14 +8,12 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
-import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.db.guilds.GuildData
 import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.premiumGuild
 import xyz.gnarbot.gnar.utils.toDuration
-import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.time.Duration
 

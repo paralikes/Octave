@@ -10,7 +10,6 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
-import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.commands.music.embedTitle
@@ -95,7 +94,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
         }
 
     val guild: Guild?
-        get() = Bot.getInstance().shardManager.getGuildById(guildId)
+        get() = Launcher.shardManager.getGuildById(guildId)
 
     /**
      * @return If the user is listening to DiscordFM

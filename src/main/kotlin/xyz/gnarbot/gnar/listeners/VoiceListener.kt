@@ -5,8 +5,6 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
 import net.dv8tion.jda.api.hooks.EventListener
-import net.dv8tion.jda.api.hooks.ListenerAdapter
-import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.db.OptionsRegistry
 import xyz.gnarbot.gnar.utils.response.ResponseBuilder

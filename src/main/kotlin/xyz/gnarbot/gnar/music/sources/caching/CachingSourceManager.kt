@@ -3,20 +3,17 @@ package xyz.gnarbot.gnar.music.sources.caching
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.*
-import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import redis.clients.jedis.exceptions.JedisConnectionException
 import redis.clients.jedis.params.SetParams
-import xyz.gnarbot.gnar.Bot
 import xyz.gnarbot.gnar.utils.PlaylistUtils
 import java.io.DataInput
 import java.io.DataOutput
 import java.util.concurrent.TimeUnit
 
 class CachingSourceManager : AudioSourceManager {
-
     init {
         try {
             jedisPool.resource.use {
@@ -105,5 +102,4 @@ class CachingSourceManager : AudioSourceManager {
             }
         }
     }
-
 }

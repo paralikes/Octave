@@ -7,13 +7,13 @@ import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
 import me.devoxin.flight.internal.utils.TextSplitter
 import xyz.gnarbot.gnar.utils.RequestUtil
-import xyz.gnarbot.gnar.utils.extensions.bot
+import xyz.gnarbot.gnar.utils.extensions.launcher
 import java.net.URLEncoder
 
 class Lyrics : Cog {
     @Command(description = "Shows the lyrics of the current song")
     fun lyrics(ctx: Context) {
-        val manager = ctx.bot.players.getExisting(ctx.guild)
+        val manager = ctx.launcher.players.getExisting(ctx.guild)
                 ?: return ctx.send("There's no player to be seen here.")
 
         val audioTrack = manager.player.playingTrack
@@ -46,7 +46,7 @@ class Lyrics : Cog {
             val fullTitle = songObject.getString("full_title")
 
             ctx.textChannel?.let { tx ->
-                ctx.bot.eventWaiter.paginator {
+                ctx.launcher.eventWaiter.paginator {
                     setUser(ctx.author)
                     setEmptyMessage("There should be something here 👀")
                     setItemsPerPage(1)

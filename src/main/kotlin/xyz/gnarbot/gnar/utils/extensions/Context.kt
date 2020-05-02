@@ -4,21 +4,22 @@ import me.devoxin.flight.api.Context
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.sharding.ShardManager
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.entities.Configuration
 import xyz.gnarbot.gnar.db.Database
+import xyz.gnarbot.gnar.db.OptionsRegistry
 import xyz.gnarbot.gnar.db.guilds.GuildData
 import xyz.gnarbot.gnar.db.premium.PremiumGuild
 import xyz.gnarbot.gnar.music.MusicManager
 
 val Context.db: Database
-    get() = Bot.getInstance().db()
+    get() = Launcher.database
 
 val Context.shardManager: ShardManager
     get() = this.jda.shardManager!!
 
 val Context.data: GuildData
-    get() = Bot.getInstance().options.ofGuild(guild!!)
+    get() = OptionsRegistry.ofGuild(guild!!)
 
 val Context.premiumGuild: PremiumGuild?
     get() = db.getPremiumGuild(guild!!.id)
@@ -27,13 +28,13 @@ val Context.isGuildPremium: Boolean
     get() = premiumGuild != null
 
 val Context.config: Configuration
-    get() = Bot.getInstance().configuration
+    get() = Launcher.configuration
 
-val Context.bot: Bot
-    get() = Bot.getInstance()
+val Context.launcher: Launcher
+    get() = Launcher
 
 val Context.manager: MusicManager
-    get() = Bot.getInstance().players.get(this.guild)
+    get() = Launcher.players.get(this.guild)
 
 val Context.voiceChannel : VoiceChannel?
     get() = member!!.voiceState?.channel

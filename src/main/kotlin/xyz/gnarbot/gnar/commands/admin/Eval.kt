@@ -5,7 +5,7 @@ import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.entities.Cog
 import org.jetbrains.kotlin.script.jsr223.KotlinJsr223JvmLocalScriptEngineFactory
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import java.util.concurrent.CompletableFuture
 
 class Eval : Cog {
@@ -21,7 +21,7 @@ class Eval : Cog {
             "ctx" to ctx,
             "jda" to ctx.jda,
             "sm" to ctx.jda.shardManager!!,
-            "bot" to Bot.getInstance()
+            "bot" to Launcher
         )
 
         val bindString = bindings.map { "val ${it.key} = bindings[\"${it.key}\"] as ${it.value.javaClass.kotlin.qualifiedName}" }.joinToString("\n")

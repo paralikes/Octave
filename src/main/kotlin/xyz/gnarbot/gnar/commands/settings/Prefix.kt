@@ -3,7 +3,7 @@ package xyz.gnarbot.gnar.commands.settings
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.utils.extensions.data
 
 class Prefix : Cog {
@@ -15,7 +15,7 @@ class Prefix : Cog {
             data.command.prefix = prefix
             data.save()
 
-            return ctx.send("The prefix has been reset to `${Bot.getInstance().configuration.prefix}`.")
+            return ctx.send("The prefix has been reset to `${Launcher.configuration.prefix}`.")
         }
 
         if (prefix matches mention) {

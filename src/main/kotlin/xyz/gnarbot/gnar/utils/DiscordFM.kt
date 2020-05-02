@@ -2,17 +2,13 @@ package xyz.gnarbot.gnar.utils
 
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
-import xyz.gnarbot.gnar.Bot
 import java.io.IOException
-import java.nio.charset.StandardCharsets
-import java.util.*
-import java.util.stream.Collectors
 import kotlin.collections.HashMap
 
 class DiscordFM {
-    fun getRandomSong(library: String): String {
+    fun getRandomSong(library: String): String? {
         return cache[library]?.random()?.trim { it <= ' ' }
-                ?: "https://www.youtube.com/watch?v=D7npse9n-Yw"
+                //?: "https://www.youtube.com/watch?v=D7npse9n-Yw"
     }
 
     companion object {
@@ -27,23 +23,21 @@ class DiscordFM {
 
     init {
         for (lib in LIBRARIES) {
-            try {
-                DiscordFM::class.java.getResourceAsStream("/dfm/$lib.txt").use {
-                    if (it == null) {
-                        log.warn("Playlist {} does not exist, skipping...", lib)
-                        return@use
-                    }
+            DiscordFM::class.java.getResourceAsStream("/dfm/$lib.txt").use {
+                if (it == null) {
+                    return@use log.warn("Playlist {} does not exist, skipping...", lib)
+                }
 
+                try {
                     val collect = IOUtils.toString(it, Charsets.UTF_8)
-                            .split('\n')
-                            .filter { s -> s.startsWith("https://") }
+                        .split('\n')
+                        .filter { s -> s.startsWith("https://") }
 
                     cache[lib] = collect
-
                     log.info("Added {} tracks from playlist {}", collect.size, lib)
+                } catch (e: IOException) {
+                    log.error("Failed to load playlist {}", lib, e)
                 }
-            } catch (e: IOException) {
-                log.error("Failed to load playlist {}", lib, e)
             }
         }
     }
