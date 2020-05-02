@@ -9,7 +9,7 @@ import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
 import net.dv8tion.jda.api.Permission
 import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.entities.framework.MusicCog
-import xyz.gnarbot.gnar.utils.commands.helpers.DJ
+import xyz.gnarbot.gnar.entities.framework.DJ
 import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.selfMember
 import xyz.gnarbot.gnar.utils.getDisplayValue

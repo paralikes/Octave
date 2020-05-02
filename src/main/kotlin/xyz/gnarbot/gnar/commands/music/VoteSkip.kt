@@ -3,12 +3,12 @@ package xyz.gnarbot.gnar.commands.music
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import net.dv8tion.jda.api.EmbedBuilder
+import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.desc
 import xyz.gnarbot.gnar.utils.description
 import xyz.gnarbot.gnar.utils.extensions.*
 import xyz.gnarbot.gnar.utils.field
 import xyz.gnarbot.gnar.utils.getDisplayValue
-import xyz.gnarbot.gnar.utils.commands.helpers.MusicCog
 import java.util.concurrent.TimeUnit
 
 class VoteSkip : MusicCog(true, true, true) {
