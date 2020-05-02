@@ -22,13 +22,12 @@ class Repeat : MusicCog(true, false, true) {
         }
 
         ctx.manager.scheduler.repeatOption = option
+        val symbol = when (ctx.manager.scheduler.repeatOption) {
+            RepeatOption.QUEUE -> "\uD83D\uDD01"
+            RepeatOption.SONG -> "\uD83D\uDD02"
+            RepeatOption.NONE -> "\u274C"
+        }
 
-        ctx.send(
-                when (ctx.manager.scheduler.repeatOption) {
-                    RepeatOption.QUEUE -> "\uD83D\uDD01"
-                    RepeatOption.SONG -> "\uD83D\uDD02"
-                    RepeatOption.NONE -> "\u274C"
-                } + " Music player was set to __**${ctx.manager.scheduler.repeatOption}**__."
-        )
+        ctx.send("$symbol Music player was set to __**${ctx.manager.scheduler.repeatOption}**__.")
     }
 }
