@@ -191,7 +191,7 @@ class Settings : Cog {
     }
 
     @SubCommand(aliases = ["vqc", "vpc"], description = "Sets the vote-play cooldown.")
-    fun votequeue_cooldown(ctx: Context, content: String) {
+    fun votequeuecooldown(ctx: Context, content: String) {
         if (content == "reset") {
             ctx.data.let {
                 it.music.votePlayCooldown = 0
@@ -221,5 +221,38 @@ class Settings : Cog {
         }
 
         ctx.send("Successfully set vote play cooldown to $content.")
+    }
+
+    @SubCommand(aliases = ["vqd", "vpd"], description = "Sets the vote-play duration.")
+    fun votequeueduration(ctx: Context, content: String) {
+        if (content == "reset") {
+            ctx.data.let {
+                it.music.votePlayDuration = 0
+                it.save()
+            }
+
+            return ctx.send("Reset vote play duration.")
+        }
+
+        val amount = try {
+            content.toDuration()
+        } catch (e: RuntimeException) {
+            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
+        }
+
+        if(amount > ctx.config.votePlayDuration) {
+            return ctx.send("This is too much. The limit is ${ctx.config.votePlayDurationText}.")
+        }
+
+        if(amount.toSeconds() < 10) {
+            return ctx.send("Has to be more than 10 seconds.")
+        }
+
+        ctx.data.let {
+            it.music.votePlayDuration = amount.toMillis()
+            it.save()
+        }
+
+        ctx.send("Successfully set vote play duration to $content.")
     }
 }
