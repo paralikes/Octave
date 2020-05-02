@@ -86,33 +86,33 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             return false
         }
 
+        if (command.method.hasAnnotation<CheckVoiceState>()) {
+            if (ctx.member!!.voiceState?.channel == null) {
+                ctx.send("You're not in a voice channel.")
+                return false
+            }
+
+            if (ctx.member!!.voiceState?.channel == ctx.guild!!.afkChannel) {
+                ctx.send("You can't play music in the AFK channel.")
+                return false
+            }
+
+            if (data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels) {
+                val channels = data.music.channels
+                        .map { ctx.guild!!.getVoiceChannelById(it) }
+                        .map { it!!.name }
+                        .joinToString { ", " }
+
+                ctx.send("Music can only be played in: `$channels`, since this server has set it/them as a designated voice channel.")
+                return false
+            }
+        }
+
+        if (command.method.hasAnnotation<DJ>() || data.command.isDjOnlyMode) {
+            return isDJ(ctx) || data.music.isDisableDj
+        }
+
         if (command.cog is MusicCog) {
-            if (command.method.hasAnnotation<CheckVoiceState>()) {
-                if (ctx.member!!.voiceState?.channel == null) {
-                    ctx.send("You're not in a voice channel.")
-                    return false
-                }
-
-                if (ctx.member!!.voiceState?.channel == ctx.guild!!.afkChannel) {
-                    ctx.send("You can't play music in the AFK channel.")
-                    return false
-                }
-
-                if (data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels) {
-                    val channels = data.music.channels
-                            .map { ctx.guild!!.getVoiceChannelById(it) }
-                            .map { it!!.name }
-                            .joinToString { ", " }
-
-                    ctx.send("Music can only be played in: `$channels`, since this server has set it/them as a designated voice channel.")
-                    return false
-                }
-            }
-
-            if (command.method.hasAnnotation<DJ>() || data.command.isDjOnlyMode) {
-                return isDJ(ctx) || data.music.isDisableDj
-            }
-
             return (command.cog as MusicCog).check(ctx)
         }
 
