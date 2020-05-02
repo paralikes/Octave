@@ -34,7 +34,7 @@ class Lyrics : Cog {
         RequestUtil.jsonObject {
             url("https://lyrics.tsu.sh/v1/?q=$encodedTitle")
             header("User-Agent", "Octave (DiscordBot, https://github.com/DankMemer/Octave")
-        }.thenAccept { it ->
+        }.thenAccept {
             if (!it.isNull("error")) {
                 return@thenAccept ctx.send("No lyrics found for `$title`. Try another song?")
             }
