@@ -94,7 +94,7 @@ class Cleanup : MusicCog(true, true, true) {
 
         val removed = oldSize - newSize;
         if (removed == 0) {
-            return ctx.send("There are no duplicate songs to clear.")
+            return ctx.send("There are no songs to clear.")
         }
 
         //TODO make this smarter lol
