@@ -82,19 +82,23 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         val data = ctx.data
 
         //TODO: Add messages to all of this?
-        if(isIgnored(ctx, data, ctx.member!!))
+        if (isIgnored(ctx, data, ctx.member!!)) {
             return false
+        }
 
         if (command.cog is MusicCog) {
-            if(command.method.hasAnnotation<CheckVoiceState>()) {
-                if(ctx.member!!.voiceState?.channel == null)
+            if (command.method.hasAnnotation<CheckVoiceState>()) {
+                if (ctx.member!!.voiceState?.channel == null) {
                     return false
+                }
 
-                if(ctx.member!!.voiceState?.channel == ctx.guild!!.afkChannel)
+                if (ctx.member!!.voiceState?.channel == ctx.guild!!.afkChannel) {
                     return false
+                }
 
-                if(data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels)
+                if (data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels) {
                     return false
+                }
             }
 
             if (command.method.hasAnnotation<DJ>() || data.command.isDjOnlyMode) {
