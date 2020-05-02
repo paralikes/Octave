@@ -1,38 +1,32 @@
 package xyz.gnarbot.gnar.commands.music
 
-import xyz.gnarbot.gnar.commands.BotInfo
-import xyz.gnarbot.gnar.commands.Category
-import xyz.gnarbot.gnar.commands.Command
-import xyz.gnarbot.gnar.commands.Context
-import xyz.gnarbot.gnar.music.MusicManager
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
 import xyz.gnarbot.gnar.music.TrackContext
 import xyz.gnarbot.gnar.utils.Utils
-import java.util.concurrent.TimeUnit
+import xyz.gnarbot.gnar.utils.desc
+import xyz.gnarbot.gnar.utils.extensions.MusicCog
+import xyz.gnarbot.gnar.utils.extensions.config
+import xyz.gnarbot.gnar.utils.extensions.manager
+import xyz.gnarbot.gnar.utils.field
 
-@Command(
-        aliases = ["nowplaying", "np", "playing"],
-        description = "Shows what's currently playing."
-)
-@BotInfo(
-        id = 67,
-        category = Category.MUSIC
-)
-class NowPlayingCommand : MusicCommandExecutor(false, true, true) {
+class NowPlaying: MusicCog(false, true, true) {
     private val totalBlocks = 20
 
-    override fun execute(context: Context, label: String, args: Array<String>, manager: MusicManager) {
+    @Command(aliases = ["nowplaying", "np", "playing"], description = "Shows what's currently playing.")
+    fun nowPlaying(ctx: Context) {
+        val manager = ctx.manager
+
         val track = manager.player.playingTrack
         //Reset expire time if np has been called.
         manager.scheduler.queue.clearExpireAsync()
 
-        context.send().embed("Now Playing") {
-            desc {
-                "**[${track.info.embedTitle}](${track.info.embedUri})**"
-            }
-
+        ctx.send {
+            setTitle("Now Playing")
+            desc { "**[${track.info.embedTitle}](${track.info.embedUri})**" }
             manager.discordFMTrack?.let {
                 field("Radio") {
-                    val member = context.guild.getMemberById(it.requester)
+                    val member = ctx.guild?.getMemberById(it.requester)
                     buildString {
                         append("Currently streaming music from radio station `${it.station.capitalize()}`")
                         member?.let {
@@ -45,13 +39,13 @@ class NowPlayingCommand : MusicCommandExecutor(false, true, true) {
 
             field("Requester", true) {
                 track.getUserData(TrackContext::class.java)?.requester?.let {
-                    context.guild.getMemberById(it)?.asMention
+                    ctx.guild?.getMemberById(it)?.asMention
                 } ?: "Not Found"
             }
 
             field("Request Channel", true) {
                 track.getUserData(TrackContext::class.java)?.requestedChannel?.let {
-                    context.guild.getTextChannelById(it)?.asMention
+                    ctx.guild?.getTextChannelById(it)?.asMention
                 } ?: "Not Found"
             }
 
@@ -93,7 +87,7 @@ class NowPlayingCommand : MusicCommandExecutor(false, true, true) {
                 }
             }
 
-            footer { "Use ${config.prefix}lyrics current to see the lyrics of the song!" }
-        }.action().queue()
+            setFooter("Use ${ctx.config.prefix}lyrics current to see the lyrics of the song!")
+        }
     }
 }
