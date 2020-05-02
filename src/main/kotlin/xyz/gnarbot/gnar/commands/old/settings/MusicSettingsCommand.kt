@@ -52,22 +52,6 @@ class MusicSettingsCommand : CommandTemplate() {
         context.send().info("Successfully set queue limit to $amount.").queue()
     }
 
-    @Description("Enables the vote queue.")
-    fun votequeue_enable(context: Context) {
-        context.data.music.isVotePlay = true
-        context.data.save()
-
-        context.send().info("Enabled vote play.").queue()
-    }
-
-    @Description("Disables the vote queue.")
-    fun votequeue_disable(context: Context) {
-        context.data.music.isVotePlay = false
-        context.data.save()
-
-        context.send().info("Successfully disabled vote play.").queue()
-    }
-
     @Description("Changes the vote queue cooldown.")
     fun votequeue_cooldown(context: Context, content: String) {
         if (content == "reset") {
@@ -195,42 +179,5 @@ class MusicSettingsCommand : CommandTemplate() {
         context.data.music.voteSkipDuration = amount.toMillis()
         context.data.save()
         context.send().info("Successfully set vote skip duration to $content.").queue()
-    }
-
-    @Description("Set the DJ role")
-    fun dj_role_set(context: Context, role: Role?) {
-        if(role == null) {
-            context.send().error("The role doesn't exist.").queue()
-            return
-        }
-
-        context.data.command.djRole = role.id
-        context.data.save()
-
-        context.send().info("Successfully set the DJ Role to ${role.name} (${role.id}).").queue()
-    }
-
-    @Description("Reset the DJ role")
-    fun dj_role_reset(context: Context) {
-        context.data.command.djRole = null
-        context.data.save()
-
-        context.send().info("Successfully reset DJ role name.").queue()
-    }
-
-    @Description("Set the music announcement channel")
-    fun announcementchannel_set(context: Context, textChannel: TextChannel) {
-        context.data.music.announcementChannel = textChannel.id
-        context.data.save()
-
-        context.send().info("Succesfully set music announcement channel to ${textChannel.asMention}").queue()
-    }
-
-    @Description("Reset the music announcement channel")
-    fun announcementchannel_reset(context: Context) {
-        context.data.music.announcementChannel = null
-        context.data.save()
-
-        context.send().info("Succesfully reset the music announcement channel.").queue()
     }
 }
