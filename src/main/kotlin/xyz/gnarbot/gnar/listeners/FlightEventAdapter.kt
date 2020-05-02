@@ -7,9 +7,15 @@ import me.devoxin.flight.api.SubCommandFunction
 import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
 import net.dv8tion.jda.api.Permission
-import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.entities.framework.MusicCog
+import xyz.gnarbot.gnar.utils.commands.helpers.DJ
+import xyz.gnarbot.gnar.utils.extensions.data
+import xyz.gnarbot.gnar.utils.extensions.selfMember
 import xyz.gnarbot.gnar.utils.getDisplayValue
+import xyz.gnarbot.gnar.utils.hasAnyRoleId
+import xyz.gnarbot.gnar.utils.hasAnyRoleNamed
+import kotlin.reflect.full.hasAnnotation
 
 class FlightEventAdapter : DefaultCommandEventAdapter() {
 
@@ -59,12 +65,20 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         ctx.send("This command is on cool-down. Wait ${getDisplayValue(cooldown, true)}.")
     }
 
+    @ExperimentalStdlibApi
     override fun onCommandPreInvoke(ctx: Context, command: CommandFunction): Boolean {
         if (ctx.guild == null) {
             return false
         }
 
-        //TODO pre-invoke checks (djlock, etc)
+        if (ctx.member!!.hasPermission(Permission.ADMINISTRATOR) || ctx.member!!.hasPermission(Permission.MANAGE_SERVER)) {
+            return true
+        }
+
+        if (command.method.hasAnnotation<DJ>() || ctx.data.command.isDjOnlyMode) {
+            return isDJ(ctx) || ctx.data.music.isDisableDj
+        }
+
         if (command.cog is MusicCog) {
             return (command.cog as MusicCog).check(ctx)
         }
@@ -73,7 +87,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     }
 
     override fun onCommandPostInvoke(ctx: Context, command: CommandFunction, failed: Boolean) {
-        Bot.getInstance().datadog.incrementCounter("bot.commands_ran")
+        Launcher.datadog.incrementCounter("bot.commands_ran")
     }
 
     override fun onBotMissingPermissions(ctx: Context, command: CommandFunction, permissions: List<Permission>) {
@@ -86,4 +100,20 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         ctx.send("You need the following permissions:\n$formatted")
     }
 
+    companion object {
+        fun isDJ(context: Context): Boolean {
+            val memberSize = context.selfMember!!.voiceState?.channel?.members?.size
+            val djRole = context.data.command.djRole
+
+            val djRolePresent = if (djRole != null) context.member!!.hasAnyRoleId(djRole) else false
+            val memberAmount = if (memberSize != null) memberSize <= 2 else false
+            val admin = context.member!!.permissions.contains(Permission.MANAGE_SERVER) || context.member!!.permissions.contains(Permission.ADMINISTRATOR)
+
+            if (context.member!!.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount || admin) {
+                return true
+            }
+
+            return false
+        }
+    }
 }
