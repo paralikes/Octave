@@ -10,11 +10,13 @@ class DiscordLogBack : AppenderBase<ILoggingEvent>() {
     private var patternLayout: PatternLayout? = null
 
     override fun append(event: ILoggingEvent) {
-        if (client == null)
+        if (client == null) {
             return
+        }
 
-        if (!event.level.isGreaterOrEqual(Level.INFO))
+        if (!event.level.isGreaterOrEqual(Level.INFO)) {
             return
+        }
 
         var content = patternLayout!!.doLayout(event)
 
@@ -26,7 +28,7 @@ class DiscordLogBack : AppenderBase<ILoggingEvent>() {
                 content = sb.toString()
             }
 
-        client!!.send(content)
+        client?.send(content)
     }
 
     override fun start() {
@@ -40,9 +42,6 @@ class DiscordLogBack : AppenderBase<ILoggingEvent>() {
 
     companion object {
         private var client: WebhookClient? = null
-        fun disable() {
-            client = null
-        }
 
         fun enable(webhookClient: WebhookClient) {
             client = webhookClient

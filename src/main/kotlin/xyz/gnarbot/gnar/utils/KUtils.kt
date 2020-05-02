@@ -7,16 +7,12 @@ import ninja.leaping.configurate.ConfigurationNode
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-inline operator fun ConfigurationNode.get(vararg nodes: Any): ConfigurationNode {
-    return this.getNode(*nodes)
-}
+inline operator fun ConfigurationNode.get(vararg nodes: Any): ConfigurationNode = this.getNode(*nodes)
 
 fun Member.hasAnyRoleNamed(name: String) = roles.any { it.name == name }
 fun Member.hasAnyRoleId(id: String) = id == guild.publicRole.id || roles.any { it.id == id }
 
-fun String.toDuration(): Duration {
-    return Duration.ofNanos(parseDuration(this))
-}
+fun String.toDuration(): Duration = Duration.ofNanos(parseDuration(this))
 
 fun parseDuration(input: String): Long {
     val s = input.trim()
