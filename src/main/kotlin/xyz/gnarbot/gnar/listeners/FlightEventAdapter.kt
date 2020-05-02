@@ -12,7 +12,7 @@ import xyz.gnarbot.gnar.utils.Utils
 import xyz.gnarbot.gnar.utils.extensions.MusicCog
 import xyz.gnarbot.gnar.utils.getDisplayValue
 
-class FlightEvent : DefaultCommandEventAdapter() {
+class FlightEventAdapter : DefaultCommandEventAdapter() {
 
     override fun onBadArgument(ctx: Context, command: CommandFunction, error: BadArgument) {
         val commandFormat = buildString {

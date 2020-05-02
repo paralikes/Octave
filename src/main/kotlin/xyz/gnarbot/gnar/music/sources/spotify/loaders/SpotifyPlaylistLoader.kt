@@ -58,7 +58,13 @@ class SpotifyPlaylistLoader : Loader {
             val tasks = mutableListOf<CompletableFuture<AudioTrack>>()
 
             for (jTrack in jsonTracks) {
-                val track = (jTrack as JSONObject).getJSONObject("track")
+                val trackJ = jTrack as JSONObject
+
+                if (trackJ.isNull("track")) {
+                    continue
+                }
+
+                val track = trackJ.getJSONObject("track")
                 val title = track.getString("name")
                 val artist = track.getJSONArray("artists").getJSONObject(0).getString("name")
 
