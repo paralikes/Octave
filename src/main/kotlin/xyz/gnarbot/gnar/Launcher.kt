@@ -16,6 +16,7 @@ import xyz.gnarbot.gnar.entities.BotCredentials
 import xyz.gnarbot.gnar.entities.Configuration
 import xyz.gnarbot.gnar.entities.ExtendedShardManager
 import xyz.gnarbot.gnar.entities.framework.DefaultPrefixProvider
+import xyz.gnarbot.gnar.entities.framework.DurationParser
 import xyz.gnarbot.gnar.listeners.BotListener
 import xyz.gnarbot.gnar.listeners.FlightEventAdapter
 import xyz.gnarbot.gnar.listeners.VoiceListener
@@ -65,6 +66,7 @@ object Launcher {
         commandClient = CommandClientBuilder()
             .setPrefixProvider(DefaultPrefixProvider())
             .registerDefaultParsers()
+            .addCustomParser(DurationParser())
             .setOwnerIds(*configuration.admins.toLongArray())
             .addEventListeners(FlightEventAdapter())
             .build()

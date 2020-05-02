@@ -1,0 +1,18 @@
+package xyz.gnarbot.gnar.entities.framework
+
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.internal.parsers.Parser
+import xyz.gnarbot.gnar.utils.toDuration
+import java.lang.RuntimeException
+import java.time.Duration
+import java.util.*
+
+class DurationParser : Parser<Duration> {
+    override fun parse(ctx: Context, param: String): Optional<Duration> {
+        return try {
+            Optional.of(param.toDuration())
+        } catch (e: RuntimeException) {
+            Optional.empty()
+        }
+    }
+}
