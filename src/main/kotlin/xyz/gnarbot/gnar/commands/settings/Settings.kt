@@ -288,4 +288,37 @@ class Settings : Cog {
 
         ctx.send("Successfully set vote skip duration to $content.")
     }
+
+    @SubCommand(aliases = ["vsc"], description = "Sets the vote-skip cooldown.")
+    fun voteskipcooldown(ctx: Context, content: String) {
+        if (content == "reset") {
+            ctx.data.let {
+                it.music.voteSkipCooldown = 0
+                it.save()
+            }
+
+            return ctx.send("Reset vote skip cooldown.")
+        }
+
+        val amount = try {
+            content.toDuration()
+        } catch (e: RuntimeException) {
+            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
+        }
+
+        if(amount > ctx.config.voteSkipCooldown) {
+            return ctx.send("This is too much. The limit is ${ctx.config.voteSkipCooldownText}.")
+        }
+
+        if(amount.toSeconds() < 10) {
+            return ctx.send("Has to be more than 10 seconds.")
+        }
+
+        ctx.data.let {
+            it.music.voteSkipCooldown = amount.toMillis()
+            it.save()
+        }
+
+        ctx.send("Successfully set vote skip cooldown to $content.")
+    }
 }
