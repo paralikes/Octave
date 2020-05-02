@@ -2,27 +2,17 @@ package xyz.gnarbot.gnar.commands.settings
 
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
-import me.devoxin.flight.internal.parsers.MemberParser
-import me.devoxin.flight.internal.parsers.RoleParser
-import me.devoxin.flight.internal.parsers.TextChannelParser
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.IMentionable
-import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import xyz.gnarbot.gnar.Bot
-import xyz.gnarbot.gnar.commands.template.annotations.Description
 import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.data
-import xyz.gnarbot.gnar.utils.extensions.isGuildPremium
 import xyz.gnarbot.gnar.utils.extensions.premiumGuild
 import xyz.gnarbot.gnar.utils.toDuration
 import java.lang.RuntimeException
-import java.time.Duration
-import kotlin.reflect.KFunction
 
 class Settings : Cog {
     @Command(aliases = ["setting", "set", "config", "configuration", "configure", "opts", "options"],
