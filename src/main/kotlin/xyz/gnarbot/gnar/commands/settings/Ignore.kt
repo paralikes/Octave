@@ -16,10 +16,10 @@ import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.data
 
 class Ignore : Cog {
-    @Command
+    @Command(description = "Configure user/channel/role ignoring.")
     fun ignore(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
-    @SubCommand
+    @SubCommand(description = "Toggle ignore for a user.")
     fun user(ctx: Context, @Greedy member: Member) {
         val data = ctx.data
         val ignored = data.ignored
@@ -35,7 +35,7 @@ class Ignore : Cog {
         data.save()
     }
 
-    @SubCommand
+    @SubCommand(description = "Toggle ignore for a channel.")
     fun channel(ctx: Context, @Greedy channel: TextChannel) {
         val data = ctx.data
         val ignored = data.ignored
@@ -51,7 +51,7 @@ class Ignore : Cog {
         data.save()
     }
 
-    @SubCommand
+    @SubCommand(description = "Toggle ignore for a role.")
     fun role(ctx: Context, @Greedy role: Role) {
         val data = ctx.data
         val ignored = data.ignored
@@ -77,7 +77,7 @@ class Ignore : Cog {
             .joinToString("\n") { "• $it" }
     }
 
-    @SubCommand
+    @SubCommand(description = "Lists all entities that are currently being ignored.")
     fun list(ctx: Context) {
         val ignored = ctx.data.ignored
 
