@@ -24,7 +24,7 @@ open class MusicCog(private val sameChannel: Boolean, private val requirePlaying
         }
 
         if (sameChannel && ctx.voiceChannel != botChannel) {
-            ctx.send("You're not in the same channel as the context.bot.")
+            ctx.send("You're not in the same channel as the bot.")
             return false
         }
 
