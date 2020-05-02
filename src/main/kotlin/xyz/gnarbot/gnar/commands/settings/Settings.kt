@@ -321,4 +321,6 @@ class Settings : Cog {
 
         ctx.send("Successfully set vote skip cooldown to $content.")
     }
+
+    // TODO: Cleanup this shit by moving to a single function to deduplicate code.
 }
