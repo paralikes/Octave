@@ -7,9 +7,13 @@ import me.devoxin.flight.api.SubCommandFunction
 import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Member
 import xyz.gnarbot.gnar.Launcher
+import xyz.gnarbot.gnar.db.guilds.GuildData
+import xyz.gnarbot.gnar.entities.framework.CheckVoiceState
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.entities.framework.DJ
+import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.selfMember
 import xyz.gnarbot.gnar.utils.getDisplayValue
@@ -75,16 +79,42 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             return true
         }
 
-        if (command.method.hasAnnotation<DJ>() || ctx.data.command.isDjOnlyMode) {
-            return isDJ(ctx) || ctx.data.music.isDisableDj
-        }
+        val data = ctx.data
+
+        //TODO: Add messages to all of this?
+        if(isIgnored(ctx, data, ctx.member!!))
+            return false
 
         if (command.cog is MusicCog) {
+            if(command.method.hasAnnotation<CheckVoiceState>()) {
+                if(ctx.member!!.voiceState?.channel == null)
+                    return false
+
+                if(ctx.member!!.voiceState?.channel == ctx.guild!!.afkChannel)
+                    return false
+
+                if(data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels)
+                    return false
+            }
+
+            if (command.method.hasAnnotation<DJ>() || data.command.isDjOnlyMode) {
+                return isDJ(ctx) || data.music.isDisableDj
+            }
+
             return (command.cog as MusicCog).check(ctx)
         }
 
         return true
     }
+
+    private fun isIgnored(ctx: Context, data: GuildData, member: Member): Boolean {
+        return (data.ignored.users.contains(member.user.id)
+                || data.ignored.channels.contains(ctx.textChannel!!.id)
+                || data.ignored.roles.any { id -> member.roles.any { it.id == id } })
+                && !member.hasPermission(Permission.ADMINISTRATOR)
+                && member.user.idLong !in ctx.config.admins
+    }
+
 
     override fun onCommandPostInvoke(ctx: Context, command: CommandFunction, failed: Boolean) {
         Launcher.datadog.incrementCounter("bot.commands_ran")
