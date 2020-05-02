@@ -1,9 +1,7 @@
 package xyz.gnarbot.gnar.commands.settings
 
-import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.VoiceChannel
 import xyz.gnarbot.gnar.commands.BotInfo
 import xyz.gnarbot.gnar.commands.Category
 import xyz.gnarbot.gnar.commands.Command
@@ -15,94 +13,7 @@ import java.lang.NumberFormatException
 import java.lang.RuntimeException
 import java.time.Duration
 
-@Command(
-        aliases = ["musicsettings", "musicconfig"],
-        description = "Change music settings."
-)
-@BotInfo(
-        id = 55,
-        category = Category.SETTINGS,
-        permissions = [Permission.MANAGE_SERVER]
-)
 class MusicSettingsCommand : CommandTemplate() {
-    @Description("Toggle music announcement.")
-    fun toggle_announcements(context: Context) {
-        val value = context.data.music.announce
-        context.data.music.announce = !value
-        context.data.save()
-
-        context.send().info(if (value) "Announcements for music disabled." else "Announcements for music enabled.").queue()
-    }
-
-    @Description("Add voice channels that Octave can play music in.")
-    fun voice_channel_add(context: Context, channel: VoiceChannel) {
-        if (channel.id in context.data.music.channels) {
-            context.send().error("`${channel.name}` is already a music channel.").queue()
-            return
-        }
-
-        if (channel == context.guild.afkChannel) {
-            context.send().error("`${channel.name}` is the AFK channel, you can't play music there.").queue()
-            return
-        }
-
-        context.data.music.channels.add(channel.id)
-        context.data.save()
-
-        context.send().info("`${channel.name}` is now a designated music channel.").queue()
-    }
-
-    @Description("Remove voice channels that Octave can play music in.")
-    fun voice_channel_remove(context: Context, channel: VoiceChannel) {
-        if (channel.id !in context.data.music.channels) {
-            context.send().error("`${channel.name}` is not one of the music channels.").queue()
-            return
-        }
-
-        context.data.music.channels.remove(channel.id)
-        context.data.save()
-
-        context.send().info("${channel.name} is no longer a designated music channel.").queue()
-    }
-
-    @Description("Set the maximum song length")
-    fun song_length(context: Context, content: String) {
-        if (content == "reset") {
-            context.data.music.maxSongLength = 0
-            context.data.save()
-
-            context.send().info("Reset song length limit.").queue()
-            return
-        }
-
-        val amount: Duration = try{
-            content.toDuration()
-        } catch (e: RuntimeException) {
-            context.send().info("Wrong duration specified: Expected something like `40 minutes`").queue()
-            return
-        }
-
-        var durationLimit = if(context.isGuildPremium) {
-            context.premiumGuild.songLengthQuota
-        } else {
-            config.durationLimit.toMillis()
-        }
-
-        if(amount.toMillis() > durationLimit) {
-            context.send().error("This is too much. The limit is ${config.durationLimitText}.").queue()
-            return
-        }
-
-        if(amount.toMinutes() < 1) {
-            context.send().error("That's too little. It has to be more than 1 minute.").queue()
-            return
-        }
-
-        context.data.music.maxSongLength = amount.toMillis()
-        context.data.save()
-        context.send().info("Successfully set song length limit to $content.").queue()
-    }
-
     @Description("Sets the maximum queue size")
     fun queue_size(context: Context, content: String) {
         if (content == "reset") {
@@ -321,36 +232,5 @@ class MusicSettingsCommand : CommandTemplate() {
         context.data.save()
 
         context.send().info("Succesfully reset the music announcement channel.").queue()
-    }
-
-    @Description("Disable DJ requirement for all commands.")
-    fun djrequirement_disable(context: Context) {
-        context.data.music.isDisableDj = true
-        context.data.save()
-
-        context.send().info("Now no commands will require DJ to be ran.").queue()
-    }
-
-    @Description("Re-enable DJ requirement for DJ commands.")
-    fun djrequirement_enable(context: Context) {
-        if(!context.data.music.isDisableDj)
-            return context.send().error("DJ mode isn't disabled here").queue()
-
-        context.data.music.isDisableDj = false
-        context.data.save()
-
-        context.send().info("Now DJ commands will require DJ to be ran.").queue()
-    }
-
-    @Description("Enable DJ Only mode.")
-    fun djonly_enable(context: Context) {
-        context.data.command.isDjOnlyMode = true
-        context.send().info("Enabled DJ-only mode.").queue()
-    }
-
-    @Description("Disable DJ Only mode.")
-    fun djonly_disable(context: Context) {
-        context.data.command.isDjOnlyMode = false
-        context.send().info("Disabled DJ-only mode.").queue()
     }
 }
