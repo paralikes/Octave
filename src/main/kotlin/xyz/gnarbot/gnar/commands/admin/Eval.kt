@@ -1,4 +1,6 @@
-package xyz.gnarbot.gnar.commands.admin
+package xyz.gnarbot.gnar.commands.admin        val bindings = mapOf(
+            "ctx" to ctx,
+
 
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
