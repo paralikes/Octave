@@ -1,9 +1,11 @@
 package xyz.gnarbot.gnar.commands.music
 
+import com.jagrosh.jdautilities.paginator
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
+import me.devoxin.flight.internal.utils.TextSplitter
 import xyz.gnarbot.gnar.utils.RequestUtil
 import xyz.gnarbot.gnar.utils.extensions.bot
 import java.net.URLEncoder
@@ -21,7 +23,7 @@ class Lyrics : Cog {
         sendLyricsFor(ctx, title)
     }
 
-    @SubCommand
+    @SubCommand(description = "Search for specific song lyrics")
     fun search(ctx: Context, content: String?) {
         sendLyricsFor(ctx, content)
     }
@@ -32,9 +34,9 @@ class Lyrics : Cog {
         RequestUtil.jsonObject {
             url("https://lyrics.tsu.sh/v1/?q=$encodedTitle")
             header("User-Agent", "Octave (DiscordBot, https://github.com/DankMemer/Octave")
-        }.thenAccept {
+        }.thenAccept { it ->
             if (!it.isNull("error")) {
-                return@thenAccept ctx.send().info("No lyrics found for `$title`. Try another song?").queue()
+                return@thenAccept ctx.send("No lyrics found for `$title`. Try another song?")
             }
 
             val lyrics = it.getString("content")
@@ -43,19 +45,21 @@ class Lyrics : Cog {
             val songObject = it.getJSONObject("song")
             val fullTitle = songObject.getString("full_title")
 
-            ctx.bot.eventWaiter.paginator {
-                setUser(ctx.user)
-                setEmptyMessage("There should be something here 👀")
-                setItemsPerPage(1)
-                finally { message -> message!!.delete().queue() }
-                title { "Lyrics for $fullTitle" }
+            ctx.textChannel?.let { tx ->
+                ctx.bot.eventWaiter.paginator {
+                    setUser(ctx.author)
+                    setEmptyMessage("There should be something here 👀")
+                    setItemsPerPage(1)
+                    finally { message -> message!!.delete().queue() }
+                    title { "Lyrics for $fullTitle" }
 
-                for (page in pages) {
-                    entry { page }
-                }
-            }.display(ctx.textChannel)
+                    for (page in pages) {
+                        entry { page }
+                    }
+                }.display(tx)
+            }
         }.exceptionally {
-            ctx.send().error(it.localizedMessage).queue()
+            ctx.send(it.localizedMessage)
             return@exceptionally null
         }
     }
