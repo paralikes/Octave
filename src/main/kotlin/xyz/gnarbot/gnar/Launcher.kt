@@ -4,6 +4,8 @@ import com.jagrosh.jdautilities.waiter.EventWaiter
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
 import com.timgroup.statsd.NonBlockingStatsDClient
 import io.sentry.Sentry
+import me.devoxin.flight.api.CommandClient
+import me.devoxin.flight.api.CommandClientBuilder
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.requests.RestAction
 import org.slf4j.LoggerFactory
@@ -13,7 +15,9 @@ import xyz.gnarbot.gnar.db.Database
 import xyz.gnarbot.gnar.entities.BotCredentials
 import xyz.gnarbot.gnar.entities.Configuration
 import xyz.gnarbot.gnar.entities.ExtendedShardManager
+import xyz.gnarbot.gnar.entities.framework.DefaultPrefixProvider
 import xyz.gnarbot.gnar.listeners.BotListener
+import xyz.gnarbot.gnar.listeners.FlightEventAdapter
 import xyz.gnarbot.gnar.listeners.VoiceListener
 import xyz.gnarbot.gnar.music.PlayerRegistry
 import xyz.gnarbot.gnar.utils.DiscordFM
@@ -40,9 +44,13 @@ object Launcher {
     lateinit var shardManager: ExtendedShardManager
         private set // begone foul modifications
 
+    lateinit var commandClient: CommandClient
+        private set // uwu
+
     val loaded: Boolean
         get() = shardManager.shardsRunning == shardManager.shardsTotal
 
+    @ExperimentalStdlibApi
     @JvmStatic
     fun main(args: Array<String>) {
         println("+---------------------------------+")
@@ -54,10 +62,18 @@ object Launcher {
         Sentry.init(configuration.sentryDsn)
         RestAction.setPassContext(false)
 
+        commandClient = CommandClientBuilder()
+            .setPrefixProvider(DefaultPrefixProvider())
+            .registerDefaultParsers()
+            .setOwnerIds(*configuration.admins.toLongArray())
+            .addEventListeners(FlightEventAdapter())
+            .build()
+
         shardManager = ExtendedShardManager.create(credentials.token) {
-            addEventListeners(eventWaiter, BotListener(), VoiceListener()/*, CommandClient */)
+            addEventListeners(eventWaiter, BotListener(), VoiceListener(), commandClient)
         }
 
+        commandClient.commands.register("xyz.gnarbot.gnar.commands")
         statsPoster.postEvery(30, TimeUnit.MINUTES)
     }
 }
