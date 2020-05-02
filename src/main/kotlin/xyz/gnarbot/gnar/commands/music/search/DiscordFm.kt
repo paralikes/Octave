@@ -11,7 +11,7 @@ import xyz.gnarbot.gnar.music.DiscordFMTrackContext
 import xyz.gnarbot.gnar.music.MusicLimitException
 import xyz.gnarbot.gnar.utils.DiscordFM
 
-class DiscordFMCommand : Cog {
+class DiscordFm : Cog {
     @Command(aliases = ["dfm"], description = "Stream random songs from some radio stations.")
     fun radio(ctx: Context, station: String?) {
         if (station == null) {
