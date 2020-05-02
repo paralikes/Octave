@@ -102,6 +102,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                     val channels = data.music.channels
                             .map { ctx.guild!!.getVoiceChannelById(it) }
                             .map { it!!.name }
+                            .joinToString { ", " }
 
                     ctx.send("Music can only be played in: `$channels`, since this server has set it/them as a designated voice channel.")
                     return false
