@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import xyz.gnarbot.gnar.Bot
+import xyz.gnarbot.gnar.db.guilds.GuildData
 import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.data
@@ -109,6 +110,32 @@ class Settings : Cog {
         ctx.send("`${channel.name}` is now a designated music channel.")
     }
 
+    @SubCommand(aliases = ["ac"], description = "Set the music announcement channel. Omit to reset.")
+    fun announcementchannel(ctx: Context, textChannel: TextChannel?) {
+        ctx.data.let {
+            it.music.announcementChannel = textChannel?.id
+            it.save()
+        }
+
+        val out = textChannel?.let { "Successfully set music announcement channel to ${it.asMention}" }
+            ?: "Successfully reset the music announcement channel."
+
+        ctx.send(out)
+    }
+
+    @SubCommand(aliases = ["djr", "dr"], description = "Sets the DJ role. Omit to reset.")
+    fun djrole(ctx: Context, role: Role?) {
+        ctx.data.let {
+            it.command.djRole = role?.id
+            it.save()
+        }
+
+        val out = role?.let { "Successfully set the DJ role to ${it.asMention}" }
+            ?: "Successfully reset the DJ role to default."
+
+        ctx.send(out)
+    }
+
     @SubCommand(aliases = ["sl"], description = "Set the maximum song length. \"reset\" to reset.")
     fun songlength(ctx: Context, content: String) {
         val data = ctx.data
@@ -141,32 +168,6 @@ class Settings : Cog {
         ctx.send("Successfully set song length limit to $content.")
     }
 
-    @SubCommand(aliases = ["ac"], description = "Set the music announcement channel. Omit to reset.")
-    fun announcementchannel(ctx: Context, textChannel: TextChannel?) {
-        ctx.data.let {
-            it.music.announcementChannel = textChannel?.id
-            it.save()
-        }
-
-        val out = textChannel?.let { "Successfully set music announcement channel to ${it.asMention}" }
-            ?: "Successfully reset the music announcement channel."
-
-        ctx.send(out)
-    }
-
-    @SubCommand(aliases = ["djr", "dr"], description = "Sets the DJ role. Omit to reset.")
-    fun djrole(ctx: Context, role: Role?) {
-        ctx.data.let {
-            it.command.djRole = role?.id
-            it.save()
-        }
-
-        val out = role?.let { "Successfully set the DJ role to ${it.asMention}" }
-            ?: "Successfully reset the DJ role to default."
-
-        ctx.send(out)
-    }
-
     @SubCommand(aliases = ["qs"], description = "Sets the maximum queue size for the server. Omit to reset.")
     fun queuesize(ctx: Context, limit: Int?) {
         val data = ctx.data
@@ -191,136 +192,51 @@ class Settings : Cog {
     }
 
     @SubCommand(aliases = ["vqc", "vpc"], description = "Sets the vote-play cooldown.")
-    fun votequeuecooldown(ctx: Context, content: String) {
-        if (content == "reset") {
-            ctx.data.let {
-                it.music.votePlayCooldown = 0
-                it.save()
-            }
-
-            return ctx.send("Vote-play cooldown reset.")
-        }
-
-        val amount = try {
-            content.toDuration()
-        } catch (e: RuntimeException) {
-            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
-        }
-
-        if(amount > ctx.config.votePlayCooldown) {
-            return ctx.send("This is too much. The limit is ${ctx.config.votePlayCooldownText}.")
-        }
-
-        if(amount.toSeconds() < 10) {
-            return ctx.send("Has to be more than 10 seconds.")
-        }
-
-        ctx.data.let {
-            it.music.votePlayCooldown = amount.toMillis()
-            it.save()
-        }
-
-        ctx.send("Successfully set vote play cooldown to $content.")
-    }
+    fun votequeuecooldown(ctx: Context, content: String) = durationParseCommand(ctx, content,
+        { music.votePlayCooldown = it }, ctx.config.votePlayCooldown, ctx.config.votePlayCooldownText, "vote-play cooldown")
 
     @SubCommand(aliases = ["vqd", "vpd"], description = "Sets the vote-play duration.")
-    fun votequeueduration(ctx: Context, content: String) {
-        if (content == "reset") {
-            ctx.data.let {
-                it.music.votePlayDuration = 0
-                it.save()
-            }
-
-            return ctx.send("Reset vote play duration.")
-        }
-
-        val amount = try {
-            content.toDuration()
-        } catch (e: RuntimeException) {
-            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
-        }
-
-        if(amount > ctx.config.votePlayDuration) {
-            return ctx.send("This is too much. The limit is ${ctx.config.votePlayDurationText}.")
-        }
-
-        if(amount.toSeconds() < 10) {
-            return ctx.send("Has to be more than 10 seconds.")
-        }
-
-        ctx.data.let {
-            it.music.votePlayDuration = amount.toMillis()
-            it.save()
-        }
-
-        ctx.send("Successfully set vote play duration to $content.")
-    }
+    fun votequeueduration(ctx: Context, content: String) = durationParseCommand(ctx, content,
+        { music.votePlayDuration = it }, ctx.config.votePlayDuration, ctx.config.votePlayDurationText, "vote-play duration")
 
     @SubCommand(aliases = ["vsd"], description = "Sets the vote-skip duration.")
-    fun voteskipduration(ctx: Context, content: String) {
-        if (content == "reset") {
-            ctx.data.let {
-                it.music.voteSkipDuration = 0
-                it.save()
-            }
-
-            return ctx.send("Reset vote skip duration.")
-        }
-
-        val amount = try {
-            content.toDuration()
-        } catch (e: RuntimeException) {
-            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
-        }
-
-        if(amount > ctx.config.voteSkipDuration) {
-            return ctx.send("This is too much. The limit is ${ctx.config.voteSkipDurationText}.")
-        }
-
-        if(amount.toSeconds() < 10) {
-            return ctx.send("Has to be more than 10 seconds.")
-        }
-
-        ctx.data.let {
-            it.music.voteSkipDuration = amount.toMillis()
-            it.save()
-        }
-
-        ctx.send("Successfully set vote skip duration to $content.")
-    }
+    fun voteskipduration(ctx: Context, content: String) = durationParseCommand(ctx, content,
+        { music.voteSkipDuration = it }, ctx.config.voteSkipDuration, ctx.config.voteSkipDurationText, "vote-skip duration")
 
     @SubCommand(aliases = ["vsc"], description = "Sets the vote-skip cooldown.")
-    fun voteskipcooldown(ctx: Context, content: String) {
-        if (content == "reset") {
+    fun voteskipcooldown(ctx: Context, content: String) = durationParseCommand(ctx, content,
+        { music.voteSkipCooldown = it }, ctx.config.voteSkipCooldown, ctx.config.voteSkipCooldownText, "vote-skip cooldown")
+
+    private fun durationParseCommand(ctx: Context, duration: String, setter: GuildData.(Long) -> Unit,
+                                     limit: Duration, limitText: String, property: String) {
+        if (duration == "reset") {
             ctx.data.let {
-                it.music.voteSkipCooldown = 0
+                it.setter(0)
                 it.save()
             }
 
-            return ctx.send("Reset vote skip cooldown.")
+            return ctx.send("Reset $property.")
         }
 
         val amount = try {
-            content.toDuration()
+            duration.toDuration()
         } catch (e: RuntimeException) {
             return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
         }
 
-        if(amount > ctx.config.voteSkipCooldown) {
-            return ctx.send("This is too much. The limit is ${ctx.config.voteSkipCooldownText}.")
+        if (amount > limit) {
+            return ctx.send("This is too much. The limit is $limitText.")
         }
 
-        if(amount.toSeconds() < 10) {
+        if (amount.toSeconds() < 10) {
             return ctx.send("Has to be more than 10 seconds.")
         }
 
         ctx.data.let {
-            it.music.voteSkipCooldown = amount.toMillis()
+            it.setter(amount.toMillis())
             it.save()
         }
 
-        ctx.send("Successfully set vote skip cooldown to $content.")
+        ctx.send("Successfully set $property to $duration.")
     }
-
-    // TODO: Cleanup this shit by moving to a single function to deduplicate code.
 }
