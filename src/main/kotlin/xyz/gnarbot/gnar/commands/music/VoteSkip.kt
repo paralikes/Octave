@@ -62,7 +62,7 @@ class VoteSkip : MusicCog(true, true, true) {
         ctx.manager.isVotingToSkip = true
         val halfPeople = ctx.selfMember!!.voiceState!!.channel!!.members.filterNot { it.user.isBot }.size / 2
 
-        ctx.sendAsync {
+        val message = ctx.sendAsync {
             setTitle("Vote Skip")
             setDescription(
                 buildString {
@@ -73,37 +73,37 @@ class VoteSkip : MusicCog(true, true, true) {
                             "within **$voteSkipDurationText**, the song will be skipped!")
                 }
             )
-        }.let { message ->
-            message.addReaction("👍")
-                .submit()
-                .thenApply { message }
-                .thenCompose {
-                    it.editMessage(EmbedBuilder(it.embeds[0])
-                        .apply {
-                            setDescription("Voting has ended! Check the newer messages for results.")
-                            clearFields()
-                        }.build()
-                    ).submitAfter(voteSkipDuration, TimeUnit.MILLISECONDS)
-                }.thenAccept { m ->
-                    val skip = m.reactions.firstOrNull { it.reactionEmote.name == "👍" }?.count?.minus(1) ?: 0
-
-                    ctx.send {
-                        setTitle("Vote Skip")
-                        setDescription(
-                            buildString {
-                                if (skip > halfPeople) {
-                                    appendln("The vote has passed! The song has been skipped.")
-                                    ctx.manager.scheduler.nextTrack()
-                                } else {
-                                    appendln("The vote has failed! The song will stay.")
-                                }
-                            }
-                        )
-                        addField("Results", "__$skip Skip Votes__", false)
-                    }
-                }.whenComplete { _, _ ->
-                    ctx.manager.isVotingToSkip = false
-                }
         }
+
+        message.addReaction("👍")
+            .submit()
+            .thenApply { message }
+            .thenCompose {
+                it.editMessage(EmbedBuilder(it.embeds[0])
+                    .apply {
+                        setDescription("Voting has ended! Check the newer messages for results.")
+                        clearFields()
+                    }.build()
+                ).submitAfter(voteSkipDuration, TimeUnit.MILLISECONDS)
+            }.thenAccept { m ->
+                val skip = m.reactions.firstOrNull { it.reactionEmote.name == "👍" }?.count?.minus(1) ?: 0
+
+                ctx.send {
+                    setTitle("Vote Skip")
+                    setDescription(
+                        buildString {
+                            if (skip > halfPeople) {
+                                appendln("The vote has passed! The song has been skipped.")
+                                ctx.manager.scheduler.nextTrack()
+                            } else {
+                                appendln("The vote has failed! The song will stay.")
+                            }
+                        }
+                    )
+                    addField("Results", "__$skip Skip Votes__", false)
+                }
+            }.whenComplete { _, _ ->
+                ctx.manager.isVotingToSkip = false
+            }
     }
 }
