@@ -11,9 +11,6 @@ import java.lang.RuntimeException
 import java.time.Duration
 
 class MusicSettingsCommand : CommandTemplate() {
-    @Description("Changes the vote queue duration.")
-
-
     @Description("Changes the vote skip cooldown.")
     fun voteskip_cooldown(context: Context, content: String) {
         if (content == "reset") {
@@ -44,38 +41,5 @@ class MusicSettingsCommand : CommandTemplate() {
         context.data.music.voteSkipCooldown = amount.toMillis()
         context.data.save()
         context.send().info("Successfully set vote skip cooldown to $content.").queue()
-    }
-
-    @Description("Changes the vote skip duration.")
-    fun voteskip_duration(context: Context, content: String) {
-        if (content == "reset") {
-            context.data.music.voteSkipDuration = 0
-            context.data.save()
-
-            context.send().info("Reset voteskip duration.").queue()
-            return
-        }
-
-        val amount: Duration = try{
-            content.toDuration()
-        } catch (e: RuntimeException) {
-            context.send().info("Wrong duration specified: Expected something like `40 minutes`").queue()
-            return
-        }
-
-        if(amount > config.voteSkipDuration) {
-            context.send().error("This is too much. The limit is ${config.voteSkipDurationText}.").queue()
-            return
-        }
-
-
-        if(amount.toSeconds() < 10) {
-            context.send().error("Has to be more than 10 seconds.").queue()
-            return
-        }
-
-        context.data.music.voteSkipDuration = amount.toMillis()
-        context.data.save()
-        context.send().info("Successfully set vote skip duration to $content.").queue()
     }
 }

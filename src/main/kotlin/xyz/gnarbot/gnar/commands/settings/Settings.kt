@@ -255,4 +255,37 @@ class Settings : Cog {
 
         ctx.send("Successfully set vote play duration to $content.")
     }
+
+    @SubCommand(aliases = ["vsd"], description = "Sets the vote-skip duration.")
+    fun voteskipduration(ctx: Context, content: String) {
+        if (content == "reset") {
+            ctx.data.let {
+                it.music.voteSkipDuration = 0
+                it.save()
+            }
+
+            return ctx.send("Reset vote skip duration.")
+        }
+
+        val amount = try {
+            content.toDuration()
+        } catch (e: RuntimeException) {
+            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
+        }
+
+        if(amount > ctx.config.voteSkipDuration) {
+            return ctx.send("This is too much. The limit is ${ctx.config.voteSkipDurationText}.")
+        }
+
+        if(amount.toSeconds() < 10) {
+            return ctx.send("Has to be more than 10 seconds.")
+        }
+
+        ctx.data.let {
+            it.music.voteSkipDuration = amount.toMillis()
+            it.save()
+        }
+
+        ctx.send("Successfully set vote skip duration to $content.")
+    }
 }
