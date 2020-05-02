@@ -81,7 +81,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
         val data = ctx.data
 
-        //TODO: Add messages to all of this?
+        //Don't send a message if it's just ignored.
         if (isIgnored(ctx, data, ctx.member!!)) {
             return false
         }
@@ -89,14 +89,21 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         if (command.cog is MusicCog) {
             if (command.method.hasAnnotation<CheckVoiceState>()) {
                 if (ctx.member!!.voiceState?.channel == null) {
+                    ctx.send("You're not in a voice channel.")
                     return false
                 }
 
                 if (ctx.member!!.voiceState?.channel == ctx.guild!!.afkChannel) {
+                    ctx.send("You can't play music in the AFK channel.")
                     return false
                 }
 
                 if (data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels) {
+                    val channels = data.music.channels
+                            .map { ctx.guild!!.getVoiceChannelById(it) }
+                            .map { it!!.name }
+
+                    ctx.send("Music can only be played in: `$channels`, since this server has set it/them as a designated voice channel.")
                     return false
                 }
             }
@@ -135,18 +142,25 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     }
 
     companion object {
-        fun isDJ(context: Context): Boolean {
-            val memberSize = context.selfMember!!.voiceState?.channel?.members?.size
-            val djRole = context.data.command.djRole
+        fun isDJ(ctx: Context): Boolean {
+            val data = ctx.data
+            val memberSize = ctx.selfMember!!.voiceState?.channel?.members?.size
+            val djRole = data.command.djRole
 
-            val djRolePresent = if (djRole != null) context.member!!.hasAnyRoleId(djRole) else false
+            val djRolePresent = if (djRole != null) ctx.member!!.hasAnyRoleId(djRole) else false
             val memberAmount = if (memberSize != null) memberSize <= 2 else false
-            val admin = context.member!!.permissions.contains(Permission.MANAGE_SERVER) || context.member!!.permissions.contains(Permission.ADMINISTRATOR)
+            val admin = ctx.member!!.permissions.contains(Permission.MANAGE_SERVER) || ctx.member!!.permissions.contains(Permission.ADMINISTRATOR)
 
-            if (context.member!!.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount || admin) {
+            if (ctx.member!!.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount || admin) {
                 return true
             }
 
+            val extra = when (djRolePresent) {
+                true -> ", or a role called ${djRole?.let { ctx.guild!!.getRoleById(it)?.name }}"
+                false -> ""
+            }
+
+            ctx.send("You need a role called DJ$extra.\nThis can be bypassed if you're an admin (either Manage Server or Administrator) or you're alone with the bot.")
             return false
         }
     }
