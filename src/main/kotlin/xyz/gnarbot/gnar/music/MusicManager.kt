@@ -6,20 +6,20 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import me.devoxin.flight.api.Context
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import xyz.gnarbot.gnar.Launcher
-import xyz.gnarbot.gnar.commands.Context
 import xyz.gnarbot.gnar.commands.music.embedTitle
 import xyz.gnarbot.gnar.commands.music.embedUri
 import xyz.gnarbot.gnar.db.OptionsRegistry
 import xyz.gnarbot.gnar.music.filters.DSPFilter
 import xyz.gnarbot.gnar.music.sources.caching.CachingSourceManager
-import xyz.gnarbot.gnar.utils.extensions.friendlierMessage
+import xyz.gnarbot.gnar.utils.extensions.*
 import xyz.gnarbot.gnar.utils.getDisplayValue
-import xyz.gnarbot.gnar.utils.response.respond
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
@@ -61,7 +61,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
     /** @return Wrapper around AudioPlayer to use it as an AudioSendHandler. */
     private val sendHandler: AudioPlayerSendHandler = AudioPlayerSendHandler(player)
 
-    private val dbAnnouncementChannel = bot.db.getGuildData(guildId)?.music?.announcementChannel;
+    private val dbAnnouncementChannel = bot.db.getGuildData(guildId)?.music?.announcementChannel
 
     /**
      * @return Voting cooldown.
@@ -72,9 +72,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
      * @return Whether there is a vote to skip the song or not.
      */
     var isVotingToSkip = false
-
-    var isVotingToPlay = false;
-
+    var isVotingToPlay = false
     var lastPlayVoteTime: Long = 0L
 
     val currentRequestChannel: TextChannel?
@@ -108,23 +106,17 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
         closeAudioConnection()
     }
 
-    fun openAudioConnection(channel: VoiceChannel, context: Context): Boolean {
+    fun openAudioConnection(channel: VoiceChannel, ctx: Context): Boolean {
         when {
-            !bot.configuration.musicEnabled -> {
-                context.send().error("Music is disabled.").queue()
-                playerRegistry.destroy(guild)
-                return false
-            }
             !guild?.selfMember!!.hasPermission(channel, Permission.VOICE_CONNECT) -> {
-                context.send().issue("The bot can't connect to this channel due to a lack of permission.").queue()
+                ctx.send("The bot can't connect to this channel due to a lack of permission.")
                 playerRegistry.destroy(guild)
                 return false
             }
-
             channel.userLimit != 0
                     && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
                     && channel.members.size >= channel.userLimit -> {
-                context.send().issue("The bot can't join due to the user limit.").queue()
+                ctx.send("The bot can't join due to the user limit.")
                 playerRegistry.destroy(guild)
                 return false
             }
@@ -134,9 +126,10 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                     sendingHandler = sendHandler
                 }
 
-                context.send().embed("Music Playback") {
-                    desc { "Joining channel `${channel.name}`." }
-                }.action().queue()
+                ctx.send {
+                    setTitle("Music Playback")
+                    setDescription("Joining channel `${channel.name}`.")
+                }
                 return true
             }
         }
@@ -149,7 +142,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
             }
 
             if (!it.selfMember.hasPermission(channel, Permission.VOICE_CONNECT)) {
-                currentRequestChannel?.respond()?.issue("I don't have permission to join `${channel.name}`.")?.queue()
+                currentRequestChannel?.sendMessage("I don't have permission to join `${channel.name}`.")?.queue()
                 playerRegistry.destroy(it)
                 return
             }
@@ -158,9 +151,10 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
             it.audioManager.openAudioConnection(channel)
             player.isPaused = false
 
-            currentRequestChannel?.respond()?.embed("Music Playback") {
-                desc { "Moving to channel `${channel.name}`." }
-            }?.action()?.queue()
+            currentRequestChannel?.sendMessage(EmbedBuilder().apply {
+                setTitle("Music Playback")
+                setDescription("Moving to channel `${channel.name}`.")
+            }.build())?.queue()
         }
     }
 
@@ -189,84 +183,69 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
         playerRegistry.destroy(guild)
     }, 30, TimeUnit.SECONDS)
 
-    fun loadAndPlay(context: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null) {
+    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null) {
         playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 cache(trackUrl, track)
 
                 if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) { // wtf is this mess
-                    if (!openAudioConnection(context.voiceChannel, context)) {
+                    if (!openAudioConnection(ctx.voiceChannel!!, ctx)) {
                         return
                     }
                 }
 
-                val queueLimit = queueLimit(context)
+                val queueLimit = queueLimit(ctx)
                 val queueLimitDisplay = when (queueLimit) {
                     Integer.MAX_VALUE -> "unlimited"
                     else -> queueLimit
                 }
 
                 if (scheduler.queue.size >= queueLimit) {
-                    context.send().issue("The queue can not exceed $queueLimitDisplay songs.").queue()
-                    return
+                    return ctx.send("The queue can not exceed $queueLimitDisplay songs.")
                 }
 
                 if (!track.info.isStream) {
-                    val invalidDuration = !context.isGuildPremium && (context.data.music.maxSongLength > bot.configuration.durationLimit.toMillis())
+                    val data = ctx.data
+                    val premiumGuild = ctx.premiumGuild
+                    val invalidDuration = premiumGuild == null && data.music.maxSongLength > bot.configuration.durationLimit.toMillis()
 
                     val durationLimit = when {
-                        context.data.music.maxSongLength != 0L && !invalidDuration -> {
-                            context.data.music.maxSongLength
-                        }
-                        context.isGuildPremium -> {
-                            context.premiumGuild.songLengthQuota
-                        }
-                        context.data.isPremium -> {
-                            TimeUnit.MINUTES.toMillis(360) //Keep key perks.
-                        }
-                        else -> {
-                            bot.configuration.durationLimit.toMillis()
-                        }
+                        data.music.maxSongLength != 0L && !invalidDuration -> data.music.maxSongLength
+                        premiumGuild != null -> premiumGuild.songLengthQuota
+                        data.isPremium -> TimeUnit.MINUTES.toMillis(360) //Keep key perks.
+                        else -> bot.configuration.durationLimit.toMillis()
                     }
 
                     val durationLimitText = when {
-                        context.data.music.maxSongLength != 0L && !invalidDuration -> {
-                            getDisplayValue(context.data.music.maxSongLength)
-                        }
-                        context.isGuildPremium -> {
-                            getDisplayValue(context.premiumGuild.songLengthQuota)
-                        }
-                        context.data.isPremium -> {
-                            getDisplayValue(TimeUnit.MINUTES.toMillis(360)) //Keep key perks.
-                        }
-                        else -> {
-                            bot.configuration.durationLimitText
-                        }
+                        data.music.maxSongLength != 0L && !invalidDuration -> getDisplayValue(data.music.maxSongLength)
+                        premiumGuild != null -> getDisplayValue(premiumGuild.songLengthQuota)
+                        data.isPremium -> getDisplayValue(TimeUnit.MINUTES.toMillis(360)) //Keep key perks.
+                        else -> bot.configuration.durationLimitText
                     }
 
                     if (track.duration > durationLimit) {
-                        return context.send().issue("The track can not exceed $durationLimitText.").queue()
+                        return ctx.send("The track can not exceed $durationLimitText.")
                     }
                 }
 
                 track.userData = trackContext
                 scheduler.queue(track)
 
-                context.send().embed("Music Queue") {
-                    desc { "Added __**[${track.info.embedTitle}](${track.info.embedUri})**__ to queue." }
-                    footer { footnote }
-                }.action().queue()
+                ctx.send {
+                    setTitle("Music Queue")
+                    setDescription("Added __**[${track.info.embedTitle}](${track.info.embedUri})**__ to queue.")
+                    setFooter(footnote)
+                }
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
                 cache(trackUrl, playlist)
 
                 if (playlist.isSearchResult) {
-                    trackLoaded(playlist.tracks.first())
-                    return
+                    return trackLoaded(playlist.tracks.first())
                 }
 
-                val queueLimit = queueLimit(context)
+                val queueLimit = queueLimit(ctx)
                 val queueLimitDisplay = when (queueLimit) {
                     Integer.MAX_VALUE -> "unlimited"
                     else -> queueLimit
@@ -274,8 +253,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
 
                 if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
-                    if (!context.member.voiceState!!.inVoiceChannel()) {
-                        context.send().issue("You left the channel before the track is loaded.").queue()
+                    if (!ctx.member!!.voiceState!!.inVoiceChannel()) {
+                        ctx.send("You left the channel before the track is loaded.")
 
                         // Track is not supposed to load and the queue is empty
                         // destroy player
@@ -284,7 +263,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                         }
                         return
                     }
-                    if (!openAudioConnection(context.voiceChannel, context)) {
+                    if (!openAudioConnection(ctx.voiceChannel!!, ctx)) {
                         return
                     }
                 }
@@ -305,18 +284,17 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                     added++
                 }
 
-                context.send().embed("Music Queue") {
-                    desc {
-                        buildString {
-                            append("Added `$added` tracks to queue from playlist `${playlist.name}`.\n")
-                            if (ignored > 0) {
-                                append("Ignored `$ignored` songs as the queue can not exceed `$queueLimitDisplay` songs.")
-                            }
+                ctx.send {
+                    setTitle("Music Queue")
+                    val desc = buildString {
+                        append("Added `$added` tracks to queue from playlist `${playlist.name}`.\n")
+                        if (ignored > 0) {
+                            append("Ignored `$ignored` songs as the queue can not exceed `$queueLimitDisplay` songs.")
                         }
                     }
-
-                    footer { footnote }
-                }.action().queue()
+                    setDescription(desc)
+                    setFooter(footnote)
+                }
             }
 
             override fun noMatches() {
@@ -326,7 +304,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                     playerRegistry.destroy(guild)
                 }
 
-                context.send().issue("Nothing found by `$trackUrl`").queue()
+                ctx.send("Nothing found by `$trackUrl`")
             }
 
             override fun loadFailed(e: FriendlyException) {
@@ -341,27 +319,21 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                     playerRegistry.destroy(guild)
                 }
 
-                context.send().issue(e.friendlierMessage()).queue()
+                ctx.send(e.friendlierMessage())
             }
         })
     }
 
-    fun queueLimit(context: Context): Int {
-        val invalidSize = !context.isGuildPremium && (context.data.music.maxQueueSize > bot.configuration.queueLimit)
+    fun queueLimit(ctx: Context): Int {
+        val premiumGuild = ctx.premiumGuild
+        val data = ctx.data
+        val invalidSize = premiumGuild == null && data.music.maxQueueSize > bot.configuration.queueLimit
 
         return when {
-            context.data.music.maxQueueSize != 0 && !invalidSize -> {
-                context.data.music.maxQueueSize
-            }
-            context.isGuildPremium -> {
-                context.premiumGuild.queueSizeQuota
-            }
-            context.data.isPremium -> {
-                500 //Keep key perks.
-            }
-            else -> {
-                bot.configuration.queueLimit
-            }
+            data.music.maxQueueSize != 0 && !invalidSize -> data.music.maxQueueSize
+            premiumGuild != null -> premiumGuild.queueSizeQuota
+            data.isPremium -> 500 //Keep key perks.
+            else -> bot.configuration.queueLimit
         }
     }
 

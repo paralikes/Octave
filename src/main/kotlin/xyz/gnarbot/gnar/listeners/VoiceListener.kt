@@ -7,7 +7,6 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.db.OptionsRegistry
-import xyz.gnarbot.gnar.utils.response.ResponseBuilder
 
 class VoiceListener : EventListener {
     override fun onEvent(event: GenericEvent) {
@@ -79,9 +78,8 @@ class VoiceListener : EventListener {
                 if (options.music.channels.isNotEmpty()) {
                     if (event.channelJoined.id !in options.music.channels) {
                         it.currentRequestChannel?.let { requestChannel ->
-                            ResponseBuilder(requestChannel).error(
-                                    "Can not join `${event.channelJoined.name}`, it isn't one of the designated music channels."
-                            ).queue()
+                            requestChannel.sendMessage("Cannot join `${event.channelJoined.name}`, it isn't one of the designated music channels.")
+                                .queue()
                         }
 
                         return Launcher.players.destroy(event.guild.idLong)

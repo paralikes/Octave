@@ -9,6 +9,7 @@ import io.sentry.Sentry
 import io.sentry.event.Event
 import io.sentry.event.EventBuilder
 import io.sentry.event.interfaces.StackTraceInterface
+import net.dv8tion.jda.api.EmbedBuilder
 import org.redisson.api.RQueue
 import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.commands.music.embedTitle
@@ -17,7 +18,6 @@ import xyz.gnarbot.gnar.db.OptionsRegistry
 import xyz.gnarbot.gnar.music.settings.RepeatOption
 import xyz.gnarbot.gnar.utils.PlaylistUtils
 import xyz.gnarbot.gnar.utils.extensions.friendlierMessage
-import xyz.gnarbot.gnar.utils.response.respond
 import java.util.*
 
 class TrackScheduler(private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
@@ -85,12 +85,10 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     }
 
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long, stackTrace: Array<out StackTraceElement>) {
+        val guild = manager.guild ?: return
         track.getUserData(TrackContext::class.java)
-            ?.requestedChannel?.let {
-                manager.guild?.getTextChannelById(it)
-            }
-            ?.respond()
-            ?.error("The track ${track.info.embedTitle} is stuck longer than ${thresholdMs}ms threshold.")
+            ?.requestedChannel?.let(guild::getTextChannelById)
+            ?.sendMessage("The track ${track.info.embedTitle} is stuck longer than ${thresholdMs}ms threshold.")
             ?.queue()
 
         val eventBuilder = EventBuilder().withMessage("AudioTrack stuck longer than ${thresholdMs}ms")
@@ -121,27 +119,26 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             manager.guild?.getTextChannelById(it)
         } ?: return
 
-        channel.respond().issue(exception.friendlierMessage()).queue()
+        channel.sendMessage(exception.friendlierMessage()).queue()
     }
 
     private fun announceNext(track: AudioTrack) {
-        manager.announcementChannel?.let {
-            it.respond().embed("Music Playback") {
-                desc {
-                    buildString {
-                        append("Now playing __**[").append(track.info.embedTitle)
-                        append("](").append(track.info.embedUri).append(")**__")
+        val channel = manager.announcementChannel ?: return
+        val description = buildString {
+            append("Now playing __**[").append(track.info.embedTitle)
+            append("](").append(track.info.embedUri).append(")**__")
 
-                        track.getUserData(TrackContext::class.java)?.requester?.let { manager.guild?.getMemberById(it) }?.let {
-                            append(" requested by ")
-                            append(it.asMention)
-                        }
+            track.getUserData(TrackContext::class.java)?.requester?.let { manager.guild?.getMemberById(it) }?.let {
+                append(" requested by ")
+                append(it.asMention)
+            }
 
-                        append(".")
-                    }
-                }
-            }.action().queue()
+            append(".")
         }
+
+        channel.sendMessage(EmbedBuilder().apply {
+            setDescription(description)
+        }.build()).queue()
     }
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
