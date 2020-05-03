@@ -7,6 +7,7 @@ import xyz.gnarbot.gnar.entities.framework.CheckVoiceState
 import xyz.gnarbot.gnar.entities.framework.DJ
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.music.MusicManager
+import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.manager
 
 class Filters : MusicCog {
@@ -14,20 +15,26 @@ class Filters : MusicCog {
     override fun requirePlayingTrack() = true
     override fun requirePlayer() = true
 
-    private val filters = mapOf(
-        "tremolo" to ::modifyTremolo,
-        "timescale" to ::modifyTimescale,
-        "karaoke" to ::modifyKaraoke
-    )
-
-    private val filterString = filters.keys.joinToString("`, `", prefix = "`", postfix = "`")
-
     @DJ
     @CheckVoiceState
     @Command(aliases = ["filters", "fx", "effects"], description = "Apply audio filters to the music such as speed and pitch")
-    fun filter(ctx: Context, filter: String, type: String, value: Double) {
-        filters[filter]?.invoke(ctx, type, value, ctx.manager)
-                ?: return ctx.send("Invalid filter. Pick one of $filterString, or `status` to view filter status.")
+    fun filter(ctx: Context) {
+        DEFAULT_SUBCOMMAND(ctx)
+    }
+
+    @SubCommand
+    fun tremolo(ctx: Context, type: String, value: Double) {
+        modifyTremolo(ctx, type, value, ctx.manager)
+    }
+
+    @SubCommand
+    fun timescale(ctx: Context, type: String, value: Double) {
+        modifyTimescale(ctx, type, value, ctx.manager)
+    }
+
+    @SubCommand
+    fun karaoke(ctx: Context, type: String, value: Double) {
+        modifyKaraoke(ctx, type, value, ctx.manager)
     }
 
     @SubCommand(description = "Check the current status of filters.")
