@@ -16,12 +16,19 @@ class Help : Cog {
             return sendCommands(ctx)
         }
 
-        val command = ctx.commandClient.commands.findCommandByName(command)
+        val cmd = ctx.commandClient.commands.findCommandByName(command)
             ?: ctx.commandClient.commands.findCommandByAlias(command)
 
-        if (command != null) {
-            return sendCommandHelp(ctx, command)
+        if (cmd != null) {
+            return sendCommandHelp(ctx, cmd)
         }
+
+        val category = ctx.commandClient.commands.values
+            .filter { categoryAlias.getOrDefault(it.category, it.category) == command }
+            .takeIf { it.isNotEmpty() }
+            ?: return ctx.send("No categories found with that name. Category names are case-sensitive.")
+
+        sendCategoryCommands(ctx, category)
     }
 
     fun sendCommands(ctx: Context) {
@@ -79,6 +86,18 @@ class Help : Cog {
     }
 
     fun sendCategoryCommands(ctx: Context, commands: List<CommandFunction>) {
+        val guildTrigger = ctx.data.command.prefix ?: ctx.config.prefix
+        val categoryName = categoryAlias.getOrDefault(commands[0].category, commands[0].category)
 
+        ctx.send {
+            setColor(0x9571D3)
+            setTitle("$categoryName Commands")
+            setDescription("The prefix of the bot on this server is `$guildTrigger`")
+            val fieldName = "$categoryName — ${commands.size}"
+            val commandList = commands.joinToString("`, `", prefix = "`", postfix = "`") { it.name }
+            addField(fieldName, commandList, false)
+            setFooter("For more information try ${guildTrigger}help (command) " +
+                "or ${guildTrigger}help (category), ex: ${guildTrigger}help bassboost or ${guildTrigger}help play")
+        }
     }
 }
