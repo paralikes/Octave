@@ -24,8 +24,8 @@ class RestartShards : Cog {
                 ctx.send("Queued **${deadShards.size}** shards for reboot.")
             }
             else -> {
-                if (filter[0].isDigit()) {
-                    val num = filter[0].toInt()
+                if (filter.all { it.isDigit() }) {
+                    val num = filter.toInt()
 
                     if (num < 0 || num >= ctx.jda.shardInfo.shardTotal) {
                         return ctx.send("**$num** should be equal to or higher than 0, and less than ${ctx.jda.shardInfo.shardTotal}.")

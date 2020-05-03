@@ -12,6 +12,7 @@ import gg.octave.bot.entities.ExtendedShardManager
 import gg.octave.bot.entities.framework.DefaultPrefixProvider
 import gg.octave.bot.entities.framework.DurationParser
 import gg.octave.bot.entities.framework.ExtendedMemberParser
+import gg.octave.bot.entities.framework.KeyTypeParser
 import gg.octave.bot.listeners.BotListener
 import gg.octave.bot.listeners.FlightEventAdapter
 import gg.octave.bot.listeners.VoiceListener
@@ -64,12 +65,14 @@ object Launcher {
 
         Sentry.init(configuration.sentryDsn)
         RestAction.setPassContext(false)
+        println(configuration.prefix)
 
         commandClient = CommandClientBuilder()
             .setPrefixProvider(DefaultPrefixProvider())
             .registerAlmostAllParsers()
             .addCustomParser(ExtendedMemberParser())
             .addCustomParser(DurationParser())
+            .addCustomParser(KeyTypeParser())
             .setOwnerIds(*configuration.admins.toLongArray())
             .addEventListeners(FlightEventAdapter())
             .configureDefaultHelpCommand { enabled = false }

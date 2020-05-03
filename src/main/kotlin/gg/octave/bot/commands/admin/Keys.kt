@@ -28,6 +28,7 @@ class Keys : Cog {
         }
 
         ctx.sendPrivate(keys)
+        ctx.send("The keys have been sent to your DMs.")
     }
 
     @SubCommand(aliases = ["revoke"], description = "Revokes a premium key.")
