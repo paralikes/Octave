@@ -57,7 +57,7 @@ class Filters : MusicCog {
             "pitch" -> manager.dspFilter.tsPitch = value
             "speed" -> manager.dspFilter.tsSpeed = value
             "rate" -> manager.dspFilter.tsRate = value
-            else -> return ctx.send("Invalid choice `${type}`, pick one of `pitch`/`speed`/`rate`.")
+            else -> return ctx.send("Invalid choice `$type`, pick one of `pitch`/`speed`/`rate`.")
         }
 
         ctx.send("Timescale `${type.toLowerCase()}` set to `$value`")
@@ -76,7 +76,7 @@ class Filters : MusicCog {
                 manager.dspFilter.tFrequency = frequency.toFloat()
                 ctx.send("Tremolo `frequency` set to `$frequency`")
             }
-            else -> ctx.send("Invalid choice `${type}`, pick one of `depth`/`frequency`.")
+            else -> ctx.send("Invalid choice `$type`, pick one of `depth`/`frequency`.")
         }
     }
 
@@ -85,13 +85,13 @@ class Filters : MusicCog {
             "level" -> {
                 val level = amount.coerceAtLeast(0.0)
                 manager.dspFilter.kLevel = level.toFloat()
-                return ctx.send("Karaoke `${type}` set to `$level`")
+                return ctx.send("Karaoke `$type` set to `$level`")
             }
             "band" -> manager.dspFilter.kFilterBand = amount.toFloat()
             "width" -> manager.dspFilter.kFilterWidth = amount.toFloat()
-            else -> ctx.send("Invalid choice `${type}`, pick one of `level`/`band`/`width`.")
+            else -> ctx.send("Invalid choice `$type`, pick one of `level`/`band`/`width`.")
         }
 
-        ctx.send("Karaoke `${type}` set to `$amount`")
+        ctx.send("Karaoke `$type` set to `$amount`")
     }
 }
