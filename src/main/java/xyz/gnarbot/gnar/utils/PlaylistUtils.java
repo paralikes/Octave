@@ -8,7 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import xyz.gnarbot.gnar.Bot;
+import xyz.gnarbot.gnar.Launcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -80,7 +80,7 @@ public class PlaylistUtils {
 
     public static AudioTrack toAudioTrack(String encoded) {
         try {
-            AudioPlayerManager playerManager = Bot.getInstance().getPlayers().getPlayerManager();
+            AudioPlayerManager playerManager = Launcher.INSTANCE.getPlayers().getPlayerManager();
             byte[] b64 = Base64.getDecoder().decode(encoded);
             ByteArrayInputStream bais = new ByteArrayInputStream(b64);
             return playerManager.decodeTrack(new MessageInput(bais)).decodedTrack;
@@ -90,7 +90,7 @@ public class PlaylistUtils {
     }
 
     public static String toBase64String(AudioTrack track) {
-        AudioPlayerManager playerManager = Bot.getInstance().getPlayers().getPlayerManager();
+        AudioPlayerManager playerManager = Launcher.INSTANCE.getPlayers().getPlayerManager();
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             playerManager.encodeTrack(new MessageOutput(baos), track);

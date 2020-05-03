@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.rethinkdb.net.Cursor;
-import xyz.gnarbot.gnar.Bot;
+import xyz.gnarbot.gnar.Launcher;
 import xyz.gnarbot.gnar.db.ManagedObject;
 
 import javax.annotation.Nullable;
@@ -41,7 +41,7 @@ public class PremiumUser extends ManagedObject {
     @JsonIgnore
     @Nullable
     public Cursor<PremiumGuild> getPremiumGuilds() {
-        return Bot.getInstance().db().getPremiumGuilds(getId());
+        return Launcher.INSTANCE.getDatabase().getPremiumGuilds(getId());
     }
 
     @JsonIgnore
@@ -52,7 +52,7 @@ public class PremiumUser extends ManagedObject {
 
     @JsonIgnore
     public int getTotalPremiumGuildQuota() {
-        if (Bot.getInstance().getConfiguration().getAdmins().contains(Long.parseLong(getId()))) {
+        if (Launcher.INSTANCE.getConfiguration().getAdmins().contains(Long.parseLong(getId()))) {
             return 99999;
         } else if (pledgeAmount >= 20.0) {  // base: 5 servers + 1 for every extra $3
             int extra = (int) ((pledgeAmount - 20) / 3);

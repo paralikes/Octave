@@ -3,7 +3,7 @@ package xyz.gnarbot.gnar.db.premium;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import xyz.gnarbot.gnar.Bot;
+import xyz.gnarbot.gnar.Launcher;
 import xyz.gnarbot.gnar.db.ManagedObject;
 
 import java.beans.ConstructorProperties;
@@ -46,32 +46,32 @@ public class PremiumGuild extends ManagedObject {
 
     @JsonIgnore
     public PremiumUser getRedeemer() {
-        return Bot.getInstance().db().getPremiumUser(getRedeemerId());
+        return Launcher.INSTANCE.getDatabase().getPremiumUser(getRedeemerId());
     }
 
     @JsonIgnore
     public int getQueueSizeQuota() {
         double pledgeAmount = getRedeemer().getPledgeAmount();
-        if (Bot.getInstance().getConfiguration().getAdmins().contains(Long.parseLong(getId())) || pledgeAmount >= 10) {
+        if (Launcher.INSTANCE.getConfiguration().getAdmins().contains(Long.parseLong(getId())) || pledgeAmount >= 10) {
             return Integer.MAX_VALUE;
         } else if (pledgeAmount >= 5) {
             return 500;
         } else {
-            return Bot.getInstance().getConfiguration().getQueueLimit();
+            return Launcher.INSTANCE.getConfiguration().getQueueLimit();
         }
     }
 
     @JsonIgnore
     public long getSongLengthQuota() {
         double pledgeAmount = getRedeemer().getPledgeAmount();
-        if (Bot.getInstance().getConfiguration().getAdmins().contains(Long.parseLong(getId()))) {
+        if (Launcher.INSTANCE.getConfiguration().getAdmins().contains(Long.parseLong(getId()))) {
             return Integer.MAX_VALUE;
         } else if (pledgeAmount >= 10) {
             return TimeUnit.MINUTES.toMillis(720);
         } else if (pledgeAmount >= 5) {
             return TimeUnit.MINUTES.toMillis(360);
         } else {
-            return Bot.getInstance().getConfiguration().getDurationLimit().toMillis();
+            return Launcher.INSTANCE.getConfiguration().getDurationLimit().toMillis();
         }
     }
 

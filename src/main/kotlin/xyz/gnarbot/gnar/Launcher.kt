@@ -56,8 +56,8 @@ object Launcher {
     fun main(args: Array<String>) {
         println("+---------------------------------+")
         println("|           O c t a v e           |")
-        println("| JDA: ${JDAInfo.VERSION}         |")
-        println("| LP : ${PlayerLibrary.VERSION}   |")
+        println("| JDA: ${JDAInfo.VERSION.padEnd(27)}|")
+        println("| LP : ${PlayerLibrary.VERSION.padEnd(27)}|")
         println("+---------------------------------+")
 
         Sentry.init(configuration.sentryDsn)

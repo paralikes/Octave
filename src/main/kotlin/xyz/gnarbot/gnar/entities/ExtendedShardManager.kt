@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.PrivateChannel
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
+import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import xyz.gnarbot.gnar.Launcher
 import xyz.gnarbot.gnar.entities.sharding.BucketedController
@@ -26,8 +27,8 @@ class ExtendedShardManager(private val shardManager: ShardManager): ShardManager
 
                     // Gateway
                     setSessionController(BucketedController(Launcher.configuration.bucketFactor, 215616923168276480L))
-                    setShards(Launcher.credentials.shardStart, Launcher.credentials.shardEnd - 1)
                     setShardsTotal(Launcher.credentials.totalShards)
+                    setShards(Launcher.credentials.shardStart, Launcher.credentials.shardEnd - 1)
                     setMaxReconnectDelay(32)
 
                     // Audio
@@ -36,6 +37,7 @@ class ExtendedShardManager(private val shardManager: ShardManager): ShardManager
                     // Performance
                     setBulkDeleteSplittingEnabled(false)
                     disableCache(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS))
+                    setMemberCachePolicy(MemberCachePolicy.VOICE.or(MemberCachePolicy.OWNER))
                 }
                 .apply(apply)
                 .build()
