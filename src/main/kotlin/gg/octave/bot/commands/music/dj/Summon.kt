@@ -8,6 +8,7 @@ import gg.octave.bot.utils.extensions.selfMember
 import gg.octave.bot.utils.extensions.voiceChannel
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
 import net.dv8tion.jda.api.entities.VoiceChannel
 
 class Summon : MusicCog {
@@ -16,7 +17,7 @@ class Summon : MusicCog {
     @DJ
     @CheckVoiceState
     @Command(description = "Move the bot to another channel.")
-    fun summon(ctx: Context, channel: VoiceChannel?) {
+    fun summon(ctx: Context, @Greedy channel: VoiceChannel?) {
         val vc = channel
             ?: ctx.voiceChannel
             ?: return ctx.send("That's not a valid music channel. " +

@@ -65,13 +65,18 @@ class Ignore : Cog {
     }
 
     fun <T : IMentionable> mapper(type: String, data: Set<String>, transform: (String) -> T?): String {
-        if (data.isEmpty()) {
-            return "No $type are ignored."
-        }
-
         return data.mapNotNull(transform)
-            .map(IMentionable::getAsMention)
-            .joinToString("\n") { "• $it" }
+            .takeIf { it.isNotEmpty() }
+            ?.map(IMentionable::getAsMention)
+            ?.joinToString("\n") { "• $it" }
+            ?: "No $type are ignored."
+    }
+
+    fun mapString(type: String, data: Set<String>, transform: (String) -> String): String {
+        return data.map(transform)
+            .takeIf { it.isNotEmpty() }
+            ?.joinToString("\n") { "• $it" }
+            ?: "No $type are ignored."
     }
 
     @SubCommand(description = "Lists all entities that are currently being ignored.")
@@ -81,7 +86,7 @@ class Ignore : Cog {
         ctx.send {
             setColor(0x9570D3)
             setTitle("Ignored Entities")
-            addField("Users", mapper("users", ignored.users, ctx.guild!!::getMemberById), true)
+            addField("Users", mapString("users", ignored.users) { "<@$it>" }, true)
             addField("Channel", mapper("channels", ignored.channels, ctx.guild!!::getTextChannelById), true)
             addField("Roles", mapper("roles", ignored.roles, ctx.guild!!::getRoleById), true)
         }

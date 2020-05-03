@@ -58,10 +58,12 @@ class Patron : Cog {
             .thenCompose { Launcher.patreon.fetchPledges() }
             .thenAccept { pledges ->
                 val pledge = pledges.firstOrNull { it.discordId != null && it.discordId == ctx.author.idLong }
-                    ?: return@thenAccept ctx.send(
-                        "Couldn't find your pledge.\n" +
+                    ?: return@thenAccept ctx.send {
+                        setDescription(
+                            "Couldn't find your pledge.\n" +
                             "[Re-link your account](https://support.patreon.com/hc/en-us/articles/212052266-Get-my-Discord-role) and try again."
-                    )
+                        )
+                    }
 
                 if (pledge.isDeclined || pledge.pledgeCents <= 0) {
                     return@thenAccept ctx.send("It looks like your pledge was declined, or your pledge is too low!\n" +
