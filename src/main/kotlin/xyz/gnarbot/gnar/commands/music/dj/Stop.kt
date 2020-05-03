@@ -3,10 +3,14 @@ package xyz.gnarbot.gnar.commands.music.dj
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import xyz.gnarbot.gnar.Launcher
+import xyz.gnarbot.gnar.entities.framework.CheckVoiceState
+import xyz.gnarbot.gnar.entities.framework.DJ
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 
 class Stop : MusicCog(false, false, false) {
+    @DJ
+    @CheckVoiceState
     @Command(aliases = ["leave", "end", "st", "fuckoff"], description = "Stop and clear the music player.")
     fun stop(ctx: Context, clear: Boolean = false) {
         val karen = ctx.manager
