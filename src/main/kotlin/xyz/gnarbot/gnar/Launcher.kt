@@ -69,6 +69,7 @@ object Launcher {
             .addCustomParser(DurationParser())
             .setOwnerIds(*configuration.admins.toLongArray())
             .addEventListeners(FlightEventAdapter())
+            .configureDefaultHelpCommand { enabled = false }
             .build()
 
         shardManager = ExtendedShardManager.create(credentials.token) {

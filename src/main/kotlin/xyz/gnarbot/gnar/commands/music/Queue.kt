@@ -57,9 +57,9 @@ class Queue : Cog {
                     }
                 }
 
-                manager.discordFMTrack.let {
+                manager.discordFMTrack?.let {
                     field("Radio") {
-                        val member = ctx.guild!!.getMemberById(it!!.requester)
+                        val member = ctx.guild!!.getMemberById(it.requester)
                         buildString {
                             append("Currently streaming music from radio station `${it.station.capitalize()}`")
                             member?.let {

@@ -30,13 +30,24 @@ class Help : Cog {
             appendln()
             val triggerList = listOf(command.name, *command.properties.aliases)
             appendln("**Triggers:** ${triggerList.joinToString(", ")}")
-            appendln("**Usage:** `${ctx.trigger}${command.name} ${command.arguments.joinToString(" ") { it.format(false) }}`")
+            append("**Usage:** `${ctx.trigger}")
+            append(command.name)
+            if (command.arguments.isNotEmpty()) {
+                appendln(" ${command.arguments.joinToString(" ") { it.format(false) }}`")
+            } else {
+                appendln("`")
+            }
             appendln()
             appendln("**Subcommands:**")
 
-            val padEnd = command.subcommands.values.maxBy { it.name.length }?.name?.length ?: 15
-            for (sc in command.subcommands.values) {
-                appendln("`${sc.name.padEnd(padEnd, ' ')}:` ${sc.properties.description}")
+
+            if (command.subcommands.isNotEmpty()) {
+                val padEnd = command.subcommands.values.maxBy { it.name.length }?.name?.length ?: 15
+                for (sc in command.subcommands.values) {
+                    appendln("`${sc.name.padEnd(padEnd, ' ')}:` ${sc.properties.description}")
+                }
+            } else {
+                appendln("*None.*")
             }
         }
 

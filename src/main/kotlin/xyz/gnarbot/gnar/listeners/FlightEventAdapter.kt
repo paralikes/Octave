@@ -54,12 +54,14 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     }
 
     override fun onParseError(ctx: Context, command: CommandFunction, error: Throwable) {
+        error.printStackTrace()
         Sentry.capture(error)
         ctx.send("An error was encountered while parsing the arguments for this command.\n" +
             "The error has been logged. We apologise for any inconvenience caused!")
     }
 
     override fun onCommandError(ctx: Context, command: CommandFunction, error: Throwable) {
+        error.printStackTrace()
         Sentry.capture(error)
         ctx.send("The command encountered an error, which has been logged.\n" +
             "We apologise for any inconvenience caused!")

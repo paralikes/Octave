@@ -9,6 +9,7 @@ import xyz.gnarbot.gnar.entities.framework.CheckVoiceState
 import xyz.gnarbot.gnar.entities.framework.DJ
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.PlaylistUtils
+import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.manager
 import java.util.regex.Pattern
 
@@ -29,7 +30,7 @@ class Remove : MusicCog {
         }
 
         val track : String = when (which) {
-            null -> return ctx.send("You need to specify what to remove.")
+            null -> return ctx.send("You need to specify what to remove. (`first`/`last`/`all`/`1..3`)")
             "first" -> queue.remove() //Remove head
             "last" -> manager.scheduler.removeQueueIndex(queue, queue.size - 1)
             "all" -> {
