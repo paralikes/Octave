@@ -65,7 +65,6 @@ object Launcher {
 
         Sentry.init(configuration.sentryDsn)
         RestAction.setPassContext(false)
-        println(configuration.prefix)
 
         commandClient = CommandClientBuilder()
             .setPrefixProvider(DefaultPrefixProvider())
