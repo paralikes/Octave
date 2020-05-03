@@ -19,7 +19,6 @@ import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.gnarbot.gnar.Bot;
 import xyz.gnarbot.gnar.Launcher;
 import xyz.gnarbot.gnar.db.OptionsRegistry;
 import xyz.gnarbot.gnar.entities.BotCredentials;
@@ -166,7 +165,7 @@ public class PlayerRegistry {
             try {
                 //Guild was long gone, dangling manager,
                 MusicManager musicManager = entry.getValue();
-                if(Bot.getInstance().getShardManager().getGuildById(musicManager.getGuildId()) == null) {
+                if(Launcher.INSTANCE.getShardManager().getGuildById(musicManager.getGuildId()) == null) {
                     iterator.remove();
                     return;
                 }
