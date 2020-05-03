@@ -9,6 +9,7 @@ import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.manager
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.annotations.SubCommand
 import net.dv8tion.jda.api.entities.Member
 import java.time.Duration
@@ -21,7 +22,7 @@ class Cleanup : MusicCog {
     @DJ
     @CheckVoiceState
     @Command(aliases = ["cu"], description = "Clear songs based on a specific user, duplicates, or if a user left")
-    fun cleanup(ctx: Context, member: Member?) {
+    fun cleanup(ctx: Context, @Greedy member: Member?) {
         if (member == null) {
             return DEFAULT_SUBCOMMAND(ctx)
         }

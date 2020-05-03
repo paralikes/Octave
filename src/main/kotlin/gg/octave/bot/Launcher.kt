@@ -11,11 +11,13 @@ import gg.octave.bot.entities.Configuration
 import gg.octave.bot.entities.ExtendedShardManager
 import gg.octave.bot.entities.framework.DefaultPrefixProvider
 import gg.octave.bot.entities.framework.DurationParser
+import gg.octave.bot.entities.framework.ExtendedMemberParser
 import gg.octave.bot.listeners.BotListener
 import gg.octave.bot.listeners.FlightEventAdapter
 import gg.octave.bot.listeners.VoiceListener
 import gg.octave.bot.music.PlayerRegistry
 import gg.octave.bot.utils.DiscordFM
+import gg.octave.bot.utils.extensions.registerAlmostAllParsers
 import io.sentry.Sentry
 import me.devoxin.flight.api.CommandClient
 import me.devoxin.flight.api.CommandClientBuilder
@@ -65,7 +67,8 @@ object Launcher {
 
         commandClient = CommandClientBuilder()
             .setPrefixProvider(DefaultPrefixProvider())
-            .registerDefaultParsers()
+            .registerAlmostAllParsers()
+            .addCustomParser(ExtendedMemberParser())
             .addCustomParser(DurationParser())
             .setOwnerIds(*configuration.admins.toLongArray())
             .addEventListeners(FlightEventAdapter())
