@@ -15,8 +15,8 @@ class BassBoost : MusicCog {
 
     @DJ
     @CheckVoiceState
-    @Command(aliases = ["bb", "bassboost"], description = "Sets the bass boost level of the music playing.")
-    fun boost(ctx: Context, arg: String) {
+    @Command(aliases = ["bb", "boost"], description = "Sets the bass boost level of the music playing.")
+    fun bassboost(ctx: Context, arg: String) {
         val manager = ctx.manager
 
         when (arg) {
