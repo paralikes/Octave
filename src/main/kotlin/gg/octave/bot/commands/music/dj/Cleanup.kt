@@ -37,7 +37,7 @@ class Cleanup : MusicCog {
         ctx.manager.scheduler.queue.removeIf(predicate)
         val newSize = ctx.manager.scheduler.queue.size
 
-        val removed = oldSize - newSize;
+        val removed = oldSize - newSize
         if (removed == 0) {
             return ctx.send("There are no songs to clear.")
         }
@@ -61,7 +61,7 @@ class Cleanup : MusicCog {
 
         ctx.manager.scheduler.queue.removeIf(predicate)
         val newSize = ctx.manager.scheduler.queue.size
-        val removed = oldSize - newSize;
+        val removed = oldSize - newSize
         if (removed == 0) {
             return ctx.send("There are no songs to clear.")
         }
@@ -83,7 +83,7 @@ class Cleanup : MusicCog {
         ctx.manager.scheduler.queue.removeIf(predicate)
         val newSize = ctx.manager.scheduler.queue.size
 
-        val removed = oldSize - newSize;
+        val removed = oldSize - newSize
         if (removed == 0) {
             return ctx.send("There are no duplicate songs to clear.")
         }
@@ -97,7 +97,7 @@ class Cleanup : MusicCog {
         ctx.manager.scheduler.queue.removeIf { PlaylistUtils.toAudioTrack(it).duration > duration.toMillis() }
         val newSize = ctx.manager.scheduler.queue.size
 
-        val removed = oldSize - newSize;
+        val removed = oldSize - newSize
         if (removed == 0) {
             return ctx.send("There are no songs to clear.")
         }
