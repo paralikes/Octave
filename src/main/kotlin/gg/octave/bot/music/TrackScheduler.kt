@@ -1,0 +1,169 @@
+package gg.octave.bot.music
+
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
+import io.sentry.Sentry
+import io.sentry.event.Event
+import io.sentry.event.EventBuilder
+import io.sentry.event.interfaces.StackTraceInterface
+import net.dv8tion.jda.api.EmbedBuilder
+import org.redisson.api.RQueue
+import gg.octave.bot.Launcher
+import gg.octave.bot.commands.music.embedTitle
+import gg.octave.bot.commands.music.embedUri
+import gg.octave.bot.db.OptionsRegistry
+import gg.octave.bot.music.settings.RepeatOption
+import gg.octave.bot.utils.PlaylistUtils
+import gg.octave.bot.utils.extensions.friendlierMessage
+import java.util.*
+
+class TrackScheduler(private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
+    //Base64 encoded.
+    val queue: RQueue<String> = Launcher.db.redisson.getQueue("playerQueue:${manager.guildId}")
+    var repeatOption = RepeatOption.NONE
+    var lastTrack: AudioTrack? = null
+        private set
+
+    /**
+     * Add the next track to queue or play right away if nothing is in the queue.
+     *
+     * @param track The track to play or add to queue.
+     */
+    fun queue(track: AudioTrack) {
+        if (!player.startTrack(track, true)) {
+            queue.offer(PlaylistUtils.toBase64String(track))
+        }
+    }
+
+    /**
+     * Start the next track, stopping the current one if it is playing.
+     */
+    fun nextTrack() {
+        if (queue.isEmpty()) {
+            manager.discordFMTrack?.let {
+                it.nextDiscordFMTrack(manager)
+
+                //This basically forces it to poll the next track immediately, they skipped it.
+                val track = queue.poll()
+                player.startTrack(PlaylistUtils.toAudioTrack(track), false)
+                return
+            }
+
+            manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.guild) }
+            return
+        }
+
+        val track = queue.poll()
+        val decodedTrack = PlaylistUtils.toAudioTrack(track)
+        player.startTrack(decodedTrack, false)
+
+        if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {
+            announceNext(decodedTrack)
+        }
+    }
+
+    override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
+        this.lastTrack = track
+
+        if (endReason.mayStartNext) {
+            when (repeatOption) {
+                RepeatOption.SONG -> {
+                    val newTrack = track.makeClone().also { it.userData = track.userData }
+                    player.startTrack(newTrack, false)
+                }
+                RepeatOption.QUEUE -> {
+                    val newTrack = track.makeClone().also { it.userData = track.userData }
+                    queue.offer(PlaylistUtils.toBase64String(newTrack))
+                    nextTrack()
+                }
+                RepeatOption.NONE -> nextTrack()
+            }
+        }
+    }
+
+    override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long, stackTrace: Array<out StackTraceElement>) {
+        val guild = manager.guild ?: return
+        track.getUserData(TrackContext::class.java)
+            ?.requestedChannel?.let(guild::getTextChannelById)
+            ?.sendMessage("The track ${track.info.embedTitle} is stuck longer than ${thresholdMs}ms threshold.")
+            ?.queue()
+
+        val eventBuilder = EventBuilder().withMessage("AudioTrack stuck longer than ${thresholdMs}ms")
+            .withLevel(Event.Level.ERROR)
+            .withSentryInterface(StackTraceInterface(stackTrace))
+
+        Sentry.capture(eventBuilder)
+
+//        val exc = buildString {
+//            append("AudioTrack (${track.info.identifier}) stuck >=${thresholdMs}ms\n")
+//            for (line in stackTrace) {
+//                val trace = line.toString().split('/').last() // java.base@<version>/<info>
+//                append(trace)
+//                append("\n")
+//            }
+//        }
+
+        nextTrack()
+    }
+
+    override fun onTrackException(player: AudioPlayer, track: AudioTrack, exception: FriendlyException) {
+        if (exception.toString().contains("decoding")) {
+            return
+        }
+
+        Sentry.capture(exception)
+        val channel = track.getUserData(TrackContext::class.java)?.requestedChannel?.let {
+            manager.guild?.getTextChannelById(it)
+        } ?: return
+
+        channel.sendMessage(exception.friendlierMessage()).queue()
+    }
+
+    private fun announceNext(track: AudioTrack) {
+        val channel = manager.announcementChannel ?: return
+        val description = buildString {
+            append("Now playing __**[").append(track.info.embedTitle)
+            append("](").append(track.info.embedUri).append(")**__")
+
+            track.getUserData(TrackContext::class.java)?.requester?.let { manager.guild?.getMemberById(it) }?.let {
+                append(" requested by ")
+                append(it.asMention)
+            }
+
+            append(".")
+        }
+
+        channel.sendMessage(EmbedBuilder().apply {
+            setDescription(description)
+        }.build()).queue()
+    }
+
+    fun shuffle() = (queue as MutableList<*>).shuffle()
+
+    fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int) : String {
+        var index = 0
+        val iterator = queue.iterator()
+        var value = ""
+        while (iterator.hasNext() && index <= indexToRemove) {
+            val currentValue = iterator.next()
+            if (index == indexToRemove) {
+                value = currentValue
+                iterator.remove()
+            }
+
+            index++
+        }
+
+        return value
+    }
+
+
+    companion object {
+        fun getQueueForGuild(guildId: String) : RQueue<String> {
+            return Launcher.db.redisson.getQueue("playerQueue:$guildId")
+        }
+    }
+}
