@@ -11,11 +11,13 @@ import java.util.concurrent.TimeUnit
 class VoteSkip : MusicCog(true, true, true) {
     @Command(description = "Vote to skip the current music track.")
     suspend fun voteskip(ctx: Context) {
+        val manager = ctx.manager
+
         if (ctx.member!!.voiceState!!.isDeafened) {
             return ctx.send("You actually have to be listening to the song to start a vote.")
         }
 
-        if (ctx.manager.isVotingToSkip) {
+        if (manager.isVotingToSkip) {
             return ctx.send("There's already a vote going on.")
         }
 
@@ -33,7 +35,7 @@ class VoteSkip : MusicCog(true, true, true) {
             getDisplayValue(data.music.voteSkipCooldown)
         }
 
-        if (System.currentTimeMillis() - ctx.manager.lastVoteTime < voteSkipCooldown) {
+        if (System.currentTimeMillis() - manager.lastVoteTime < voteSkipCooldown) {
             return ctx.send("You must wait $voteSkipCooldownText before starting a new vote.")
         }
 
@@ -54,12 +56,12 @@ class VoteSkip : MusicCog(true, true, true) {
             }
         }
 
-        if (ctx.manager.player.playingTrack.duration - ctx.manager.player.playingTrack.position <= voteSkipDuration) {
+        if (manager.player.playingTrack.duration - manager.player.playingTrack.position <= voteSkipDuration) {
             return ctx.send("By the time the vote finishes in $voteSkipDurationText, the song will be over.")
         }
 
-        ctx.manager.lastVoteTime = System.currentTimeMillis()
-        ctx.manager.isVotingToSkip = true
+        manager.lastVoteTime = System.currentTimeMillis()
+        manager.isVotingToSkip = true
         val halfPeople = ctx.selfMember!!.voiceState!!.channel!!.members.filterNot { it.user.isBot }.size / 2
 
         val message = ctx.sendAsync {
@@ -94,7 +96,7 @@ class VoteSkip : MusicCog(true, true, true) {
                         buildString {
                             if (skip > halfPeople) {
                                 appendln("The vote has passed! The song has been skipped.")
-                                ctx.manager.scheduler.nextTrack()
+                                manager.scheduler.nextTrack()
                             } else {
                                 appendln("The vote has failed! The song will stay.")
                             }
@@ -103,7 +105,7 @@ class VoteSkip : MusicCog(true, true, true) {
                     addField("Results", "__$skip Skip Votes__", false)
                 }
             }.whenComplete { _, _ ->
-                ctx.manager.isVotingToSkip = false
+                manager.isVotingToSkip = false
             }
     }
 }
