@@ -15,7 +15,7 @@ class Volume : MusicCog {
 
     @DJ
     @CheckVoiceState
-    @Command(aliases = ["v"], description = "Set the volume of the music player.")
+    @Command(aliases = ["v", "vol"], description = "Set the volume of the music player.")
     fun volume(ctx: Context, amount: String?) {
         if (amount.isNullOrEmpty()) {
             val volume = ctx.manager.player.volume.toDouble()
