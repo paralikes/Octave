@@ -37,7 +37,7 @@ class ExtendedShardManager(private val shardManager: ShardManager) : ShardManage
                     // Performance
                     setBulkDeleteSplittingEnabled(false)
                     disableCache(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS))
-                    setMemberCachePolicy(MemberCachePolicy.VOICE.or(MemberCachePolicy.OWNER))
+                    setMemberCachePolicy(MemberCachePolicy.VOICE)
                 }
                 .apply(apply)
                 .build()

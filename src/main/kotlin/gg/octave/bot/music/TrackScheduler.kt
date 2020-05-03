@@ -87,7 +87,8 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     override fun onTrackStuck(player: AudioPlayer, track: AudioTrack, thresholdMs: Long, stackTrace: Array<out StackTraceElement>) {
         val guild = manager.guild ?: return
         track.getUserData(TrackContext::class.java)
-            ?.requestedChannel?.let(guild::getTextChannelById)
+            ?.requestedChannel
+            ?.let(guild::getTextChannelById)
             ?.sendMessage("The track ${track.info.embedTitle} is stuck longer than ${thresholdMs}ms threshold.")
             ?.queue()
 
@@ -128,11 +129,9 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             append("Now playing __**[").append(track.info.embedTitle)
             append("](").append(track.info.embedUri).append(")**__")
 
-            track.getUserData(TrackContext::class.java)?.requester?.let { manager.guild?.getMemberById(it) }?.let {
-                append(" requested by ")
-                append(it.asMention)
-            }
-
+            val reqData = track.getUserData(TrackContext::class.java)
+            append(" requested by ")
+            append(reqData?.requesterMention ?: "Unknown")
             append(".")
         }
 

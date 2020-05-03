@@ -29,25 +29,18 @@ class NowPlaying : MusicCog {
                 val member = ctx.guild?.getMemberById(it.requester)
                 val r = buildString {
                     append("Currently streaming music from radio station `${it.station.capitalize()}`")
-                    member?.let {
-                        append(", requested by ${member.asMention}")
-                    }
-                    append('.')
+                    append(", requested by ${it.requesterMention}.")
                 }
                 addField("Radio", r, false)
             }
             addField(
                 "Requester",
-                track.getUserData(TrackContext::class.java)?.requester?.let {
-                    ctx.guild?.getMemberById(it)?.asMention
-                } ?: "Not Found",
+                track.getUserData(TrackContext::class.java)?.requesterMention ?: "Unknown.",
                 true
             )
             addField(
                 "Request Channel",
-                track.getUserData(TrackContext::class.java)?.requestedChannel?.let {
-                    ctx.guild?.getTextChannelById(it)?.asMention
-                } ?: "Not Found",
+                track.getUserData(TrackContext::class.java)?.channelMention ?: "Unknown.",
                 true
             )
             addBlankField(true)
