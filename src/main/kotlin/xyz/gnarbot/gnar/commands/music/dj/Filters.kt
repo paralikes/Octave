@@ -51,7 +51,7 @@ class Filters : MusicCog {
         ctx.send("Cleared all filters.")
     }
 
-    fun modifyTimescale(ctx: Context, type: String, amount: Double, manager: MusicManager) {
+    private fun modifyTimescale(ctx: Context, type: String, amount: Double, manager: MusicManager) {
         val value = amount.coerceIn(0.1, 3.0)
 
         when (type) {
@@ -64,7 +64,7 @@ class Filters : MusicCog {
         ctx.send("Timescale `${type.toLowerCase()}` set to `$value`")
     }
 
-    fun modifyTremolo(ctx: Context, type: String, amount: Double, manager: MusicManager) {
+    private fun modifyTremolo(ctx: Context, type: String, amount: Double, manager: MusicManager) {
         when (type) {
             "depth" -> {
                 val depth = amount.coerceIn(0.0, 1.0)
@@ -81,7 +81,7 @@ class Filters : MusicCog {
         }
     }
 
-    fun modifyKaraoke(ctx: Context, type: String, amount: Double, manager: MusicManager) {
+    private fun modifyKaraoke(ctx: Context, type: String, amount: Double, manager: MusicManager) {
         when (type) {
             "level" -> {
                 val level = amount.coerceAtLeast(0.0)
