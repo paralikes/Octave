@@ -4,7 +4,7 @@ import gg.octave.bot.Launcher
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
-import me.devoxin.flight.internal.utils.TextSplitter
+import gg.octave.bot.utils.TextSplitter
 import net.dv8tion.jda.api.JDA
 
 class ShardInfoCommand : Cog {
