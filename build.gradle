@@ -13,10 +13,10 @@ plugins {
 }
 
 archivesBaseName = 'Octave'
-group 'xyz.gnarbot'
+group 'gg.octave'
 version '6.1'
 
-mainClassName = 'xyz.gnarbot.gnar.Bot'
+mainClassName = 'gg.octave.bot.Launcher'
 
 sourceCompatibility = 11
 targetCompatibility = 11
