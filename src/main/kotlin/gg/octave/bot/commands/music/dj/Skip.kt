@@ -1,11 +1,11 @@
 package gg.octave.bot.commands.music.dj
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
 import gg.octave.bot.utils.extensions.manager
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
 
 class Skip : MusicCog {
     override fun sameChannel() = true

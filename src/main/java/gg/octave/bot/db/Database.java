@@ -13,10 +13,6 @@ import org.redisson.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
-import gg.octave.bot.db.guilds.GuildData;
-import gg.octave.bot.db.guilds.UserData;
-import gg.octave.bot.db.premium.PremiumGuild;
-import gg.octave.bot.db.premium.PremiumUser;
 
 import javax.annotation.Nullable;
 import java.util.List;

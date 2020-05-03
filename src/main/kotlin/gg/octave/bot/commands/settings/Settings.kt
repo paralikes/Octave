@@ -1,5 +1,11 @@
 package gg.octave.bot.commands.settings
 
+import gg.octave.bot.db.guilds.GuildData
+import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
+import gg.octave.bot.utils.extensions.config
+import gg.octave.bot.utils.extensions.data
+import gg.octave.bot.utils.extensions.premiumGuild
+import gg.octave.bot.utils.toDuration
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.SubCommand
@@ -8,13 +14,6 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
-import gg.octave.bot.db.guilds.GuildData
-import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
-import gg.octave.bot.utils.extensions.config
-import gg.octave.bot.utils.extensions.data
-import gg.octave.bot.utils.extensions.premiumGuild
-import gg.octave.bot.utils.toDuration
-import java.lang.RuntimeException
 import java.time.Duration
 
 class Settings : Cog {

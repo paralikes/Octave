@@ -5,7 +5,13 @@ import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.tools.io.HttpClientTools
-import com.sedmelluq.discord.lavaplayer.track.*
+import com.sedmelluq.discord.lavaplayer.track.AudioItem
+import com.sedmelluq.discord.lavaplayer.track.AudioReference
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
+import gg.octave.bot.music.sources.spotify.loaders.SpotifyAlbumLoader
+import gg.octave.bot.music.sources.spotify.loaders.SpotifyPlaylistLoader
+import gg.octave.bot.music.sources.spotify.loaders.SpotifyTrackLoader
 import org.apache.http.HttpStatus
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
@@ -15,9 +21,6 @@ import org.apache.http.entity.StringEntity
 import org.apache.http.util.EntityUtils
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import gg.octave.bot.music.sources.spotify.loaders.SpotifyAlbumLoader
-import gg.octave.bot.music.sources.spotify.loaders.SpotifyPlaylistLoader
-import gg.octave.bot.music.sources.spotify.loaders.SpotifyTrackLoader
 import java.io.DataInput
 import java.io.DataOutput
 import java.util.*

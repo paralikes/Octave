@@ -1,9 +1,8 @@
 package gg.octave.bot.entities.framework
 
+import gg.octave.bot.utils.toDuration
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.internal.parsers.Parser
-import gg.octave.bot.utils.toDuration
-import java.lang.RuntimeException
 import java.time.Duration
 import java.util.*
 

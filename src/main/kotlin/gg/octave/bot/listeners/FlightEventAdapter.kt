@@ -1,5 +1,16 @@
 package gg.octave.bot.listeners
 
+import gg.octave.bot.Launcher
+import gg.octave.bot.db.guilds.GuildData
+import gg.octave.bot.entities.framework.CheckVoiceState
+import gg.octave.bot.entities.framework.DJ
+import gg.octave.bot.entities.framework.MusicCog
+import gg.octave.bot.utils.extensions.config
+import gg.octave.bot.utils.extensions.data
+import gg.octave.bot.utils.extensions.selfMember
+import gg.octave.bot.utils.getDisplayValue
+import gg.octave.bot.utils.hasAnyRoleId
+import gg.octave.bot.utils.hasAnyRoleNamed
 import io.sentry.Sentry
 import me.devoxin.flight.api.CommandFunction
 import me.devoxin.flight.api.Context
@@ -8,17 +19,6 @@ import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
-import gg.octave.bot.Launcher
-import gg.octave.bot.db.guilds.GuildData
-import gg.octave.bot.entities.framework.CheckVoiceState
-import gg.octave.bot.entities.framework.MusicCog
-import gg.octave.bot.entities.framework.DJ
-import gg.octave.bot.utils.extensions.config
-import gg.octave.bot.utils.extensions.data
-import gg.octave.bot.utils.extensions.selfMember
-import gg.octave.bot.utils.getDisplayValue
-import gg.octave.bot.utils.hasAnyRoleId
-import gg.octave.bot.utils.hasAnyRoleNamed
 import kotlin.reflect.full.hasAnnotation
 
 class FlightEventAdapter : DefaultCommandEventAdapter() {
@@ -101,9 +101,9 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
             if (data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels) {
                 val channels = data.music.channels
-                        .map { ctx.guild!!.getVoiceChannelById(it) }
-                        .map { it!!.name }
-                        .joinToString { ", " }
+                    .map { ctx.guild!!.getVoiceChannelById(it) }
+                    .map { it!!.name }
+                    .joinToString { ", " }
 
                 ctx.send("Music can only be played in: `$channels`, since this server has set it/them as a designated voice channel.")
                 return false
@@ -123,10 +123,10 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
     private fun isIgnored(ctx: Context, data: GuildData, member: Member): Boolean {
         return (data.ignored.users.contains(member.user.id)
-                || data.ignored.channels.contains(ctx.textChannel!!.id)
-                || data.ignored.roles.any { id -> member.roles.any { it.id == id } })
-                && !member.hasPermission(Permission.ADMINISTRATOR)
-                && member.user.idLong !in ctx.config.admins
+            || data.ignored.channels.contains(ctx.textChannel!!.id)
+            || data.ignored.roles.any { id -> member.roles.any { it.id == id } })
+            && !member.hasPermission(Permission.ADMINISTRATOR)
+            && member.user.idLong !in ctx.config.admins
     }
 
 

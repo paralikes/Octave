@@ -1,20 +1,21 @@
 package gg.octave.bot.commands.music
 
 import com.jagrosh.jdautilities.paginator
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.entities.Cog
 import gg.octave.bot.Launcher
 import gg.octave.bot.music.TrackContext
 import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.Utils
-import gg.octave.bot.utils.extensions.*
+import gg.octave.bot.utils.extensions.config
+import gg.octave.bot.utils.extensions.selfMember
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.entities.Cog
 
 class Queue : Cog {
     @Command(aliases = ["q"], description = "Shows the current queue.")
     fun queue(ctx: Context) {
         val manager = Launcher.players.getExisting(ctx.guild)
-                ?: return ctx.send("There's no music player in this guild.\n$PLAY_MESSAGE")
+            ?: return ctx.send("There's no music player in this guild.\n$PLAY_MESSAGE")
 
         val queue = manager.scheduler.queue
         var queueLength = 0L

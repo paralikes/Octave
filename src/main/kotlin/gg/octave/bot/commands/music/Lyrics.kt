@@ -1,23 +1,23 @@
 package gg.octave.bot.commands.music
 
 import com.jagrosh.jdautilities.paginator
+import gg.octave.bot.utils.RequestUtil
+import gg.octave.bot.utils.extensions.launcher
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
 import me.devoxin.flight.internal.utils.TextSplitter
-import gg.octave.bot.utils.RequestUtil
-import gg.octave.bot.utils.extensions.launcher
 import java.net.URLEncoder
 
 class Lyrics : Cog {
     @Command(description = "Shows the lyrics of the current song")
     fun lyrics(ctx: Context) {
         val manager = ctx.launcher.players.getExisting(ctx.guild)
-                ?: return ctx.send("There's no player to be seen here.")
+            ?: return ctx.send("There's no player to be seen here.")
 
         val audioTrack = manager.player.playingTrack
-                ?: return ctx.send("There's no song playing currently.")
+            ?: return ctx.send("There's no song playing currently.")
 
         val title = audioTrack.info.title
         sendLyricsFor(ctx, title)

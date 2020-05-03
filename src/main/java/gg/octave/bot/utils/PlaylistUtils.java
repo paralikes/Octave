@@ -6,9 +6,9 @@ import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
+import gg.octave.bot.Launcher;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import gg.octave.bot.Launcher;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -20,7 +20,7 @@ public class PlaylistUtils {
     public static BasicAudioPlaylist decodePlaylist(List<String> encodedTracks, String name) {
         List<AudioTrack> tracks = new CopyOnWriteArrayList<>();
 
-        for(String encodedTrack : encodedTracks)
+        for (String encodedTrack : encodedTracks)
             tracks.add(toAudioTrack(encodedTrack));
 
         return new BasicAudioPlaylist(name, tracks, tracks.get(0), false);

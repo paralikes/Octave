@@ -2,11 +2,6 @@ package gg.octave.bot.commands.music.search
 
 import com.jagrosh.jdautilities.menu.Selector
 import com.jagrosh.jdautilities.menu.SelectorBuilder
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.annotations.Greedy
-import me.devoxin.flight.api.entities.Cog
-import net.dv8tion.jda.api.EmbedBuilder
 import gg.octave.bot.Launcher
 import gg.octave.bot.listeners.FlightEventAdapter
 import gg.octave.bot.music.MusicLimitException
@@ -18,6 +13,11 @@ import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.selfMember
 import gg.octave.bot.utils.extensions.voiceChannel
 import gg.octave.bot.utils.getDisplayValue
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
+import me.devoxin.flight.api.entities.Cog
+import net.dv8tion.jda.api.EmbedBuilder
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
@@ -77,7 +77,7 @@ class Play : Cog {
         }
     }
 
-    private fun prompt(ctx: Context, manager: MusicManager?) : CompletableFuture<Void> {
+    private fun prompt(ctx: Context, manager: MusicManager?): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
 
         val oldQueue = TrackScheduler.getQueueForGuild(ctx.guild!!.id)
@@ -176,7 +176,7 @@ class Play : Cog {
 
             manager.lastPlayVoteTime = System.currentTimeMillis()
             manager.isVotingToPlay = true
-            val halfPeople = ctx.selfMember!!.voiceState!!.channel!!.members.filter { !it.user.isBot  }.size / 2
+            val halfPeople = ctx.selfMember!!.voiceState!!.channel!!.members.filter { !it.user.isBot }.size / 2
 
             ctx.messageChannel.sendMessage(EmbedBuilder().apply {
                 setTitle("Vote Play")

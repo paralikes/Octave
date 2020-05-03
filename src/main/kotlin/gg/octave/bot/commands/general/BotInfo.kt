@@ -1,12 +1,12 @@
 package gg.octave.bot.commands.general
 
 import com.sun.management.OperatingSystemMXBean
+import gg.octave.bot.Launcher
+import gg.octave.bot.utils.Capacity
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.JDAInfo
-import gg.octave.bot.Launcher
-import gg.octave.bot.utils.Capacity
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 

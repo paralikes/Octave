@@ -1,9 +1,5 @@
 package gg.octave.bot.commands.music.dj
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.annotations.SubCommand
-import net.dv8tion.jda.api.entities.Member
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
@@ -11,6 +7,10 @@ import gg.octave.bot.music.TrackContext
 import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.manager
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.SubCommand
+import net.dv8tion.jda.api.entities.Member
 import java.time.Duration
 
 class Cleanup : MusicCog {
@@ -53,7 +53,7 @@ class Cleanup : MusicCog {
             val track = PlaylistUtils.toAudioTrack(it)
 
             val req = ctx.guild!!.getMemberById(track.getUserData(TrackContext::class.java)!!.requester)
-                    ?: return@check true
+                ?: return@check true
 
             return@check req.voiceState?.channel?.idLong != ctx.guild!!.selfMember.voiceState?.channel?.idLong
         }

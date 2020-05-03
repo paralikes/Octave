@@ -6,20 +6,22 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
+import gg.octave.bot.Launcher
+import gg.octave.bot.commands.music.embedTitle
+import gg.octave.bot.commands.music.embedUri
+import gg.octave.bot.music.filters.DSPFilter
+import gg.octave.bot.music.sources.caching.CachingSourceManager
+import gg.octave.bot.utils.extensions.data
+import gg.octave.bot.utils.extensions.friendlierMessage
+import gg.octave.bot.utils.extensions.premiumGuild
+import gg.octave.bot.utils.extensions.voiceChannel
+import gg.octave.bot.utils.getDisplayValue
 import me.devoxin.flight.api.Context
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
-import gg.octave.bot.Launcher
-import gg.octave.bot.commands.music.embedTitle
-import gg.octave.bot.commands.music.embedUri
-import gg.octave.bot.db.OptionsRegistry
-import gg.octave.bot.music.filters.DSPFilter
-import gg.octave.bot.music.sources.caching.CachingSourceManager
-import gg.octave.bot.utils.extensions.*
-import gg.octave.bot.utils.getDisplayValue
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
@@ -76,9 +78,9 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
     val currentRequestChannel: TextChannel?
         get() {
             return (player.playingTrack ?: scheduler.lastTrack)
-                    ?.getUserData(TrackContext::class.java)
-                    ?.requestedChannel
-                    ?.let { it -> guild?.getTextChannelById(it) }
+                ?.getUserData(TrackContext::class.java)
+                ?.requestedChannel
+                ?.let { it -> guild?.getTextChannelById(it) }
         }
 
     val announcementChannel: TextChannel?
@@ -112,8 +114,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 return false
             }
             channel.userLimit != 0
-                    && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
-                    && channel.members.size >= channel.userLimit -> {
+                && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
+                && channel.members.size >= channel.userLimit -> {
                 ctx.send("The bot can't join due to the user limit.")
                 playerRegistry.destroy(guild)
                 return false

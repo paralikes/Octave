@@ -1,11 +1,11 @@
 package gg.octave.bot.commands.music
 
+import gg.octave.bot.entities.framework.MusicCog
+import gg.octave.bot.utils.Utils
+import gg.octave.bot.utils.extensions.manager
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import net.dv8tion.jda.api.EmbedBuilder
-import gg.octave.bot.utils.Utils
-import gg.octave.bot.entities.framework.MusicCog
-import gg.octave.bot.utils.extensions.manager
 
 class DMNowPlaying : MusicCog {
     override fun requirePlayingTrack() = true

@@ -1,15 +1,14 @@
 package gg.octave.bot.commands.general
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.entities.Cog
 import gg.octave.bot.db.OptionsRegistry
 import gg.octave.bot.db.PremiumKey
 import gg.octave.bot.db.Redeemer
 import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.db
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.entities.Cog
 import java.awt.Color
-import java.util.*
 
 class Redeem : Cog {
     @Command(description = "Redeems a premium key.")

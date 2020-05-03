@@ -1,5 +1,11 @@
 package gg.octave.bot.commands.general
 
+import gg.octave.bot.Launcher
+import gg.octave.bot.db.premium.PremiumGuild
+import gg.octave.bot.db.premium.PremiumUser
+import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
+import gg.octave.bot.utils.extensions.db
+import gg.octave.bot.utils.extensions.shardManager
 import io.sentry.Sentry
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
@@ -9,12 +15,6 @@ import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
-import gg.octave.bot.Launcher
-import gg.octave.bot.db.premium.PremiumGuild
-import gg.octave.bot.db.premium.PremiumUser
-import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
-import gg.octave.bot.utils.extensions.db
-import gg.octave.bot.utils.extensions.shardManager
 import java.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
@@ -61,7 +61,7 @@ class Patron : Cog {
                     ?: return@thenAccept ctx.send(
                         "Couldn't find your pledge.\n" +
                             "[Re-link your account](https://support.patreon.com/hc/en-us/articles/212052266-Get-my-Discord-role) and try again."
-                        )
+                    )
 
                 if (pledge.isDeclined || pledge.pledgeCents <= 0) {
                     return@thenAccept ctx.send("It looks like your pledge was declined, or your pledge is too low!\n" +

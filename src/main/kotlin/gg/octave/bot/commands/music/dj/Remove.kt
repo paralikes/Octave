@@ -1,16 +1,15 @@
 package gg.octave.bot.commands.music.dj
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.annotations.Greedy
 import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
 import gg.octave.bot.utils.PlaylistUtils
-import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.manager
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
 import java.util.regex.Pattern
 
 class Remove : MusicCog {
@@ -29,7 +28,7 @@ class Remove : MusicCog {
             return ctx.send("The queue is empty.")
         }
 
-        val track : String = when (which) {
+        val track: String = when (which) {
             null -> return ctx.send("You need to specify what to remove. (`first`/`last`/`all`/`1..3`)")
             "first" -> queue.remove() //Remove head
             "last" -> manager.scheduler.removeQueueIndex(queue, queue.size - 1)
@@ -48,13 +47,13 @@ class Remove : MusicCog {
                     val start = matcher.group(1).let {
                         if (it == null) 1
                         else it.toIntOrNull()?.coerceAtLeast(1)
-                                ?: return ctx.send("Invalid start of range")
+                            ?: return ctx.send("Invalid start of range")
                     }
 
                     val end = matcher.group(2).let {
                         if (it == null) queue.size
                         else it.toIntOrNull()?.coerceAtMost(queue.size)
-                                ?: return ctx.send("Invalid end of range")
+                            ?: return ctx.send("Invalid end of range")
                     }
 
                     for (i in end downTo start) {
@@ -65,8 +64,8 @@ class Remove : MusicCog {
                 }
 
                 val num = which.toIntOrNull()
-                        ?.takeIf { it >= 1 && it <= queue.size }
-                        ?: return ctx.send("That is not a valid track number. Try `1`, `1..${queue.size}`, `first`, or `last`.")
+                    ?.takeIf { it >= 1 && it <= queue.size }
+                    ?: return ctx.send("That is not a valid track number. Try `1`, `1..${queue.size}`, `first`, or `last`.")
 
                 manager.scheduler.removeQueueIndex(queue, num - 1)
             }

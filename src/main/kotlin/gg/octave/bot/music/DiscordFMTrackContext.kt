@@ -7,9 +7,9 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import gg.octave.bot.Launcher
 
 class DiscordFMTrackContext(
-        val station: String,
-        requester: Long,
-        requestedChannel: Long
+    val station: String,
+    requester: Long,
+    requestedChannel: Long
 ) : TrackContext(requester, requestedChannel) {
     companion object {
         @JvmStatic

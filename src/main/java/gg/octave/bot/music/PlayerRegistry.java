@@ -15,6 +15,7 @@ import com.sedmelluq.lava.extensions.youtuberotator.planner.AbstractRoutePlanner
 import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.IpBlock;
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block;
+import gg.octave.bot.Launcher;
 import gg.octave.bot.db.OptionsRegistry;
 import gg.octave.bot.entities.BotCredentials;
 import gg.octave.bot.entities.Configuration;
@@ -24,12 +25,6 @@ import io.sentry.Sentry;
 import net.dv8tion.jda.api.entities.Guild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import gg.octave.bot.Launcher;
-import gg.octave.bot.db.OptionsRegistry;
-import gg.octave.bot.entities.BotCredentials;
-import gg.octave.bot.entities.Configuration;
-import gg.octave.bot.music.sources.caching.CachingSourceManager;
-import gg.octave.bot.music.sources.spotify.SpotifyAudioSourceManager;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -170,7 +165,7 @@ public class PlayerRegistry {
             try {
                 //Guild was long gone, dangling manager,
                 MusicManager musicManager = entry.getValue();
-                if(Launcher.INSTANCE.getShardManager().getGuildById(musicManager.getGuildId()) == null) {
+                if (Launcher.INSTANCE.getShardManager().getGuildById(musicManager.getGuildId()) == null) {
                     iterator.remove();
                     return;
                 }

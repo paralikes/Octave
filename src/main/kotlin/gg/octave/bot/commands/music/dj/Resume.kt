@@ -1,13 +1,13 @@
 package gg.octave.bot.commands.music.dj
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.entities.Cog
 import gg.octave.bot.commands.music.PLAY_MESSAGE
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.utils.extensions.manager
 import gg.octave.bot.utils.extensions.voiceChannel
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.entities.Cog
 
 class Resume : Cog {
     @DJ
@@ -17,7 +17,7 @@ class Resume : Cog {
         val manager = ctx.manager
         val scheduler = manager.scheduler
 
-        if(ctx.voiceChannel == null) {
+        if (ctx.voiceChannel == null) {
             return ctx.send("You need to be in a voice channel.")
         }
 

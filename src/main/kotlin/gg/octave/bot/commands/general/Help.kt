@@ -1,11 +1,11 @@
 package gg.octave.bot.commands.general
 
+import gg.octave.bot.utils.extensions.config
+import gg.octave.bot.utils.extensions.data
 import me.devoxin.flight.api.CommandFunction
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
-import gg.octave.bot.utils.extensions.config
-import gg.octave.bot.utils.extensions.data
 
 class Help : Cog {
     private val categoryAlias = mapOf("Search" to "Music", "Dj" to "Music")

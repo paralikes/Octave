@@ -137,7 +137,7 @@ class Selector(
                                 true
                             } else {
                                 val value = content.toIntOrNull() ?: return@predicate false
-                                if(value == 0)
+                                if (value == 0)
                                     return@predicate false //Else we'll hit out of bounds, lol.
 
                                 value - 1 in options.indices

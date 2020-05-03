@@ -1,11 +1,14 @@
 package gg.octave.bot.commands.music
 
+import gg.octave.bot.entities.framework.MusicCog
+import gg.octave.bot.utils.extensions.config
+import gg.octave.bot.utils.extensions.data
+import gg.octave.bot.utils.extensions.manager
+import gg.octave.bot.utils.extensions.selfMember
+import gg.octave.bot.utils.getDisplayValue
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import net.dv8tion.jda.api.EmbedBuilder
-import gg.octave.bot.entities.framework.MusicCog
-import gg.octave.bot.utils.extensions.*
-import gg.octave.bot.utils.getDisplayValue
 import java.util.concurrent.TimeUnit
 
 class VoteSkip : MusicCog {
@@ -76,7 +79,7 @@ class VoteSkip : MusicCog {
                     append(" has voted to **skip** the current track!")
                     append(" React with :thumbsup:\n")
                     append("If at least **${halfPeople + 1}** vote(s) from listeners are obtained " +
-                            "within **$voteSkipDurationText**, the song will be skipped!")
+                        "within **$voteSkipDurationText**, the song will be skipped!")
                 }
             )
         }

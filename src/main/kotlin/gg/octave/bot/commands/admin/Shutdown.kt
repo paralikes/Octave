@@ -1,9 +1,9 @@
 package gg.octave.bot.commands.admin
 
+import gg.octave.bot.Launcher
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
-import gg.octave.bot.Launcher
 import kotlin.system.exitProcess
 
 class Shutdown : Cog {

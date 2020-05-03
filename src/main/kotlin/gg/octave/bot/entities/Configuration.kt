@@ -1,9 +1,9 @@
 package gg.octave.bot.entities
 
 import com.google.common.reflect.TypeToken
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import gg.octave.bot.utils.get
 import gg.octave.bot.utils.toDuration
+import ninja.leaping.configurate.hocon.HoconConfigurationLoader
 import java.io.File
 import java.time.Duration
 

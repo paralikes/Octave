@@ -1,8 +1,8 @@
 package gg.octave.bot.apis.statsposter
 
-import org.slf4j.LoggerFactory
 import gg.octave.bot.Launcher
 import gg.octave.bot.apis.statsposter.websites.*
+import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 

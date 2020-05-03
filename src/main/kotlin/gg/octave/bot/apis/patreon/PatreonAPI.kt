@@ -1,11 +1,11 @@
 package gg.octave.bot.apis.patreon
 
+import gg.octave.bot.Launcher
+import gg.octave.bot.utils.RequestUtil
 import okhttp3.HttpUrl
 import okhttp3.Request
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import gg.octave.bot.Launcher
-import gg.octave.bot.utils.RequestUtil
 import java.net.URI
 import java.net.URLDecoder
 import java.util.concurrent.CompletableFuture
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 
 class PatreonAPI(var accessToken: String?) {
-// (val clientId: String, val clientSecret: String, val refreshToken: String) {
+    // (val clientId: String, val clientSecret: String, val refreshToken: String) {
     private val scheduler = Executors.newSingleThreadScheduledExecutor()
     //var accessToken: String = ""
 

@@ -1,6 +1,9 @@
 package gg.octave.bot.entities
 
 import com.sedmelluq.discord.lavaplayer.jdaudp.NativeAudioSendFactory
+import gg.octave.bot.Launcher
+import gg.octave.bot.entities.sharding.BucketedController
+import gg.octave.bot.utils.IntentHelper
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.entities.PrivateChannel
 import net.dv8tion.jda.api.requests.RestAction
@@ -8,12 +11,9 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import gg.octave.bot.Launcher
-import gg.octave.bot.entities.sharding.BucketedController
-import gg.octave.bot.utils.IntentHelper
 import java.util.*
 
-class ExtendedShardManager(private val shardManager: ShardManager): ShardManager by shardManager {
+class ExtendedShardManager(private val shardManager: ShardManager) : ShardManager by shardManager {
     fun openPrivateChannel(userId: Long): RestAction<PrivateChannel> {
         return shards.first { it != null }.openPrivateChannelById(userId)
     }

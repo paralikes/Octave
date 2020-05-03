@@ -1,15 +1,15 @@
 package gg.octave.bot.commands.admin
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.annotations.Greedy
-import me.devoxin.flight.api.annotations.SubCommand
-import me.devoxin.flight.api.entities.Cog
 import gg.octave.bot.db.PremiumKey
 import gg.octave.bot.db.Redeemer
 import gg.octave.bot.utils.Utils
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.db
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
+import me.devoxin.flight.api.annotations.SubCommand
+import me.devoxin.flight.api.entities.Cog
 import java.util.*
 
 class Keys : Cog {

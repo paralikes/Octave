@@ -1,11 +1,11 @@
 package gg.octave.bot.commands.admin
 
+import gg.octave.bot.Launcher
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
 import me.devoxin.flight.internal.utils.TextSplitter
 import net.dv8tion.jda.api.JDA
-import gg.octave.bot.Launcher
 
 class ShardInfoCommand : Cog {
     @Command(aliases = ["shards", "shard"], description = "View shard information.", developerOnly = true)

@@ -39,6 +39,6 @@ class PaginatorBuilder(waiter: EventWaiter) : MenuBuilder<PaginatorBuilder>(wait
 
     override fun build(): Paginator {
         return Paginator(waiter, user, title, description, color, fields, emptyMessage,
-                if (items.isEmpty()) emptyList() else Lists.partition(items, itemsPerPage), timeout, unit, finally)
+            if (items.isEmpty()) emptyList() else Lists.partition(items, itemsPerPage), timeout, unit, finally)
     }
 }

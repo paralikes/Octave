@@ -1,10 +1,6 @@
 package gg.octave.bot.commands.music.search
 
 import com.jagrosh.jdautilities.selector
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.annotations.Greedy
-import me.devoxin.flight.api.entities.Cog
 import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
@@ -13,6 +9,10 @@ import gg.octave.bot.utils.Utils
 import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.selfMember
 import gg.octave.bot.utils.extensions.voiceChannel
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
+import me.devoxin.flight.api.entities.Cog
 import java.awt.Color
 
 class Youtube : Cog {

@@ -3,21 +3,20 @@ package gg.octave.bot.utils
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import java.io.IOException
-import kotlin.collections.HashMap
 
 class DiscordFM {
     fun getRandomSong(library: String): String? {
         return cache[library]?.random()?.trim { it <= ' ' }
-                //?: "https://www.youtube.com/watch?v=D7npse9n-Yw"
+        //?: "https://www.youtube.com/watch?v=D7npse9n-Yw"
     }
 
     companion object {
         private val log = LoggerFactory.getLogger(DiscordFM::class.java)
         val LIBRARIES = arrayOf(
-                "electro hub", "chill corner", "korean madness",
-                "japanese lounge", "classical", "retro renegade",
-                "metal mix", "hip hop", "electro swing", "christmas", "halloween",
-                "purely pop", "rock n roll", "coffee house jazz", "funk")
+            "electro hub", "chill corner", "korean madness",
+            "japanese lounge", "classical", "retro renegade",
+            "metal mix", "hip hop", "electro swing", "christmas", "halloween",
+            "purely pop", "rock n roll", "coffee house jazz", "funk")
         private val cache = HashMap<String, List<String>>(LIBRARIES.size)
     }
 

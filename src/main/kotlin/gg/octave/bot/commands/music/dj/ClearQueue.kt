@@ -1,11 +1,11 @@
 package gg.octave.bot.commands.music.dj
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
-import me.devoxin.flight.api.entities.Cog
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.utils.extensions.launcher
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.entities.Cog
 
 class ClearQueue : Cog {
     @DJ

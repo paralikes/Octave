@@ -1,19 +1,16 @@
 package gg.octave.bot.commands.settings
 
+import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
+import gg.octave.bot.utils.extensions.data
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
-import me.devoxin.flight.internal.parsers.MemberParser
-import me.devoxin.flight.internal.parsers.RoleParser
-import me.devoxin.flight.internal.parsers.TextChannelParser
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
-import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
-import gg.octave.bot.utils.extensions.data
 
 class Ignore : Cog {
     @Command(description = "Configure user/channel/role ignoring.")
@@ -67,7 +64,7 @@ class Ignore : Cog {
         data.save()
     }
 
-    fun <T: IMentionable> mapper(type: String, data: Set<String>, transform: (String) -> T?): String {
+    fun <T : IMentionable> mapper(type: String, data: Set<String>, transform: (String) -> T?): String {
         if (data.isEmpty()) {
             return "No $type are ignored."
         }

@@ -5,10 +5,10 @@ import com.sedmelluq.discord.lavaplayer.track.AudioItem
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
+import gg.octave.bot.music.sources.spotify.SpotifyAudioSourceManager
 import org.apache.http.HttpStatus
 import org.apache.http.util.EntityUtils
 import org.json.JSONObject
-import gg.octave.bot.music.sources.spotify.SpotifyAudioSourceManager
 import java.util.concurrent.CompletableFuture
 import java.util.regex.Matcher
 
@@ -84,7 +84,7 @@ class SpotifyPlaylistLoader : Loader {
     }
 
     companion object {
-//        private val PLAYLIST_PATTERN = "^https?://(?:open\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+)".toPattern()
+        //        private val PLAYLIST_PATTERN = "^https?://(?:open\\.)?spotify\\.com/(?:user/[a-zA-Z0-9_]+/)?playlist/([a-zA-Z0-9]+)".toPattern()
         private const val URL_PATTERN = "https?://(?:open\\.)?spotify\\.com(?:/user/[a-zA-Z0-9_]+)?"
         private val PLAYLIST_PATTERN = "^(?:$URL_PATTERN|spotify)([/:])playlist\\1([a-zA-Z0-9]+)".toPattern()
     }

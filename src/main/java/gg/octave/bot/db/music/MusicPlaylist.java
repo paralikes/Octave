@@ -3,7 +3,6 @@ package gg.octave.bot.db.music;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
-import gg.octave.bot.utils.PlaylistUtils;
 import gg.octave.bot.db.ManagedObject;
 import gg.octave.bot.utils.PlaylistUtils;
 

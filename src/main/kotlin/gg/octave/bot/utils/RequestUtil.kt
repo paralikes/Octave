@@ -43,7 +43,7 @@ object RequestUtil {
         fun submit(): CompletableFuture<Response> {
             val future = CompletableFuture<Response>()
 
-            httpClient.newCall(req).enqueue(object: Callback {
+            httpClient.newCall(req).enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
                     future.completeExceptionally(e)
                 }

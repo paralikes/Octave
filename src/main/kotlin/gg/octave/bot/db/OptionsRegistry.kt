@@ -1,10 +1,10 @@
 package gg.octave.bot.db
 
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
 import gg.octave.bot.Launcher
 import gg.octave.bot.db.guilds.GuildData
 import gg.octave.bot.db.guilds.UserData
+import net.dv8tion.jda.api.entities.Guild
+import net.dv8tion.jda.api.entities.User
 
 object OptionsRegistry {
     fun ofGuild(guild: Guild) = ofGuild(guild.id)

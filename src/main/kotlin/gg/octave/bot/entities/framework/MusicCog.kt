@@ -1,11 +1,11 @@
 package gg.octave.bot.entities.framework
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.entities.Cog
 import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.PLAY_MESSAGE
 import gg.octave.bot.utils.extensions.selfMember
 import gg.octave.bot.utils.extensions.voiceChannel
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.entities.Cog
 
 interface MusicCog : Cog {
     fun sameChannel() = false

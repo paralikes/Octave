@@ -1,5 +1,7 @@
 package gg.octave.bot.listeners
 
+import gg.octave.bot.Launcher
+import gg.octave.bot.db.OptionsRegistry
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.*
@@ -8,8 +10,6 @@ import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import org.slf4j.LoggerFactory
-import gg.octave.bot.Launcher
-import gg.octave.bot.db.OptionsRegistry
 import java.awt.Color
 import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
@@ -45,16 +45,16 @@ class BotListener : EventListener {
 
         //Greet message start.
         val embedBuilder = EmbedBuilder()
-                .setThumbnail(event.jda.selfUser.effectiveAvatarUrl)
-                .setColor(Color.BLUE)
-                .setDescription("Welcome to Octave! The highest quality Discord music bot!\n" +
-                        "Please check the links below to get help, and use `_help` to get started!")
-                .addField("Important Links",
-                        "[Support Server](https://discord.gg/musicbot)\n" +
-                                "[Website](https://octave.gg) \n" +
-                                "[Invite Link](https://invite.octave.gg)\n" +
-                                "[Patreon](https://patreon.com/octave)", true)
-                .setFooter("Thanks for using Octave!")
+            .setThumbnail(event.jda.selfUser.effectiveAvatarUrl)
+            .setColor(Color.BLUE)
+            .setDescription("Welcome to Octave! The highest quality Discord music bot!\n" +
+                "Please check the links below to get help, and use `_help` to get started!")
+            .addField("Important Links",
+                "[Support Server](https://discord.gg/musicbot)\n" +
+                    "[Website](https://octave.gg) \n" +
+                    "[Invite Link](https://invite.octave.gg)\n" +
+                    "[Patreon](https://patreon.com/octave)", true)
+            .setFooter("Thanks for using Octave!")
 
 
         //Find the first channel we can talk to.
@@ -104,7 +104,8 @@ class BotListener : EventListener {
                 event.jda.shardInfo.shardId, event.serviceCloseFrame?.closeCode ?: -1, event.closeCode)
         } else {
             log.info("JDA {} disconnected. Code: {} {}",
-                event.jda.shardInfo.shardId, event.serviceCloseFrame?.closeCode ?: -1, event.clientCloseFrame?.closeReason ?: "")
+                event.jda.shardInfo.shardId, event.serviceCloseFrame?.closeCode
+                ?: -1, event.clientCloseFrame?.closeReason ?: "")
         }
     }
 

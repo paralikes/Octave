@@ -3,12 +3,6 @@ package gg.octave.bot
 import com.jagrosh.jdautilities.waiter.EventWaiter
 import com.sedmelluq.discord.lavaplayer.tools.PlayerLibrary
 import com.timgroup.statsd.NonBlockingStatsDClient
-import io.sentry.Sentry
-import me.devoxin.flight.api.CommandClient
-import me.devoxin.flight.api.CommandClientBuilder
-import net.dv8tion.jda.api.JDAInfo
-import net.dv8tion.jda.api.requests.RestAction
-import org.slf4j.LoggerFactory
 import gg.octave.bot.apis.patreon.PatreonAPI
 import gg.octave.bot.apis.statsposter.StatsPoster
 import gg.octave.bot.db.Database
@@ -22,6 +16,12 @@ import gg.octave.bot.listeners.FlightEventAdapter
 import gg.octave.bot.listeners.VoiceListener
 import gg.octave.bot.music.PlayerRegistry
 import gg.octave.bot.utils.DiscordFM
+import io.sentry.Sentry
+import me.devoxin.flight.api.CommandClient
+import me.devoxin.flight.api.CommandClientBuilder
+import net.dv8tion.jda.api.JDAInfo
+import net.dv8tion.jda.api.requests.RestAction
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit

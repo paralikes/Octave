@@ -5,12 +5,6 @@ import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason
-import io.sentry.Sentry
-import io.sentry.event.Event
-import io.sentry.event.EventBuilder
-import io.sentry.event.interfaces.StackTraceInterface
-import net.dv8tion.jda.api.EmbedBuilder
-import org.redisson.api.RQueue
 import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
@@ -18,6 +12,12 @@ import gg.octave.bot.db.OptionsRegistry
 import gg.octave.bot.music.settings.RepeatOption
 import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.friendlierMessage
+import io.sentry.Sentry
+import io.sentry.event.Event
+import io.sentry.event.EventBuilder
+import io.sentry.event.interfaces.StackTraceInterface
+import net.dv8tion.jda.api.EmbedBuilder
+import org.redisson.api.RQueue
 import java.util.*
 
 class TrackScheduler(private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
@@ -143,7 +143,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
 
-    fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int) : String {
+    fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int): String {
         var index = 0
         val iterator = queue.iterator()
         var value = ""
@@ -162,7 +162,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
 
     companion object {
-        fun getQueueForGuild(guildId: String) : RQueue<String> {
+        fun getQueueForGuild(guildId: String): RQueue<String> {
             return Launcher.db.redisson.getQueue("playerQueue:$guildId")
         }
     }

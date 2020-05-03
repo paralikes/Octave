@@ -4,7 +4,6 @@ import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.Permission
-import java.util.function.Consumer
 
 class General : Cog {
     @Command(aliases = ["invitebot"], description = "Get a link to invite the bot to your server.")

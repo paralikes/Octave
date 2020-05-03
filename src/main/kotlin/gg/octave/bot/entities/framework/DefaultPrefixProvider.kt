@@ -1,9 +1,9 @@
 package gg.octave.bot.entities.framework
 
-import me.devoxin.flight.api.entities.PrefixProvider
-import net.dv8tion.jda.api.entities.Message
 import gg.octave.bot.Launcher
 import gg.octave.bot.db.OptionsRegistry
+import me.devoxin.flight.api.entities.PrefixProvider
+import net.dv8tion.jda.api.entities.Message
 
 class DefaultPrefixProvider : PrefixProvider {
     override fun provide(message: Message): List<String> {

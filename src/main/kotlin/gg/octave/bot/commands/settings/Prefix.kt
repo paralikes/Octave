@@ -1,10 +1,10 @@
 package gg.octave.bot.commands.settings
 
+import gg.octave.bot.Launcher
+import gg.octave.bot.utils.extensions.data
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
-import gg.octave.bot.Launcher
-import gg.octave.bot.utils.extensions.data
 
 class Prefix : Cog {
     @Command(description = "Sets the prefix for the server. Omit to reset.")

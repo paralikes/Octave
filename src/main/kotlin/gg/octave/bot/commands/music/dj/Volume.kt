@@ -1,12 +1,12 @@
 package gg.octave.bot.commands.music.dj
 
-import me.devoxin.flight.api.Context
-import me.devoxin.flight.api.annotations.Command
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.manager
+import me.devoxin.flight.api.Context
+import me.devoxin.flight.api.annotations.Command
 
 class Volume : MusicCog {
     override fun requirePlayer() = true
@@ -17,7 +17,7 @@ class Volume : MusicCog {
     @CheckVoiceState
     @Command(aliases = ["v"], description = "Set the volume of the music player.")
     fun volume(ctx: Context, amount: String?) {
-        if(amount.isNullOrEmpty()) {
+        if (amount.isNullOrEmpty()) {
             val volume = ctx.manager.player.volume.toDouble()
             val max = volume.coerceIn(0.0, 100.0)
 
