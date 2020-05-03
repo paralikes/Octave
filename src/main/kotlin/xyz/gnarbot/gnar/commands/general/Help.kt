@@ -4,10 +4,14 @@ import me.devoxin.flight.api.CommandFunction
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
+import xyz.gnarbot.gnar.utils.extensions.config
+import xyz.gnarbot.gnar.utils.extensions.data
 
 class Help : Cog {
+    private val categoryAlias = mapOf("Search" to "Music", "Dj" to "Music")
+
     @Command
-    suspend fun help(ctx: Context, command: String?) {
+    fun help(ctx: Context, command: String?) {
         if (command == null) {
             return sendCommands(ctx)
         }
@@ -20,8 +24,24 @@ class Help : Cog {
         }
     }
 
-    suspend fun sendCommands(ctx: Context) {
+    fun sendCommands(ctx: Context) {
+        val guildTrigger = ctx.data.command.prefix ?: ctx.config.prefix
+        val categories = ctx.commandClient.commands.values
+            .groupBy { categoryAlias[it.category] ?: it.category }
+            .filter { ctx.author.idLong in ctx.commandClient.ownerIds || it.key != "Admin" }
 
+        ctx.send {
+            setColor(0x9571D3)
+            setTitle("Bot Commands")
+            setDescription("The prefix of the bot on this server is `$guildTrigger`")
+            for ((key, commands) in categories) {
+                val fieldName = "$key — ${commands.size}"
+                val commandList = commands.joinToString("`, `", prefix = "`", postfix = "`") { it.name }
+                addField(fieldName, commandList, false)
+            }
+            setFooter("For more information try ${guildTrigger}help (command) " +
+                "or ${guildTrigger}help (category), ex: ${guildTrigger}help bassboost or ${guildTrigger}help play")
+        }
     }
 
     fun sendCommandHelp(ctx: Context, command: CommandFunction) {
@@ -58,7 +78,7 @@ class Help : Cog {
         }
     }
 
-    suspend fun sendCategoryCommands(ctx: Context, commands: List<CommandFunction>) {
+    fun sendCategoryCommands(ctx: Context, commands: List<CommandFunction>) {
 
     }
 }

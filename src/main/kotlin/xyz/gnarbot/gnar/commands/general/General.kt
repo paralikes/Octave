@@ -23,8 +23,8 @@ class General : Cog {
             ctx.send(
                 "```prolog\n" +
                     "Shard ID: ${ctx.jda.shardInfo.shardId}\n" +
-                    "Latency (HTTP): $it\n" +
-                    "Latency (WS  ): ${ctx.jda.shardManager!!.averageGatewayPing}```"
+                    "Latency (HTTP): ${it}ms\n" +
+                    "Latency (WS  ): ${ctx.jda.shardManager!!.averageGatewayPing}ms```"
             )
         }
     }
