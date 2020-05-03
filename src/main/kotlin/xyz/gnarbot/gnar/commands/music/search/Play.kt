@@ -63,7 +63,7 @@ class Play : Cog {
         val args = query.split(" +".toRegex()).toTypedArray()
 
         prompt(ctx, manager).whenComplete { _, _ ->
-            if (ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx)) {
+            if (ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false)) {
                 val newManager = try {
                     Launcher.players.get(ctx.guild)
                 } catch (e: MusicLimitException) {
