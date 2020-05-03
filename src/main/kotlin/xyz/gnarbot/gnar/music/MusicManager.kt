@@ -49,9 +49,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
     private var leaveTask: Future<*>? = null
 
     /** @return Audio player for the guild. */
-    val player = playerManager.createPlayer().also {
-        it.volume = OptionsRegistry.ofGuild(guildId).music.volume
-    }
+    val player = playerManager.createPlayer()
 
     val dspFilter = DSPFilter(player)
 
