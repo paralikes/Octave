@@ -11,7 +11,7 @@ import xyz.gnarbot.gnar.utils.extensions.manager
 class BassBoost : MusicCog(true, true, true) {
     @DJ
     @CheckVoiceState
-    @Command(aliases = ["bb", "bassboost"])
+    @Command(aliases = ["bb", "bassboost"], description = "Sets the bass boost level of the music playing.")
     fun boost(ctx: Context, arg: String) {
         val manager = ctx.manager
 
