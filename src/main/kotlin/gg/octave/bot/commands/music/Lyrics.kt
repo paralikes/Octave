@@ -5,6 +5,7 @@ import gg.octave.bot.utils.RequestUtil
 import gg.octave.bot.utils.extensions.launcher
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
 import me.devoxin.flight.internal.utils.TextSplitter
@@ -24,11 +25,9 @@ class Lyrics : Cog {
     }
 
     @SubCommand(description = "Search for specific song lyrics")
-    fun search(ctx: Context, content: String?) {
-        sendLyricsFor(ctx, content)
-    }
+    fun search(ctx: Context, @Greedy content: String) = sendLyricsFor(ctx, content)
 
-    private fun sendLyricsFor(ctx: Context, title: String?) {
+    private fun sendLyricsFor(ctx: Context, title: String) {
         val encodedTitle = URLEncoder.encode(title, Charsets.UTF_8)
 
         RequestUtil.jsonObject {
