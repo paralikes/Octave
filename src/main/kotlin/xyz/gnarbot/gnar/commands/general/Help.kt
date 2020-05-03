@@ -24,7 +24,7 @@ class Help : Cog {
 
     }
 
-    suspend fun sendCommandHelp(ctx: Context, command: CommandFunction) {
+    fun sendCommandHelp(ctx: Context, command: CommandFunction) {
         val description = buildString {
             appendln(command.properties.description)
             appendln()
