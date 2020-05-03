@@ -145,7 +145,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     }
 
     companion object {
-        fun isDJ(ctx: Context): Boolean {
+        fun isDJ(ctx: Context, send: Boolean = true): Boolean {
             val data = ctx.data
             val memberSize = ctx.selfMember!!.voiceState?.channel?.members?.size
             val djRole = data.command.djRole
@@ -163,7 +163,9 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                 false -> ""
             }
 
-            ctx.send("You need a role called DJ$extra.\nThis can be bypassed if you're an admin (either Manage Server or Administrator) or you're alone with the bot.")
+            if (send) {
+                ctx.send("You need a role called DJ$extra.\nThis can be bypassed if you're an admin (either Manage Server or Administrator) or you're alone with the bot.")
+            }
             return false
         }
     }

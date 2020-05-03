@@ -51,7 +51,7 @@ class Selector(
                     append("${'\u0030' + (index + 1)}\u20E3 $name\n")
                 }
             }
-            setDescription(description)
+            setDescription(embedDescription)
             val optionType = when (type) {
                 Type.REACTIONS -> "Pick a reaction corresponding to the options."
                 Type.MESSAGE -> "Type a number corresponding to the options. ie: `1` or `cancel`"

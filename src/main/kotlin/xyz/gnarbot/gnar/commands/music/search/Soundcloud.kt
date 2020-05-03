@@ -57,9 +57,9 @@ class Soundcloud : Cog {
                             }
 
                             if (ctx.data.music.isVotePlay) {
-                                Play.startPlayVote(ctx, manager, query.split(" +").toTypedArray(), true, result.info.uri)
+                                Play.startPlayVote(ctx, manager, query.split(" +".toRegex()).toTypedArray(), true, result.info.uri)
                             } else {
-                                Play.play(ctx, query.split(" +").toTypedArray(), true, result.info.uri)
+                                Play.play(ctx, query.split(" +".toRegex()).toTypedArray(), true, result.info.uri)
                             }
                         } else {
                             ctx.send("You're not in a voice channel anymore!")

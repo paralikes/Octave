@@ -1,23 +1,104 @@
 package xyz.gnarbot.gnar.commands.music.search
 
+import com.jagrosh.jdautilities.menu.Selector
+import com.jagrosh.jdautilities.menu.SelectorBuilder
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.EmbedBuilder
 import xyz.gnarbot.gnar.Launcher
+import xyz.gnarbot.gnar.listeners.FlightEventAdapter
 import xyz.gnarbot.gnar.music.MusicLimitException
 import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.music.TrackContext
+import xyz.gnarbot.gnar.music.TrackScheduler
 import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.selfMember
+import xyz.gnarbot.gnar.utils.extensions.voiceChannel
 import xyz.gnarbot.gnar.utils.getDisplayValue
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 
 class Play : Cog {
     @Command(aliases = ["p"], description = "Plays music in a voice channel.")
-    fun play(ctx: Context) {
+    fun play(ctx: Context, @Greedy query: String?) {
+        val botChannel = ctx.selfMember!!.voiceState?.channel
+        val userChannel = ctx.voiceChannel
 
+        if (botChannel != null && botChannel != userChannel) {
+            return ctx.send("The bot is already playing music in another channel.")
+        }
+
+        val manager = Launcher.players.getExisting(ctx.guild)
+
+        if (query == null) {
+            if (manager == null) {
+                return ctx.send("There's no music player in this guild.\n\uD83C\uDFB6` ${ctx.trigger}play (song/url)` to start playing some music!")
+            }
+
+            when {
+                manager.player.isPaused -> {
+                    manager.player.isPaused = false
+
+                    ctx.send {
+                        setTitle("Play Music")
+                        setDescription("Music is no longer paused.")
+                    }
+                }
+                manager.player.playingTrack != null -> {
+                    ctx.send("Music is already playing. Are you trying to queue a track? Try adding a search term with this command!")
+                }
+                manager.scheduler.queue.isEmpty() -> {
+                    ctx.send {
+                        setTitle("Empty Queue")
+                        setDescription("There is no music queued right now. Add some songs with `${ctx.trigger}play (song/url)`.")
+                    }
+                }
+            }
+            return
+        }
+
+        val args = query.split(" +".toRegex()).toTypedArray()
+
+        prompt(ctx, manager).whenComplete { _, _ ->
+            if (ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx)) {
+                val newManager = try {
+                    Launcher.players.get(ctx.guild)
+                } catch (e: MusicLimitException) {
+                    return@whenComplete e.sendToContext(ctx)
+                }
+
+                startPlayVote(ctx, newManager, args, false, "")
+            } else {
+                play(ctx, args, false, "")
+            }
+        }
+    }
+
+    private fun prompt(ctx: Context, manager: MusicManager?) : CompletableFuture<Void> {
+        val future = CompletableFuture<Void>()
+
+        val oldQueue = TrackScheduler.getQueueForGuild(ctx.guild!!.id)
+        if (manager == null && !oldQueue.isEmpty()) {
+            SelectorBuilder(Launcher.eventWaiter)
+                .setType(Selector.Type.MESSAGE)
+                .title { "Would you like to keep your old queue?" }
+                .description { "Thanks for using Octave!" }
+                .addOption("Yes, keep it.") {
+                    ctx.send("Kept old queue. Playing new song first and continuing with your queue...")
+                    future.complete(null)
+                }.addOption("No, start a new queue.") {
+                    oldQueue.clear()
+                    ctx.send("Scrapped old queue. A new queue will start.")
+                    future.complete(null)
+                }.build().display(ctx.textChannel!!)
+        } else {
+            future.complete(null)
+        }
+
+        return future
     }
 
     companion object {

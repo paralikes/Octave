@@ -43,7 +43,7 @@ class Help : Cog {
 
             if (command.subcommands.isNotEmpty()) {
                 val padEnd = command.subcommands.values.maxBy { it.name.length }?.name?.length ?: 15
-                for (sc in command.subcommands.values) {
+                for (sc in command.subcommands.values.toSet()) {
                     appendln("`${sc.name.padEnd(padEnd, ' ')}:` ${sc.properties.description}")
                 }
             } else {
