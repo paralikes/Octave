@@ -8,7 +8,10 @@ import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class NowPlaying: MusicCog(false, true, true) {
+class NowPlaying: MusicCog {
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     private val totalBlocks = 20
 
     @Command(aliases = ["nowplaying", "np", "playing"], description = "Shows what's currently playing.")

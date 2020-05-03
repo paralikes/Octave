@@ -9,7 +9,11 @@ import xyz.gnarbot.gnar.music.MusicManager
 import xyz.gnarbot.gnar.utils.Utils
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class Jump : MusicCog(true, true, true) {
+class Jump : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     @DJ
     @CheckVoiceState
     @Command(aliases = ["seek"], description = "Set the time marker of the music playback.")

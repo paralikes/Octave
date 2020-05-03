@@ -8,7 +8,11 @@ import xyz.gnarbot.gnar.utils.extensions.*
 import xyz.gnarbot.gnar.utils.getDisplayValue
 import java.util.concurrent.TimeUnit
 
-class VoteSkip : MusicCog(true, true, true) {
+class VoteSkip : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     @Command(description = "Vote to skip the current music track.")
     suspend fun voteskip(ctx: Context) {
         val manager = ctx.manager

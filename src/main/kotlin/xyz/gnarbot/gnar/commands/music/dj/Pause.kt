@@ -5,7 +5,11 @@ import me.devoxin.flight.api.annotations.Command
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class Pause : MusicCog(true, true, true) {
+class Pause : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     @Command(description = "Pause or resume the music player.")
     fun pause(ctx: Context) {
         val manager = ctx.manager

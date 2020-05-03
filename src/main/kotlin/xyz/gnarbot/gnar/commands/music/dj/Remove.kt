@@ -12,7 +12,9 @@ import xyz.gnarbot.gnar.utils.PlaylistUtils
 import xyz.gnarbot.gnar.utils.extensions.manager
 import java.util.regex.Pattern
 
-class Remove : MusicCog(true, false, false) {
+class Remove : MusicCog {
+    override fun sameChannel() = true
+
     private val pattern = Pattern.compile("(\\d+)?\\s*?\\.\\.\\s*(\\d+)?")
 
     @DJ

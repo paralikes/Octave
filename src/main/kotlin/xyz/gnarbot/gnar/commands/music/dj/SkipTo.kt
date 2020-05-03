@@ -8,7 +8,11 @@ import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class SkipTo : MusicCog(true, true, true) {
+class SkipTo : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     @DJ
     @CheckVoiceState
     @Command(aliases = ["skt"], description = "Skip the current music track.")

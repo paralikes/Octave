@@ -7,7 +7,10 @@ import xyz.gnarbot.gnar.utils.Utils
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class DMNowPlaying : MusicCog(false, true, true) {
+class DMNowPlaying : MusicCog {
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     private val totalBlocks = 20
 
     @Command(description = "DMs you the now playing message with the song URL.")

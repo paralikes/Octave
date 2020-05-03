@@ -8,7 +8,10 @@ import xyz.gnarbot.gnar.entities.framework.DJ
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class Restart : MusicCog(true, false, true) {
+class Restart : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayer() = true
+
     @DJ
     @CheckVoiceState
     @Command(aliases = ["replay"], description = "Restart the current song.")

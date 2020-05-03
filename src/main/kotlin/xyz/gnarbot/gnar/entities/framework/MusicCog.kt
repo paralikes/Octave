@@ -7,7 +7,11 @@ import xyz.gnarbot.gnar.commands.music.PLAY_MESSAGE
 import xyz.gnarbot.gnar.utils.extensions.selfMember
 import xyz.gnarbot.gnar.utils.extensions.voiceChannel
 
-open class MusicCog(private val sameChannel: Boolean, private val requirePlayingTrack: Boolean, private val requirePlayer: Boolean) : Cog {
+interface MusicCog : Cog {
+    fun sameChannel() = false
+    fun requirePlayingTrack() = false
+    fun requirePlayer() = false
+
     fun check(ctx: Context): Boolean {
         val manager = Launcher.players.getExisting(ctx.guild)
 
@@ -18,17 +22,17 @@ open class MusicCog(private val sameChannel: Boolean, private val requirePlaying
 
         val botChannel = ctx.selfMember!!.voiceState?.channel
 
-        if (requirePlayer && botChannel == null) {
+        if (requirePlayer() && botChannel == null) {
             ctx.send("The bot is not currently in a voice channel.\n$PLAY_MESSAGE")
             return false
         }
 
-        if (sameChannel && ctx.voiceChannel != botChannel) {
+        if (sameChannel() && ctx.voiceChannel != botChannel) {
             ctx.send("You're not in the same channel as the bot.")
             return false
         }
 
-        if (requirePlayingTrack && manager.player.playingTrack == null) {
+        if (requirePlayingTrack() && manager.player.playingTrack == null) {
             ctx.send("The player is not playing anything.")
             return false
         }

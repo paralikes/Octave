@@ -8,7 +8,10 @@ import xyz.gnarbot.gnar.entities.framework.DJ
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class Shuffle : MusicCog(true, false, true) {
+class Shuffle : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayer() = true
+
     @DJ
     @CheckVoiceState
     @Command(description = "Shuffles the queue order around.")

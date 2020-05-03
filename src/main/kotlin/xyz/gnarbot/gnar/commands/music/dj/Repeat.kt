@@ -9,7 +9,9 @@ import xyz.gnarbot.gnar.music.settings.RepeatOption
 import xyz.gnarbot.gnar.utils.extensions.manager
 import java.lang.IllegalArgumentException
 
-class Repeat : MusicCog(true, false, true) {
+class Repeat : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayer() = true
 
     @DJ
     @CheckVoiceState

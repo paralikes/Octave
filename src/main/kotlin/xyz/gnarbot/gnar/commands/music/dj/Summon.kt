@@ -10,7 +10,9 @@ import xyz.gnarbot.gnar.utils.extensions.data
 import xyz.gnarbot.gnar.utils.extensions.selfMember
 import xyz.gnarbot.gnar.utils.extensions.voiceChannel
 
-class Summon : MusicCog(false, false, true) {
+class Summon : MusicCog {
+    override fun requirePlayer() = true
+
     @DJ
     @CheckVoiceState
     @Command(description = "Move the bot to another channel.")

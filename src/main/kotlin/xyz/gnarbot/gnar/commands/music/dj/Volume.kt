@@ -8,7 +8,9 @@ import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.config
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class Volume : MusicCog(false, false, true) {
+class Volume : MusicCog {
+    override fun requirePlayer() = true
+
     private val totalBlocks = 20
 
     @DJ

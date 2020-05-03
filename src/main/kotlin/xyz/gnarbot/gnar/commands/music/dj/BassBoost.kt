@@ -8,7 +8,11 @@ import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.music.settings.BoostSetting
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class BassBoost : MusicCog(true, true, true) {
+class BassBoost : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     @DJ
     @CheckVoiceState
     @Command(aliases = ["bb", "bassboost"], description = "Sets the bass boost level of the music playing.")

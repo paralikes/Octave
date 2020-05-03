@@ -13,7 +13,11 @@ import xyz.gnarbot.gnar.utils.extensions.DEFAULT_SUBCOMMAND
 import xyz.gnarbot.gnar.utils.extensions.manager
 import java.time.Duration
 
-class Cleanup : MusicCog(true, true, true) {
+class Cleanup : MusicCog {
+    override fun sameChannel() = true
+    override fun requirePlayingTrack() = true
+    override fun requirePlayer() = true
+
     @DJ
     @CheckVoiceState
     @Command(aliases = ["cu"], description = "Clear songs based on a specific user, duplicates, or if a user left")

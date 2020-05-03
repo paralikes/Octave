@@ -8,7 +8,7 @@ import xyz.gnarbot.gnar.entities.framework.DJ
 import xyz.gnarbot.gnar.entities.framework.MusicCog
 import xyz.gnarbot.gnar.utils.extensions.manager
 
-class Stop : MusicCog(false, false, false) {
+class Stop : MusicCog {
     @DJ
     @CheckVoiceState
     @Command(aliases = ["leave", "end", "st", "fuckoff"], description = "Stop and clear the music player.")
