@@ -145,9 +145,8 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
             if (data.music.channels.isNotEmpty() && ctx.member!!.voiceState?.channel?.id !in data.music.channels) {
                 val channels = data.music.channels
-                    .map { ctx.guild!!.getVoiceChannelById(it) }
-                    .map { it!!.name }
-                    .joinToString { ", " }
+                    .mapNotNull { ctx.guild!!.getVoiceChannelById(it)?.name }
+                    .joinToString(", ")
 
                 ctx.send("Music can only be played in: `$channels`, since this server has set it/them as a designated voice channel.")
                 return false
@@ -196,7 +195,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
             val djRolePresent = if (djRole != null) ctx.member!!.hasAnyRoleId(djRole) else false
             val memberAmount = if (memberSize != null) memberSize <= 2 else false
-            val admin = ctx.member!!.permissions.contains(Permission.MANAGE_SERVER) || ctx.member!!.permissions.contains(Permission.ADMINISTRATOR)
+            val admin = ctx.member!!.hasPermission(Permission.MANAGE_SERVER)
 
             if (ctx.member!!.hasAnyRoleNamed("DJ") || djRolePresent || memberAmount || admin) {
                 return true

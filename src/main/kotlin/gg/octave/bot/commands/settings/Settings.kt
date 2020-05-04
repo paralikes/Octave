@@ -18,7 +18,7 @@ import java.time.Duration
 
 class Settings : Cog {
     @Command(aliases = ["setting", "set", "config", "configuration", "configure", "opts", "options"],
-        description = "Change music settings.", guildOnly = true, userPermissions = [Permission.MANAGE_SERVER])
+        description = "Change music settings.", userPermissions = [Permission.MANAGE_SERVER])
     fun settings(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
     @SubCommand(description = "Resets the settings for the guild.")
