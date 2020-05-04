@@ -3,6 +3,7 @@ package gg.octave.bot.commands.music.dj
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
+import gg.octave.bot.entities.framework.Usage
 import gg.octave.bot.music.MusicManager
 import gg.octave.bot.utils.Utils
 import gg.octave.bot.utils.extensions.manager
@@ -16,6 +17,7 @@ class Jump : MusicCog {
 
     @DJ
     @CheckVoiceState
+    @Usage("0` **OR** `00:00` **OR** `0s")
     @Command(aliases = ["seek"], description = "Set the time marker of the music playback.")
     fun jump(ctx: Context, where: String) {
         if (!ctx.manager.player.playingTrack.isSeekable) {

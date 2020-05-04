@@ -19,7 +19,7 @@ object LpErrorTranslator {
 
     fun translate(exception: FriendlyException): String {
         val rootCause = rootCauseOf(exception)
-        val lowerCase = rootCause.localizedMessage.toLowerCase()
+        val lowerCase = (rootCause.localizedMessage ?: rootCause.toString()).toLowerCase()
 
         return errors.entries
             .firstOrNull { it.key(lowerCase) }

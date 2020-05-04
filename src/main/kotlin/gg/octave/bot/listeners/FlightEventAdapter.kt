@@ -5,6 +5,7 @@ import gg.octave.bot.db.guilds.GuildData
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
+import gg.octave.bot.entities.framework.Usage
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.selfMember
@@ -17,11 +18,40 @@ import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.SubCommandFunction
 import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
+import me.devoxin.flight.internal.arguments.Argument
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Member
+import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.VoiceChannel
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 class FlightEventAdapter : DefaultCommandEventAdapter() {
+
+    fun generateDefaultUsage(arguments: List<Argument>): String {
+        return buildString {
+            for (arg in arguments) {
+                val value = when (arg.type) {
+                    String::class.java -> "\"some text\""
+                    Int::class, java.lang.Integer::class.java, Long::class.java, java.lang.Long::class.java -> "0"
+                    Double::class.java, java.lang.Double::class.java -> "0.0"
+                    Member::class.java, User::class.java -> "@User"
+                    TextChannel::class.java -> "#general"
+                    VoiceChannel::class.java -> "Music"
+                    else -> {
+                        if (arg.type.isEnum) {
+                            arg.type.enumConstants.first()
+                        } else {
+                            "[Unknown Type, report to devs]"
+                        }
+                    }
+                }
+                append(value)
+                append(" ")
+            }
+        }.trim()
+    }
 
     override fun onBadArgument(ctx: Context, command: CommandFunction, error: BadArgument) {
         if (error.argument.type.isEnum) {
@@ -34,29 +64,35 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         }
 
         val executed = ctx.invokedCommand
-        val wasSubcommand = executed is SubCommandFunction
         val arguments = executed.arguments
-
-        val syntax = buildString {
+        val commandLayout = buildString {
             append(ctx.trigger)
             append(command.name)
-            append(" ")
 
-            if (wasSubcommand) {
-                append((executed as SubCommandFunction).name)
+            if (executed is SubCommandFunction) {
                 append(" ")
+                append(executed.name)
             }
+        }
 
+        val syntax = buildString {
+            append(commandLayout)
+            append(" ")
             for (argument in arguments) {
                 append(argument.name)
                 append(" ")
             }
-        }
+        }.trim()
+
+        val usage = executed.method.findAnnotation<Usage>()?.description
+            ?: generateDefaultUsage(arguments)
 
         ctx.send {
             setTitle("Help | ${command.name}")
             setDescription("You specified an invalid argument for `${error.argument.name}`")
-            addField("Syntax", syntax, false)
+            addField("Syntax", "`$syntax`", false)
+            addField("Example Usage", "`$commandLayout $usage`", false)
+            addField("Still Confused?", "Head over to our [#support channel](https://discord.gg/musicbot)", false)
         }
     }
 
@@ -95,7 +131,8 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             return false
         }
 
-        if (command.method.hasAnnotation<CheckVoiceState>()) {
+        //if (command.method.hasAnnotation<CheckVoiceState>()) {
+        if (command.category in setOf("Music", "Dj", "Search")) { // don't ask
             if (ctx.member!!.voiceState?.channel == null) {
                 ctx.send("You're not in a voice channel.")
                 return false

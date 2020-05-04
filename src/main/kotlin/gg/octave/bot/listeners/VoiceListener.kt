@@ -86,7 +86,7 @@ class VoiceListener : EventListener {
                     }
                 }
 
-                it.moveAudioConnection(event.channelJoined)
+                // it.moveAudioConnection(event.channelJoined)
 
                 if (it.isAlone()) {
                     it.queueLeave()

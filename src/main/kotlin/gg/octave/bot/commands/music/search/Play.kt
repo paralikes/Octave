@@ -114,35 +114,22 @@ class Play : Cog {
             //Reset expire time if play has been called.
             manager.scheduler.queue.clearExpire()
 
-            if ("https://" in args[0] || "http://" in args[0] || args[0].startsWith("spotify:")) {
-                val link = args[0].removePrefix("<").removeSuffix(">")
-
-                manager.loadAndPlay(
-                    ctx,
-                    link,
-                    TrackContext(
-                        ctx.member!!.user.idLong,
-                        ctx.textChannel!!.idLong
-                    ), "You can search and pick results using ${config.prefix}youtube or ${config.prefix}soundcloud while in a channel.")
-            } else if (isSearchResult) { //As in, it comes from SoundcloudCommand or YoutubeCommand
-                manager.loadAndPlay(
-                    ctx,
-                    uri,
-                    TrackContext(
-                        ctx.member!!.user.idLong,
-                        ctx.textChannel!!.idLong
-                    )
-                )
-            } else {
-                val query = args.joinToString(" ").trim()
-                manager.loadAndPlay(
-                    ctx,
-                    "ytsearch:$query",
-                    TrackContext(
-                        ctx.member!!.user.idLong,
-                        ctx.textChannel!!.idLong
-                    ), "You can search and pick results using ${config.prefix}youtube or ${config.prefix}soundcloud while in a channel.")
+            val query = when {
+                "https://" in args[0] || "http://" in args[0] || args[0].startsWith("spotify:") -> {
+                    args[0].removePrefix("<").removeSuffix(">")
+                }
+                isSearchResult -> uri
+                else -> "ytsearch:${args.joinToString(" ").trim()}"
             }
+
+            val trackContext = TrackContext(ctx.author.idLong, ctx.textChannel!!.idLong)
+
+            manager.loadAndPlay(
+                ctx,
+                query,
+                trackContext,
+                if (!isSearchResult) "You can search and pick results using ${config.prefix}youtube or ${config.prefix}soundcloud while in a channel." else null
+            )
         }
 
         fun startPlayVote(ctx: Context, manager: MusicManager, args: Array<String>, isSearchResult: Boolean, uri: String) {

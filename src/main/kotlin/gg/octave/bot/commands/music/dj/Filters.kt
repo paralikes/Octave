@@ -3,6 +3,7 @@ package gg.octave.bot.commands.music.dj
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
+import gg.octave.bot.entities.framework.Usage
 import gg.octave.bot.music.MusicManager
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.manager
@@ -20,12 +21,15 @@ class Filters : MusicCog {
     @Command(aliases = ["filters", "fx", "effects"], description = "Apply audio filters to the music such as speed and pitch")
     fun filter(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
+    @Usage("depth 0.5")
     @SubCommand(description = "Wobble effect.")
     fun tremolo(ctx: Context, type: String, value: Double) = modifyTremolo(ctx, type, value, ctx.manager)
 
+    @Usage("speed 1.5")
     @SubCommand(description = "Pitch, rate, and speed.")
     fun timescale(ctx: Context, type: String, value: Double) = modifyTimescale(ctx, type, value, ctx.manager)
 
+    @Usage("width 100")
     @SubCommand(description = "Karaoke settings for better vocal filtering.")
     fun karaoke(ctx: Context, type: String, value: Double) = modifyKaraoke(ctx, type, value, ctx.manager)
 
