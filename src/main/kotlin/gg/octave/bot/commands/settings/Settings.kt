@@ -66,14 +66,14 @@ class Settings : Cog {
         ctx.send(send)
     }
 
-    @SubCommand(aliases = ["djrequirement"], description = "Set whether DJ-only commands can be used by all.")
-    fun requiredj(ctx: Context, toggle: Boolean) {
+    @SubCommand(aliases = ["djrequirement", "rdj"], description = "Set whether DJ-only commands can be used by all.")
+    fun requiredj(ctx: Context, toggle: Boolean) { // toggle = false (no)
         ctx.data.let {
-            it.music.isDisableDj = toggle
+            it.music.isDisableDj = !toggle
             it.save()
         }
 
-        val send = if (toggle) "DJ commands now require the DJ role." else "DJ commands can be now run by everyone."
+        val send = if (!toggle) "DJ commands can be now run by everyone." else "DJ commands now require the DJ role."
         ctx.send(send)
     }
 
