@@ -15,22 +15,19 @@ class BassBoost : MusicCog {
 
     @DJ
     @CheckVoiceState
-    @Command(aliases = ["bb", "boost"], description = "Sets the bass boost level of the music playing.")
-    fun bassboost(ctx: Context, arg: String) {
+    @Command(aliases = ["bb", "bass", "boost"], description = "Applies bass boost to the music.")
+    fun bassboost(ctx: Context, strength: BoostSetting) {
         val manager = ctx.manager
 
-        when (arg) {
-            "off" -> manager.dspFilter.bassBoost = BoostSetting.OFF
-            "soft" -> manager.dspFilter.bassBoost = BoostSetting.SOFT
-            "hard" -> manager.dspFilter.bassBoost = BoostSetting.HARD
-            "extreme" -> manager.dspFilter.bassBoost = BoostSetting.EXTREME
-            "earrape" -> manager.dspFilter.bassBoost = BoostSetting.EARRAPE
-            else -> return ctx.send("$arg is not an option.")
+        if (strength == null) {
+            return ctx.send("`${ctx.trigger}bassboost <${BoostSetting.values().joinToString("/")}>`")
         }
+
+        manager.dspFilter.bassBoost = strength
 
         ctx.send {
             setTitle("Bass Boost")
-            addField("Boost", "Bass Boost has been set to: $arg", false)
+            setDescription("Bass Boost strength is now set to `${strength.name}`")
         }
     }
 }

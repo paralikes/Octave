@@ -24,33 +24,40 @@ import kotlin.reflect.full.hasAnnotation
 class FlightEventAdapter : DefaultCommandEventAdapter() {
 
     override fun onBadArgument(ctx: Context, command: CommandFunction, error: BadArgument) {
-        val commandFormat = buildString {
+        if (error.argument.type.isEnum) {
+            val options = error.argument.type.enumConstants.map { it.toString() }
+            return ctx.send {
+                setTitle("Help | ${command.name}")
+                setDescription("You specified an invalid argument for `${error.argument.name}`.")
+                addField("Valid Options", options.joinToString("`\n- `", prefix = "- `", postfix = "`"), true)
+            }
+        }
+
+        val executed = ctx.invokedCommand
+        val wasSubcommand = executed is SubCommandFunction
+        val arguments = executed.arguments
+
+        val syntax = buildString {
             append(ctx.trigger)
             append(command.name)
             append(" ")
 
-            if (ctx.invokedCommand is SubCommandFunction) {
-                append((ctx.invokedCommand as SubCommandFunction).name)
+            if (wasSubcommand) {
+                append((executed as SubCommandFunction).name)
                 append(" ")
             }
 
-            for (arg in ctx.invokedCommand.arguments) {
-                append(arg.format(true))
+            for (argument in arguments) {
+                append(argument.name)
                 append(" ")
             }
-
-            appendln()
-
-            val badArgument = error.argument.format(true)
-            val badArgumentIndex = this.indexOf(badArgument)
-
-            append(" ".repeat(badArgumentIndex))
-            appendln("^".repeat(badArgument.length))
-            appendln()
-            append("You provided an invalid argument for ${error.argument.name}.")
         }
 
-        ctx.send("```\n$commandFormat```")
+        ctx.send {
+            setTitle("Help | ${command.name}")
+            setDescription("You specified an invalid argument for `${error.argument.name}`")
+            addField("Syntax", syntax, false)
+        }
     }
 
     override fun onParseError(ctx: Context, command: CommandFunction, error: Throwable) {

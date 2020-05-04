@@ -9,10 +9,7 @@ import gg.octave.bot.db.Database
 import gg.octave.bot.entities.BotCredentials
 import gg.octave.bot.entities.Configuration
 import gg.octave.bot.entities.ExtendedShardManager
-import gg.octave.bot.entities.framework.DefaultPrefixProvider
-import gg.octave.bot.entities.framework.DurationParser
-import gg.octave.bot.entities.framework.ExtendedMemberParser
-import gg.octave.bot.entities.framework.KeyTypeParser
+import gg.octave.bot.entities.framework.*
 import gg.octave.bot.listeners.BotListener
 import gg.octave.bot.listeners.FlightEventAdapter
 import gg.octave.bot.listeners.VoiceListener
@@ -72,6 +69,7 @@ object Launcher {
             .addCustomParser(ExtendedMemberParser())
             .addCustomParser(DurationParser())
             .addCustomParser(KeyTypeParser())
+            .addCustomParser(BoostSettingParser())
             .setOwnerIds(*configuration.admins.toLongArray())
             .addEventListeners(FlightEventAdapter())
             .configureDefaultHelpCommand { enabled = false }

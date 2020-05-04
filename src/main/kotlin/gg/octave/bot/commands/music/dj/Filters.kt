@@ -20,13 +20,13 @@ class Filters : MusicCog {
     @Command(aliases = ["filters", "fx", "effects"], description = "Apply audio filters to the music such as speed and pitch")
     fun filter(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
-    @SubCommand
+    @SubCommand(description = "Wobble effect.")
     fun tremolo(ctx: Context, type: String, value: Double) = modifyTremolo(ctx, type, value, ctx.manager)
 
-    @SubCommand
+    @SubCommand(description = "Pitch, rate, and speed.")
     fun timescale(ctx: Context, type: String, value: Double) = modifyTimescale(ctx, type, value, ctx.manager)
 
-    @SubCommand
+    @SubCommand(description = "Karaoke settings for better vocal filtering.")
     fun karaoke(ctx: Context, type: String, value: Double) = modifyKaraoke(ctx, type, value, ctx.manager)
 
     @SubCommand(description = "Check the current status of filters.")
