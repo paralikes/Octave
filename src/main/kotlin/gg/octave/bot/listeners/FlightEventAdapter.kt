@@ -39,6 +39,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                     Member::class.java, User::class.java -> "@User"
                     TextChannel::class.java -> "#general"
                     VoiceChannel::class.java -> "Music"
+                    Boolean::class.java, java.lang.Boolean::class.java -> "yes"
                     else -> {
                         if (arg.type.isEnum) {
                             arg.type.enumConstants.first()
@@ -178,13 +179,21 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     }
 
     override fun onBotMissingPermissions(ctx: Context, command: CommandFunction, permissions: List<Permission>) {
-        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`") { it.getName() }
-        ctx.send("I need the following permissions:\n$formatted")
+        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`", transform=Permission::getName)
+
+        ctx.send {
+            setTitle("Missing Permissions")
+            setDescription("I need the following permissions:\n$formatted")
+        }
     }
 
     override fun onUserMissingPermissions(ctx: Context, command: CommandFunction, permissions: List<Permission>) {
-        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`") { it.getName() }
-        ctx.send("You need the following permissions:\n$formatted")
+        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`", transform=Permission::getName)
+
+        ctx.send {
+            setTitle("Missing Permissions")
+            setDescription("You need the following permissions:\n$formatted")
+        }
     }
 
     companion object {
