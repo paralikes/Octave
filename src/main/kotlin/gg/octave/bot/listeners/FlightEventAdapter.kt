@@ -155,7 +155,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         }
 
         if (command.method.hasAnnotation<DJ>() || data.command.isDjOnlyMode) {
-            return isDJ(ctx) || data.music.isDisableDj
+            return data.music.isDisableDj || isDJ(ctx)
         }
 
         if (command.cog is MusicCog) {
