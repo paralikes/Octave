@@ -2,7 +2,7 @@
 
 # Octave [![License](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](LICENSE) [![Chat](https://img.shields.io/badge/chat-discord-blue.svg?style=flat-square)](https://discord.gg/musicbot)
 **Octave** is an open-source Discord bot written in Java and Kotlin, using JDA and Lavaplayer.
-Octave provides various features including music playback, fun and moderation commands.
+Octave provides a premium music experience.
 
 ## The Official Octave
 Click the following [link](https://discordapp.com/oauth2/authorize?client_id=201492375653056512&scope=bot&permissions=8) and add Octave to a server, provided that you have the
