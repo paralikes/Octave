@@ -8,6 +8,7 @@ import gg.octave.bot.utils.extensions.premiumGuild
 import gg.octave.bot.utils.toDuration
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.Permission
@@ -188,20 +189,20 @@ class Settings : Cog {
         ctx.send("Successfully set queue limit to $qLimit.")
     }
 
-    @SubCommand(aliases = ["vqc", "vpc"], description = "Sets the vote-play cooldown.")
-    fun votequeuecooldown(ctx: Context, content: String) = durationParseCommand(ctx, content,
+    @SubCommand(aliases = ["votequeuecooldown", "vqc", "vpc"], description = "Sets the vote-play cooldown.")
+    fun voteplaycooldown(ctx: Context, @Greedy duration: String) = durationParseCommand(ctx, duration,
         { music.votePlayCooldown = it }, ctx.config.votePlayCooldown, ctx.config.votePlayCooldownText, "vote-play cooldown")
 
-    @SubCommand(aliases = ["vqd", "vpd"], description = "Sets the vote-play duration.")
-    fun votequeueduration(ctx: Context, content: String) = durationParseCommand(ctx, content,
+    @SubCommand(aliases = ["votequeueduration", "vqd", "vpd"], description = "Sets the vote-play duration.")
+    fun voteplayduration(ctx: Context, @Greedy duration: String) = durationParseCommand(ctx, duration,
         { music.votePlayDuration = it }, ctx.config.votePlayDuration, ctx.config.votePlayDurationText, "vote-play duration")
 
     @SubCommand(aliases = ["vsd"], description = "Sets the vote-skip duration.")
-    fun voteskipduration(ctx: Context, content: String) = durationParseCommand(ctx, content,
+    fun voteskipduration(ctx: Context, @Greedy duration: String) = durationParseCommand(ctx, duration,
         { music.voteSkipDuration = it }, ctx.config.voteSkipDuration, ctx.config.voteSkipDurationText, "vote-skip duration")
 
     @SubCommand(aliases = ["vsc"], description = "Sets the vote-skip cooldown.")
-    fun voteskipcooldown(ctx: Context, content: String) = durationParseCommand(ctx, content,
+    fun voteskipcooldown(ctx: Context, @Greedy duration: String) = durationParseCommand(ctx, duration,
         { music.voteSkipCooldown = it }, ctx.config.voteSkipCooldown, ctx.config.voteSkipCooldownText, "vote-skip cooldown")
 
     private fun durationParseCommand(ctx: Context, duration: String, setter: GuildData.(Long) -> Unit,

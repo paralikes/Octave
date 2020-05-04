@@ -62,18 +62,22 @@ class Play : Cog {
 
         val args = query.split(" +".toRegex()).toTypedArray()
 
-        prompt(ctx, manager).whenComplete { _, _ ->
+        prompt(ctx, manager).handle { _, _ ->
             if (ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false)) {
                 val newManager = try {
                     Launcher.players.get(ctx.guild)
                 } catch (e: MusicLimitException) {
-                    return@whenComplete e.sendToContext(ctx)
+                    return@handle e.sendToContext(ctx)
                 }
 
                 startPlayVote(ctx, newManager, args, false, "")
             } else {
                 play(ctx, args, false, "")
             }
+        }.exceptionally {
+            ctx.send("An error occurred!")
+            it.printStackTrace()
+            return@exceptionally
         }
     }
 
@@ -163,16 +167,17 @@ class Play : Cog {
 
             manager.lastPlayVoteTime = System.currentTimeMillis()
             manager.isVotingToPlay = true
-            val halfPeople = ctx.selfMember!!.voiceState!!.channel!!.members.filter { !it.user.isBot }.size / 2
+            val channel = ctx.selfMember!!.voiceState!!.channel ?: ctx.voiceChannel!!
+            val halfPeople = channel.members.filter { !it.user.isBot }.size / 2
 
             ctx.messageChannel.sendMessage(EmbedBuilder().apply {
                 setTitle("Vote Play")
                 setDescription(
                     buildString {
                         append(ctx.author.asMention)
-                        append(" has voted to **play** the current track!")
-                        append(" React with :thumbsup: or :thumbsdown:\n")
-                        append("Whichever has the most votes in $votePlayDurationText will win! This requires at least $halfPeople on the VC to vote to skip.")
+                        append(" has voted to **play** a track!")
+                        append(" React with :thumbsup:\n")
+                        append("If there are more than $halfPeople vote(s) within $votePlayDurationText, the track will be queued.")
                     }
                 )
             }.build())
