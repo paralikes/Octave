@@ -27,7 +27,7 @@ class Patron : Cog {
         ErrorResponse.CANNOT_SEND_TO_USER
     )
 
-    @Command(description = "Link/manage Patron membership.")
+    @Command(aliases = ["patreon"], description = "Link/manage Patron membership.")
     fun patron(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
     @SubCommand(description = "Checks premium status of you or another user.")
