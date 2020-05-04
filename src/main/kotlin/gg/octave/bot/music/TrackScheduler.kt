@@ -59,10 +59,6 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
         val track = queue.poll()
         val decodedTrack = PlaylistUtils.toAudioTrack(track)
         player.startTrack(decodedTrack, false)
-
-        if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {
-            announceNext(decodedTrack)
-        }
     }
 
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
@@ -121,6 +117,12 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
         } ?: return
 
         channel.sendMessage(exception.friendlierMessage()).queue()
+    }
+
+    override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
+        if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {
+            announceNext(track)
+        }
     }
 
     private fun announceNext(track: AudioTrack) {
