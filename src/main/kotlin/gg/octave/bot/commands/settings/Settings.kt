@@ -44,7 +44,7 @@ class Settings : Cog {
         ctx.send(send)
     }
 
-    @SubCommand(aliases = ["ta"], description = "Set the channel used for track announcements.")
+    @SubCommand(aliases = ["ta"], description = "Toggles music announcements.")
     fun announcements(ctx: Context, toggle: Boolean) {
         ctx.data.let {
             it.music.announce = toggle
