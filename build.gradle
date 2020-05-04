@@ -96,3 +96,27 @@ jar {
         attributes 'Main-Class': mainClassName
     }
 }
+
+def getBuildVersion() {
+    def gitVersion = new ByteArrayOutputStream()
+    exec {
+        commandLine("git", "rev-parse", "--short", "HEAD")
+        standardOutput = gitVersion
+    }
+    return "$version\n${gitVersion.toString().trim()}"
+}
+
+task writeVersion() {
+    def resourcePath = sourceSets.main.resources.srcDirs[0]
+    def resources = file(resourcePath)
+
+    if (!resources.exists()) {
+        resources.mkdirs()
+    }
+
+    file("$resourcePath/version.txt").text = getBuildVersion()
+}
+
+build {
+    dependsOn writeVersion
+}

@@ -3,6 +3,7 @@ package gg.octave.bot.commands.general
 import com.sun.management.OperatingSystemMXBean
 import gg.octave.bot.Launcher
 import gg.octave.bot.utils.Capacity
+import gg.octave.bot.utils.OctaveBot
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
@@ -34,7 +35,7 @@ class BotInfo : Cog {
         val users = ctx.jda.shardManager!!.userCache.size()
 
         ctx.send {
-            setTitle("Bot Information")
+            setTitle("Octave (Revision ${OctaveBot.GIT_REVISION})")
             setThumbnail(ctx.jda.selfUser.avatarUrl)
             setDescription("Never miss a beat with Octave, a simple and easy to use Discord music bot delivering high quality audio to hundreds of thousands of servers. We support Youtube, Soundcloud, and more!")
 
