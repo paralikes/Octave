@@ -14,7 +14,7 @@
         </encoder>
     </appender>
 
-    <appender name="DISCORD" class="xyz.gnarbot.gnar.utils.DiscordLogBack"/>
+    <appender name="DISCORD" class="gg.octave.bot.utils.DiscordLogBack"/>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
