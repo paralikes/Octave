@@ -7,13 +7,14 @@ import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
 import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.IMentionable
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 
 class Ignore : Cog {
-    @Command(description = "Configure user/channel/role ignoring.")
+    @Command(description = "Configure user/channel/role ignoring.", userPermissions = [Permission.MANAGE_SERVER])
     fun ignore(ctx: Context) = DEFAULT_SUBCOMMAND(ctx)
 
     @SubCommand(description = "Toggle ignore for a user.")
