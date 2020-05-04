@@ -24,6 +24,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.VoiceChannel
+import java.time.Duration
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
@@ -40,6 +41,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                     TextChannel::class.java -> "#general"
                     VoiceChannel::class.java -> "Music"
                     Boolean::class.java, java.lang.Boolean::class.java -> "yes"
+                    Duration::class.java -> "20m"
                     else -> {
                         if (arg.type.isEnum) {
                             arg.type.enumConstants.first()
