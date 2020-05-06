@@ -5,8 +5,9 @@
 Octave provides a premium music experience.
 
 ## The Official Octave
-Click the following [link](https://discordapp.com/oauth2/authorize?client_id=201492375653056512&scope=bot&permissions=8) and add Octave to a server, provided that you have the
-    `Manage Server` permission. The official website for Octave can be found [here](https://octave.gg/).
+[Click here](https://discordapp.com/oauth2/authorize?client_id=201492375653056512&scope=bot&permissions=8) to add Octave to a server, provided that you have the `Manage Server` permission.
+
+[Click here](https://octave.gg/) to head to Octave's website.
 
 ## Self-hosting Octave
 - Though we do not disallow user-hosted versions of Octave, we will not provide **any** support for it.
