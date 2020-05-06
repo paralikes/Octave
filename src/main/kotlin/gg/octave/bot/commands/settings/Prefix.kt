@@ -4,6 +4,7 @@ import gg.octave.bot.Launcher
 import gg.octave.bot.utils.extensions.data
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
+import me.devoxin.flight.api.annotations.SubCommand
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.Permission
 
@@ -13,10 +14,8 @@ class Prefix : Cog {
         val data = ctx.data
 
         if (prefix == null) {
-            data.command.prefix = prefix
-            data.save()
-
-            return ctx.send("The prefix has been reset to `${Launcher.configuration.prefix}`.")
+            val botPrefix = data.command.prefix ?: Launcher.configuration.prefix
+            return ctx.send("My prefix is `$botPrefix`")
         }
 
         if (prefix matches mention) {
@@ -31,6 +30,16 @@ class Prefix : Cog {
         data.save()
 
         ctx.send("Prefix has been set to `$prefix`.")
+    }
+
+    @SubCommand(aliases = ["clear"], description = "Resets the bot's prefix back to default.")
+    fun reset(ctx: Context) {
+        ctx.data.let {
+            it.command.prefix = null
+            it.save()
+        }
+
+        return ctx.send("The prefix has been reset to `${Launcher.configuration.prefix}`.")
     }
 
     companion object {

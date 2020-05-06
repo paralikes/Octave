@@ -8,7 +8,11 @@ import net.dv8tion.jda.api.entities.Message
 class DefaultPrefixProvider : PrefixProvider {
     override fun provide(message: Message): List<String> {
         val guildSettings = OptionsRegistry.ofGuild(message.guild)
-        val prefixes = mutableListOf("${message.jda.selfUser.name.toLowerCase()} ")
+        val prefixes = mutableListOf(
+            "${message.jda.selfUser.name.toLowerCase()} ",
+            "<@${message.jda.selfUser.id}> ",
+            "<@!${message.jda.selfUser.id}> "
+        )
 
         val customPrefix = guildSettings.command.prefix
             ?: Launcher.configuration.prefix

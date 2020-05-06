@@ -12,43 +12,40 @@ class Volume : MusicCog {
     override fun requirePlayer() = true
 
     private val totalBlocks = 20
+    private val maximumVolume = 150
 
     @DJ
     @CheckVoiceState
     @Command(aliases = ["v", "vol"], description = "Set the volume of the music player.")
-    fun volume(ctx: Context, amount: String?) {
-        if (amount.isNullOrEmpty()) {
-            val volume = ctx.manager.player.volume.toDouble()
-            val max = volume.coerceIn(0.0, 100.0)
-
-            val percent = (volume / max).coerceIn(0.0, 1.0)
-            val message = buildString {
-                for (i in 0 until totalBlocks) {
-                    if ((percent * (totalBlocks - 1)).toInt() == i) {
-                        append("__**\u25AC**__")
-                    } else {
-                        append("\u2015")
-                    }
-                }
-                append(" **%.0f**%%".format(percent * max))
-            }
-
+    fun volume(ctx: Context, amount: Int?) {
+        if (amount == null) {
+            val volume = ctx.manager.player.volume.coerceIn(0, maximumVolume)
+            val bar = buildBar(volume, maximumVolume)
 
             return ctx.send {
                 setTitle("Volume")
-                setDescription(message)
-                setFooter("Set the volume by using ${ctx.config.prefix}volume (int)", null)
+                setDescription(bar)
+                setFooter("Set the volume by using ${ctx.config.prefix}volume (number)", null)
             }
         }
 
-        val increment = amount.toInt().coerceIn(0, 150)
-
+        val newVolume = amount.coerceIn(0, maximumVolume)
         val old = ctx.manager.player.volume
-        ctx.manager.player.volume = increment
+        val bar = buildBar(newVolume, maximumVolume)
 
-        val max = increment.coerceIn(0, 100)
-        val percent = (increment.toDouble() / max).coerceIn(0.0, 1.0)
-        val message = buildString {
+        ctx.manager.player.volume = newVolume
+
+        ctx.send {
+            setTitle("Volume")
+            setDescription(bar)
+            setFooter("Volume changed from $old% to ${ctx.manager.player.volume}%")
+        }
+    }
+
+    private fun buildBar(value: Int, maximum: Int): String {
+        val percent = (value.toDouble() / maximum).coerceIn(0.0, 1.0)
+
+        return buildString {
             for (i in 0 until totalBlocks) {
                 if ((percent * (totalBlocks - 1)).toInt() == i) {
                     append("__**\u25AC**__")
@@ -56,13 +53,7 @@ class Volume : MusicCog {
                     append("\u2015")
                 }
             }
-            append(" **%.0f**%%".format(percent * max))
-        }
-
-        ctx.send {
-            setTitle("Volume")
-            setDescription(message)
-            setFooter("Volume changed from $old% to ${ctx.manager.player.volume}%")
+            append(" **%.0f**%%".format(percent * maximum))
         }
     }
 }
