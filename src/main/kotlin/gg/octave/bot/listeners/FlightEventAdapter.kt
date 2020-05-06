@@ -123,7 +123,9 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             return false
         }
 
-        if (ctx.member!!.hasPermission(Permission.ADMINISTRATOR) || ctx.member!!.hasPermission(Permission.MANAGE_SERVER)) {
+        if (ctx.member!!.hasPermission(Permission.ADMINISTRATOR)
+                || ctx.member!!.hasPermission(Permission.MANAGE_SERVER)
+                || ctx.author.idLong in ctx.config.admins) {
             return true
         }
 
@@ -171,8 +173,6 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         return (data.ignored.users.contains(member.user.id)
             || data.ignored.channels.contains(ctx.textChannel!!.id)
             || data.ignored.roles.any { id -> member.roles.any { it.id == id } })
-            && !member.hasPermission(Permission.ADMINISTRATOR)
-            && member.user.idLong !in ctx.config.admins
     }
 
 
