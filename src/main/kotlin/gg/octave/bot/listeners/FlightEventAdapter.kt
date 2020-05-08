@@ -86,9 +86,6 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             }
         }.trim()
 
-        ctx.author.isFake
-
-
         val usage = executed.method.findAnnotation<Usage>()?.description
             ?: generateDefaultUsage(arguments)
 
