@@ -28,8 +28,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 object Launcher {
-    private val log = LoggerFactory.getLogger(Launcher::class.java)
-
     val configuration = Configuration(File("bot.conf"))
     val credentials = BotCredentials(File("credentials.conf"))
     val database = Database("bot")

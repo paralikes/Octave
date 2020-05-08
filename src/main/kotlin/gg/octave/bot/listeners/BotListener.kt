@@ -1,15 +1,19 @@
 package gg.octave.bot.listeners
 
 import gg.octave.bot.Launcher
+import gg.octave.bot.db.Database
 import gg.octave.bot.db.OptionsRegistry
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.*
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.EventListener
+import org.json.JSONObject
 import org.slf4j.LoggerFactory
+import redis.clients.jedis.Jedis
 import java.awt.Color
 import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit
@@ -67,6 +71,7 @@ class BotListener : EventListener {
         Launcher.datadog.gauge("octave_bot.users", Launcher.shardManager.userCache.size())
         Launcher.datadog.gauge("octave_bot.players", Launcher.players.size().toLong())
         Launcher.datadog.incrementCounter("octave_bot.guildJoin")
+        postStats(event.jda)
     }
 
     private fun onGuildLeave(event: GuildLeaveEvent) {
@@ -75,6 +80,7 @@ class BotListener : EventListener {
         Launcher.datadog.gauge("octave_bot.users", Launcher.shardManager.userCache.size())
         Launcher.datadog.gauge("octave_bot.players", Launcher.players.size().toLong())
         Launcher.datadog.incrementCounter("octave_bot.guildLeave")
+        postStats(event.jda)
     }
 
     private fun onStatusChange(event: StatusChangeEvent) {
@@ -84,6 +90,7 @@ class BotListener : EventListener {
     private fun onReady(event: ReadyEvent) {
         Launcher.datadog.incrementCounter("octave_bot.shardReady")
         log.info("JDA ${event.jda.shardInfo.shardId} is ready.")
+        postStats(event.jda)
     }
 
     private fun onResume(event: ResumedEvent) {
@@ -94,6 +101,7 @@ class BotListener : EventListener {
     private fun onReconnect(event: ReconnectedEvent) {
         Launcher.datadog.incrementCounter("octave_bot.shardReconnect")
         log.info("JDA ${event.jda.shardInfo.shardId} has reconnected.")
+        postStats(event.jda)
     }
 
     private fun onDisconnect(event: DisconnectEvent) {
@@ -112,5 +120,15 @@ class BotListener : EventListener {
     private fun onException(event: ExceptionEvent) {
         Launcher.datadog.incrementCounter("octave_bot.exception")
         if (!event.isLogged) log.error("Exception in JDA {}", event.jda.shardInfo.shardId, event.cause)
+    }
+
+    private fun postStats(jda: JDA) {
+        Database.getDefaultJedisPool().resource.use {
+            it.hset("stats", jda.shardInfo.shardId.toString(), JSONObject()
+                    .put("guild_count", jda.guildCache.size())
+                    .put("cached_users", jda.userCache.size())
+                    .toString()
+            )
+        }
     }
 }

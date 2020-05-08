@@ -22,7 +22,7 @@ import static com.rethinkdb.RethinkDB.r;
 public class Database {
     private static final Logger LOG = LoggerFactory.getLogger("Database");
     private final Connection conn;
-    private static JedisPool defaultJedisPool = new JedisPool("localhost", 6379);
+    private static final JedisPool defaultJedisPool = new JedisPool("localhost", 6379);
     private Config config = new Config();
     private RedissonClient redisson;
 
