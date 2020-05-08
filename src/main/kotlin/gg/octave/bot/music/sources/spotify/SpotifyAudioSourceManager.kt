@@ -44,9 +44,7 @@ class SpotifyAudioSourceManager(
         get() = "" != clientId && "" != clientSecret
 
     init {
-        if (enabled) {
-            refreshAccessToken()
-        }
+        refreshAccessToken()
     }
 
 
@@ -124,7 +122,7 @@ class SpotifyAudioSourceManager(
     /**
      * Spotify shizzle
      */
-    private fun refreshAccessToken() {
+    fun refreshAccessToken() {
         if (!enabled) {
             return
         }
@@ -145,18 +143,30 @@ class SpotifyAudioSourceManager(
             val content = EntityUtils.toString(it.entity)
             val json = JSONObject(content)
 
-            if (json.has("error") && json.getString("error").startsWith("invalid_")) {
-                log.error("Spotify API access disabled (${json.getString("error")})")
-                accessToken = ""
+            if (json.has("error")) {
+                val errorMessage = json.getString("error")
+                if (errorMessage.startsWith("invalid_")) {
+                    log.error("Spotify API access disabled ($errorMessage)")
+                    accessToken = ""
+                    return
+                }
+
+                log.error("There was an error refreshing access token: $errorMessage. Queueing refresh for a minute from now.")
+                sched.schedule(::refreshAccessToken, 1, TimeUnit.MINUTES)
                 return
             }
 
-            val refreshIn = json.getInt("expires_in")
+            val refreshSeconds = json.getInt("expires_in").toLong()
             accessToken = json.getString("access_token")
-            sched.schedule(::refreshAccessToken, ((refreshIn * 1000) - 10000).toLong(), TimeUnit.MILLISECONDS)
 
-            val snippet = accessToken.substring(0..4).padEnd(accessToken.length - 5, '*') // lol imagine printing the entire token
-            log.info("Updated access token to $snippet")
+            val refreshMillis = TimeUnit.SECONDS.toMillis(refreshSeconds)
+            // Refresh 5 minutes early. This means should there be an issue with Spotify, we can refresh 5 times (1/min)
+            // before the token actually expires.
+            val earlyRefresh = TimeUnit.MINUTES.toMillis(5)
+            val refreshDelay = refreshMillis - earlyRefresh
+            sched.schedule(::refreshAccessToken, refreshDelay, TimeUnit.MILLISECONDS)
+
+            log.info("Successfully refreshed Spotify access token.")
         }
     }
 
@@ -183,5 +193,4 @@ class SpotifyAudioSourceManager(
             SpotifyTrackLoader()
         )
     }
-
 }
