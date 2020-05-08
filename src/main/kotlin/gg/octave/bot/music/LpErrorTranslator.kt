@@ -25,6 +25,7 @@ object LpErrorTranslator {
             .firstOrNull { it.key(lowerCase) }
             ?.value
             ?: rootCause.localizedMessage
+            ?: "We don't really know, try again?"
         // Or do we default to some generic message about how the error has been logged and we'll look into it?
     }
 }

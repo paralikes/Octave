@@ -29,7 +29,6 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
 
 class FlightEventAdapter : DefaultCommandEventAdapter() {
-
     fun generateDefaultUsage(arguments: List<Argument>): String {
         return buildString {
             for (arg in arguments) {
@@ -86,6 +85,9 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                 append(" ")
             }
         }.trim()
+
+        ctx.author.isFake
+
 
         val usage = executed.method.findAnnotation<Usage>()?.description
             ?: generateDefaultUsage(arguments)
