@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.PrivateChannel
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.sharding.ShardManager
+import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import java.util.*
@@ -38,6 +39,7 @@ class ExtendedShardManager(private val shardManager: ShardManager) : ShardManage
                     setBulkDeleteSplittingEnabled(false)
                     disableCache(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS))
                     setMemberCachePolicy(MemberCachePolicy.VOICE)
+                    setChunkingFilter(ChunkingFilter.NONE)
                 }
                 .apply(apply)
                 .build()
