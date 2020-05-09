@@ -10,7 +10,7 @@ import me.devoxin.flight.api.entities.Cog
 class Help : Cog {
     private val categoryAlias = mapOf("Search" to "Music", "Dj" to "Music")
 
-    @Command
+    @Command(aliases = ["commands", "cmds"], description = "Shows a list of commands, or command information.")
     fun help(ctx: Context, command: String?) {
         if (command == null) {
             return sendCommands(ctx)
