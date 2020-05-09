@@ -161,10 +161,6 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             return data.music.isDisableDj || isDJ(ctx)
         }
 
-        if (command.cog is MusicCog) {
-            return (command.cog as MusicCog).check(ctx)
-        }
-
         return true
     }
 

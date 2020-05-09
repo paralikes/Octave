@@ -4,6 +4,7 @@ import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.PLAY_MESSAGE
 import gg.octave.bot.utils.extensions.selfMember
 import gg.octave.bot.utils.extensions.voiceChannel
+import me.devoxin.flight.api.CommandFunction
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.entities.Cog
 
@@ -11,6 +12,8 @@ interface MusicCog : Cog {
     fun sameChannel() = false
     fun requirePlayingTrack() = false
     fun requirePlayer() = false
+
+    override fun localCheck(ctx: Context, command: CommandFunction) = check(ctx)
 
     fun check(ctx: Context): Boolean {
         val manager = Launcher.players.getExisting(ctx.guild)
