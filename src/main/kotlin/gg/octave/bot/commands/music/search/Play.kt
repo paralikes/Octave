@@ -35,7 +35,7 @@ class Play : Cog {
 
         if (query == null) {
             if (manager == null) {
-                return ctx.send("There's no music player in this guild.\n\uD83C\uDFB6` ${ctx.trigger}play (song/url)` to start playing some music!")
+                return ctx.send("There's no music player in this guild.\n\uD83C\uDFB6 `${ctx.trigger}play (song/url)` to start playing some music!")
             }
 
             when {
