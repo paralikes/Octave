@@ -17,17 +17,11 @@ class BassBoost : MusicCog {
     @CheckVoiceState
     @Command(aliases = ["bb", "bass", "boost"], description = "Applies bass boost to the music.")
     fun bassboost(ctx: Context, strength: BoostSetting) {
-        val manager = ctx.manager
-
-        if (strength == null) {
-            return ctx.send("`${ctx.trigger}bassboost <${BoostSetting.values().joinToString("/")}>`")
-        }
-
-        manager.dspFilter.bassBoost = strength
+        ctx.manager.dspFilter.bassBoost = strength
 
         ctx.send {
             setTitle("Bass Boost")
-            setDescription("Bass Boost strength is now set to `${strength.name}`")
+            setDescription("Bass Boost strength is now set to `${strength.name.toLowerCase()}`")
         }
     }
 }

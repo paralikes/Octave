@@ -1,4 +1,4 @@
-package gg.octave.bot.entities.framework
+package gg.octave.bot.entities.framework.parsers
 
 import gg.octave.bot.music.settings.BoostSetting
 

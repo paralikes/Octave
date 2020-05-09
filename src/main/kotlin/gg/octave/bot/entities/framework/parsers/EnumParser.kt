@@ -1,4 +1,4 @@
-package gg.octave.bot.entities.framework
+package gg.octave.bot.entities.framework.parsers
 
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.internal.parsers.Parser

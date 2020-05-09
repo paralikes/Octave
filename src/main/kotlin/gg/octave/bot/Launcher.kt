@@ -10,6 +10,7 @@ import gg.octave.bot.entities.BotCredentials
 import gg.octave.bot.entities.Configuration
 import gg.octave.bot.entities.ExtendedShardManager
 import gg.octave.bot.entities.framework.*
+import gg.octave.bot.entities.framework.parsers.*
 import gg.octave.bot.listeners.BotListener
 import gg.octave.bot.listeners.FlightEventAdapter
 import gg.octave.bot.listeners.VoiceListener
@@ -22,7 +23,6 @@ import me.devoxin.flight.api.CommandClient
 import me.devoxin.flight.api.CommandClientBuilder
 import net.dv8tion.jda.api.JDAInfo
 import net.dv8tion.jda.api.requests.RestAction
-import org.slf4j.LoggerFactory
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -70,6 +70,7 @@ object Launcher {
             .addCustomParser(DurationParser())
             .addCustomParser(KeyTypeParser())
             .addCustomParser(BoostSettingParser())
+            .addCustomParser(RepeatOptionParser())
             .setOwnerIds(*configuration.admins.toLongArray())
             .addEventListeners(FlightEventAdapter())
             .configureDefaultHelpCommand { enabled = false }

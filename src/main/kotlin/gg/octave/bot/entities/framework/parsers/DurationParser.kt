@@ -1,4 +1,4 @@
-package gg.octave.bot.entities.framework
+package gg.octave.bot.entities.framework.parsers
 
 import gg.octave.bot.utils.toDuration
 import me.devoxin.flight.api.Context

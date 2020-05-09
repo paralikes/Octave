@@ -43,7 +43,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                     Duration::class.java -> "20m"
                     else -> {
                         if (arg.type.isEnum) {
-                            arg.type.enumConstants.first()
+                            arg.type.enumConstants.first().toString().toLowerCase()
                         } else {
                             "[Unknown Type, report to devs]"
                         }
@@ -57,7 +57,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
     override fun onBadArgument(ctx: Context, command: CommandFunction, error: BadArgument) {
         if (error.argument.type.isEnum) {
-            val options = error.argument.type.enumConstants.map { it.toString() }
+            val options = error.argument.type.enumConstants.map { it.toString().toLowerCase() }
             return ctx.send {
                 setTitle("Help | ${command.name}")
                 setDescription("You specified an invalid argument for `${error.argument.name}`.")
