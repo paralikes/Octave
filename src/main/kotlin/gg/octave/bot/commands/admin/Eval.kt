@@ -13,9 +13,7 @@ class Eval : Cog {
 
     @Command(description = "Evaluate Kotlin code.", developerOnly = true)
     fun eval(ctx: Context, @Greedy code: String) {
-        if (code.isEmpty()) { // Can't remember if this is even possible with Flight lol
-            return ctx.send("Code can not be empty.") // TODO: Context methods like .send().issue()
-        }
+        val stripped = code.replace("^```\\w+".toRegex(), "").removeSuffix("```")
 
         val bindings = mapOf(
             "ctx" to ctx,
@@ -29,7 +27,7 @@ class Eval : Cog {
         bind.putAll(bindings)
 
         try {
-            val result = engine.eval("$bindString\n$code", bind)
+            val result = engine.eval("$bindString\n$stripped", bind)
                 ?: return ctx.message.addReaction("👌").queue()
 
             if (result is CompletableFuture<*>) {
