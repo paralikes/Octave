@@ -36,19 +36,13 @@ class BotInfo : Cog {
         var guilds = 0L
         var users = 0L
 
-        //This gets them twice, though. There must be a better (idiomatic) way.
-        Database.getDefaultJedisPool().resource.use { jedis ->
-            guilds = (0 until Launcher.credentials.totalShards)
-                    .map { jedis.hget("stats", it.toString()) }
-                    .map(::JSONObject)
-                    .map { it.getLong("guild_count") }
-                    .sum()
-
-            users = (0 until Launcher.credentials.totalShards)
-                    .map { jedis.hget("stats", it.toString()) }
-                    .map(::JSONObject)
-                    .map { it.getLong("cached_users") }
-                    .sum()
+        Database.getDefaultJedisPool().resource.use {
+            for(x in 0 until Launcher.credentials.totalShards) {
+                val stats = it.hget("stats", x.toString());
+                val json = JSONObject(stats)
+                guilds += json.getLong("guild_count")
+                users += json.getLong("cached_users")
+            }
         }
 
         ctx.send {
