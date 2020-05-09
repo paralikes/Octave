@@ -2,12 +2,14 @@ package gg.octave.bot.commands.general
 
 import com.sun.management.OperatingSystemMXBean
 import gg.octave.bot.Launcher
+import gg.octave.bot.db.Database
 import gg.octave.bot.utils.Capacity
 import gg.octave.bot.utils.OctaveBot
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.JDAInfo
+import org.json.JSONObject
 import java.lang.management.ManagementFactory
 import java.text.DecimalFormat
 
@@ -31,8 +33,23 @@ class BotInfo : Cog {
         val ramUsedCalculated = Capacity.calculate(ramUsedBytes)
         val ramUsedFormatted = dpFormatter.format(ramUsedCalculated.amount)
         val ramUsedPercent = dpFormatter.format(ramUsedBytes.toDouble() / Runtime.getRuntime().totalMemory() * 100)
-        val guilds = ctx.jda.shardManager!!.guildCache.size()
-        val users = ctx.jda.shardManager!!.userCache.size()
+        var guilds = 0L
+        var users = 0L
+
+        //This gets them twice, though. There must be a better (idiomatic) way.
+        Database.getDefaultJedisPool().resource.use { jedis ->
+            guilds = (0 until Launcher.credentials.totalShards)
+                    .map { jedis.hget("stats", it.toString()) }
+                    .map(::JSONObject)
+                    .map { it.getLong("guild_count") }
+                    .sum()
+
+            users = (0 until Launcher.credentials.totalShards)
+                    .map { jedis.hget("stats", it.toString()) }
+                    .map(::JSONObject)
+                    .map { it.getLong("cached_users") }
+                    .sum()
+        }
 
         ctx.send {
             setTitle("Octave (Revision ${OctaveBot.GIT_REVISION})")
