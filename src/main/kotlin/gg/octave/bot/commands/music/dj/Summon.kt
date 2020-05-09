@@ -18,24 +18,8 @@ class Summon : MusicCog {
 
     @DJ
     @CheckVoiceState
-    @Command(description = "Move the bot to another channel.")
+    @Command(description = "Connects, or moves the bot to a voice channel.")
     fun summon(ctx: Context, @Greedy channel: VoiceChannel?) {
-//        val vc = channel
-//            ?: ctx.voiceChannel
-//            ?: return ctx.send("That's not a valid music channel. " +
-//                "You can join a VC and run this command without arguments to make it join that channel.")
-//
-//        if (vc == ctx.selfMember!!.voiceState?.channel) {
-//            return ctx.send("That's the same channel as I'm currently in.")
-//        }
-//
-//        val data = ctx.data
-//
-//        if (data.music.channels.isNotEmpty()) {
-//            if (vc.id !in data.music.channels) {
-//                return ctx.send("Can not join `${vc.name}`, it isn't one of the designated music channels.")
-//            }
-//        }
         val musicManager = try {
             Launcher.players.get(ctx.guild!!)
         } catch (e: MusicLimitException) {

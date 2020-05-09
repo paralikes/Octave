@@ -26,7 +26,7 @@ class Help : Cog {
         val category = ctx.commandClient.commands.values
             .filter { categoryAlias.getOrDefault(it.category, it.category) == command }
             .takeIf { it.isNotEmpty() }
-            ?: return ctx.send("No categories found with that name. Category names are case-sensitive.")
+            ?: return ctx.send("No commands or categories found with that name. Category names are case-sensitive.")
 
         sendCategoryCommands(ctx, category)
     }
