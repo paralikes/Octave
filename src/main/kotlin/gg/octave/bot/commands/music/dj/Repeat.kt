@@ -15,13 +15,7 @@ class Repeat : MusicCog {
     @DJ
     @CheckVoiceState
     @Command(aliases = ["loop"], description = "Set if the music player should repeat")
-    fun repeat(ctx: Context, arg: String) {
-        val option = try {
-            RepeatOption.valueOf(arg)
-        } catch (e: IllegalArgumentException) {
-            return ctx.send("Valid options are `${RepeatOption.values().joinToString()}`")
-        }
-
+    fun repeat(ctx: Context, option: RepeatOption) {
         ctx.manager.scheduler.repeatOption = option
         val symbol = when (ctx.manager.scheduler.repeatOption) {
             RepeatOption.QUEUE -> "\uD83D\uDD01"
