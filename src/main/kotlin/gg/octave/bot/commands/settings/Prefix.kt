@@ -9,7 +9,7 @@ import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.Permission
 
 class Prefix : Cog {
-    @Command(description = "Sets the prefix for the server. Omit to reset.", userPermissions = [Permission.MANAGE_SERVER])
+    @Command(description = "Sets the prefix for the server.", userPermissions = [Permission.MANAGE_SERVER])
     fun prefix(ctx: Context, prefix: String?) {
         val data = ctx.data
 
