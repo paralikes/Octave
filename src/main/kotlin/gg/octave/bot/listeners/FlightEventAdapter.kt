@@ -135,8 +135,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             return false
         }
 
-        //if (command.method.hasAnnotation<CheckVoiceState>()) {
-        if (command.category in setOf("Music", "Dj", "Search")) { // don't ask
+        if (command.category == "Music" || command.category == "Dj" || command.category == "Search")
             if (ctx.member!!.voiceState?.channel == null) {
                 ctx.send("You're not in a voice channel.")
                 return false
