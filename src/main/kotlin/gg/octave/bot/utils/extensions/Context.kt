@@ -36,6 +36,9 @@ val Context.launcher: Launcher
 val Context.manager: MusicManager
     get() = Launcher.players.get(this.guild)
 
+val Context.existingManager: MusicManager?
+    get() = Launcher.players.getExisting(this.guild)
+
 val Context.voiceChannel: VoiceChannel?
     get() = member!!.voiceState?.channel
 

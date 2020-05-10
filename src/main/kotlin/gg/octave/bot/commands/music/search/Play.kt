@@ -105,7 +105,7 @@ class Play : Cog {
     }
 
     companion object {
-        fun smartPlay(ctx: Context, manager: MusicManager?, args: List<String>, isSearchResult: Boolean, uri: String) {
+        fun smartPlay(ctx: Context, manager: MusicManager?, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean = false) {
             when {
                 ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false) -> startPlayVote(ctx, manager!!, args, isSearchResult, uri)
                 else -> play(ctx, args, isSearchResult, uri)
@@ -149,14 +149,14 @@ class Play : Cog {
 
             val data = ctx.data
 
-            val voteSkipCooldown = if (data.music.votePlayCooldown <= 0) {
+            val votePlayCooldown = if (data.music.votePlayCooldown <= 0) {
                 ctx.config.votePlayCooldown.toMillis()
             } else {
                 data.music.votePlayCooldown
             }
 
-            if (System.currentTimeMillis() - manager.lastPlayVoteTime < voteSkipCooldown) {
-                return ctx.send("You must wait $voteSkipCooldown before starting a new vote.")
+            if (System.currentTimeMillis() - manager.lastPlayVoteTime < votePlayCooldown) {
+                return ctx.send("You must wait $votePlayCooldown before starting a new vote.")
             }
 
             val votePlayDuration = if (data.music.votePlayDuration == 0L) {
@@ -204,7 +204,7 @@ class Play : Cog {
                     val votes = m.reactions.firstOrNull { it.reactionEmote.name == "👍" }?.count?.minus(1) ?: 0
 
                     ctx.send {
-                        setTitle("Vote Skip")
+                        setTitle("Vote Play")
                         setDescription(
                             buildString {
                                 if (votes > halfPeople) {
