@@ -32,29 +32,7 @@ class Play : Cog {
         }
 
         if (query == null) {
-            val manager = Launcher.players.getExisting(ctx.guild)
-                ?: return ctx.send("There's no music player in this guild.\n\uD83C\uDFB6 `${ctx.trigger}play (song/url)` to start playing some music!")
-
-            when {
-                manager.player.isPaused -> {
-                    manager.player.isPaused = false
-
-                    ctx.send {
-                        setTitle("Play Music")
-                        setDescription("Music is no longer paused.")
-                    }
-                }
-                manager.player.playingTrack != null -> {
-                    ctx.send("Music is already playing. Are you trying to queue a track? Try adding a search term with this command!")
-                }
-                manager.scheduler.queue.isEmpty() -> {
-                    ctx.send {
-                        setTitle("Empty Queue")
-                        setDescription("There is no music queued right now. Add some songs with `${ctx.trigger}play (song/url)`.")
-                    }
-                }
-            }
-            return
+            return playArgless(ctx)
         }
 
         val args = query.split(" +".toRegex())
@@ -77,15 +55,40 @@ class Play : Cog {
         }
     }
 
+    private fun playArgless(ctx: Context) {
+        val manager = Launcher.players.getExisting(ctx.guild)
+            ?: return ctx.send("There's no music player in this guild.\n\uD83C\uDFB6 `${ctx.trigger}play (song/url)` to start playing some music!")
+
+        when {
+            manager.player.isPaused -> {
+                manager.player.isPaused = false
+
+                ctx.send {
+                    setTitle("Play Music")
+                    setDescription("Music is no longer paused.")
+                }
+            }
+            manager.player.playingTrack != null -> {
+                ctx.send("Music is already playing. Are you trying to queue a track? Try adding a search term with this command!")
+            }
+            manager.scheduler.queue.isEmpty() -> {
+                ctx.send {
+                    setTitle("Empty Queue")
+                    setDescription("There is no music queued right now. Add some songs with `${ctx.trigger}play (song/url)`.")
+                }
+            }
+        }
+    }
+
     private fun prompt(ctx: Context, hasManager: Boolean): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
-
         val oldQueue = TrackScheduler.getQueueForGuild(ctx.guild!!.id)
+
         if (!hasManager && !oldQueue.isEmpty()) {
             SelectorBuilder(Launcher.eventWaiter)
                 .setType(Selector.Type.MESSAGE)
-                .title { "Would you like to keep your old queue?" }
-                .description { "Thanks for using Octave!" }
+                .setTitle("Would you like to keep your old queue?")
+                .setDescription("Thanks for using Octave!")
                 .addOption("Yes, keep it.") {
                     ctx.send("Kept old queue. Playing new song first and continuing with your queue...")
                     future.complete(null)
