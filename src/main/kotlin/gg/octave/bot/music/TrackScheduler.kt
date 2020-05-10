@@ -146,7 +146,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
 
-    fun removeQueueIndex(queue: Queue<String>, indexToRemove: Int): String {
+    fun removeQueueIndex(indexToRemove: Int): String {
         var index = 0
         val iterator = queue.iterator()
         var value = ""
@@ -162,7 +162,6 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
         return value
     }
-
 
     companion object {
         fun getQueueForGuild(guildId: String): RQueue<String> {

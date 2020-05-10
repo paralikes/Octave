@@ -12,13 +12,14 @@ interface MusicCog : Cog {
     fun sameChannel() = false
     fun requirePlayingTrack() = false
     fun requirePlayer() = false
+    fun requireManager() = true
 
     override fun localCheck(ctx: Context, command: CommandFunction) = check(ctx)
 
     fun check(ctx: Context): Boolean {
         val manager = Launcher.players.getExisting(ctx.guild)
 
-        if (manager == null) {
+        if (requireManager() && manager == null) {
             ctx.send("There's no music player in this server.\n$PLAY_MESSAGE")
             return false
         }
@@ -35,7 +36,7 @@ interface MusicCog : Cog {
             return false
         }
 
-        if (requirePlayingTrack() && manager.player.playingTrack == null) {
+        if (requirePlayingTrack() && manager?.player?.playingTrack == null) {
             ctx.send("The player is not playing anything.")
             return false
         }

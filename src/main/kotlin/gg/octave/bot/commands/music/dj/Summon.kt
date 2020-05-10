@@ -14,10 +14,9 @@ import me.devoxin.flight.api.annotations.Greedy
 import net.dv8tion.jda.api.entities.VoiceChannel
 
 class Summon : MusicCog {
-    override fun requirePlayer() = true
+    override fun requireManager() = false
 
     @DJ
-    @CheckVoiceState
     @Command(description = "Connects, or moves the bot to a voice channel.")
     fun summon(ctx: Context, @Greedy channel: VoiceChannel?) {
         val musicManager = try {
@@ -26,10 +25,12 @@ class Summon : MusicCog {
             return e.sendToContext(ctx)
         }
 
+        val targetChannel = channel ?: ctx.voiceChannel!!
+
         if (ctx.guild!!.audioManager.connectedChannel != null) {
-            musicManager.moveAudioConnection(ctx.voiceChannel!!)
+            musicManager.moveAudioConnection(targetChannel)
         } else {
-            musicManager.openAudioConnection(ctx.voiceChannel!!, ctx)
+            musicManager.openAudioConnection(targetChannel, ctx)
         }
     }
 }

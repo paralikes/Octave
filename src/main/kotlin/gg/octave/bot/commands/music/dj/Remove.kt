@@ -31,7 +31,7 @@ class Remove : MusicCog {
         val track: String = when (which) {
             null -> return ctx.send("You need to specify what to remove. (`first`/`last`/`all`/`1..3`)")
             "first" -> queue.remove() //Remove head
-            "last" -> manager.scheduler.removeQueueIndex(queue, queue.size - 1)
+            "last" -> manager.scheduler.removeQueueIndex(queue.size - 1)
             "all" -> {
                 queue.clear()
                 ctx.send("Cleared the music queue.")
@@ -57,7 +57,7 @@ class Remove : MusicCog {
                     }
 
                     for (i in end downTo start) {
-                        manager.scheduler.removeQueueIndex(queue, i - 1)
+                        manager.scheduler.removeQueueIndex(i - 1)
                     }
 
                     return ctx.send("Removed tracks `$start-$end` from the queue.")
@@ -67,7 +67,7 @@ class Remove : MusicCog {
                     ?.takeIf { it >= 1 && it <= queue.size }
                     ?: return ctx.send("That is not a valid track number. Try `1`, `1..${queue.size}`, `first`, or `last`.")
 
-                manager.scheduler.removeQueueIndex(queue, num - 1)
+                manager.scheduler.removeQueueIndex(num - 1)
             }
         }
 

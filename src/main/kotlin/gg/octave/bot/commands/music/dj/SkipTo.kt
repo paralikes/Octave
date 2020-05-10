@@ -27,7 +27,7 @@ class SkipTo : MusicCog {
         }
 
         for (i in 0 until toIndex - 1) {
-            manager.scheduler.removeQueueIndex(manager.scheduler.queue, 0)
+            manager.scheduler.removeQueueIndex(0)
         }
 
         manager.scheduler.nextTrack()
