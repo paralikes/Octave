@@ -50,16 +50,19 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
      */
     fun nextTrack() {
         if (queue.isEmpty()) {
-            manager.discordFMTrack?.let {
-                it.nextDiscordFMTrack(manager)
-
-                //This basically forces it to poll the next track immediately, they skipped it.
-                val track = queue.poll()
-                player.startTrack(PlaylistUtils.toAudioTrack(track), false)
-                return
+            if (manager.discordFMTrack == null) {
+                return manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.guild) }
             }
 
-            manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.guild) }
+            manager.discordFMTrack?.let {
+                it.nextDiscordFMTrack(manager).thenAccept { track ->
+                    if (track == null) {
+                        return@thenAccept Launcher.players.destroy(manager.guild)
+                    }
+
+                    player.startTrack(track, false)
+                }
+            }
             return
         }
 
