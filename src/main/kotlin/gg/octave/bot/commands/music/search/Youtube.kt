@@ -56,11 +56,8 @@ class Youtube : Cog {
                                 return@addOption e.sendToContext(ctx)
                             }
 
-                            if (ctx.data.music.isVotePlay) {
-                                Play.startPlayVote(ctx, manager, query.split(" +".toRegex()).toTypedArray(), true, result.info.uri)
-                            } else {
-                                Play.play(ctx, query.split(" +".toRegex()).toTypedArray(), true, result.info.uri)
-                            }
+                            val args = query.split(" +".toRegex())
+                            Play.smartPlay(ctx, manager, args, true, result.info.uri)
                         } else {
                             ctx.send("You're not in a voice channel anymore!")
                         }

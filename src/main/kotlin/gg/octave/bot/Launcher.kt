@@ -19,6 +19,7 @@ import gg.octave.bot.utils.DiscordFM
 import gg.octave.bot.utils.OctaveBot
 import gg.octave.bot.utils.extensions.registerAlmostAllParsers
 import io.sentry.Sentry
+import me.devoxin.flight.FlightInfo
 import me.devoxin.flight.api.CommandClient
 import me.devoxin.flight.api.CommandClientBuilder
 import net.dv8tion.jda.api.JDAInfo
@@ -57,6 +58,7 @@ object Launcher {
         println("|           O c t a v e           |")
         println("|        Revision ${OctaveBot.GIT_REVISION}        |")
         println("| JDA: ${JDAInfo.VERSION.padEnd(27)}|")
+        println("| Flight: ${FlightInfo.VERSION.padEnd(24)}|")
         println("| LP : ${PlayerLibrary.VERSION.padEnd(27)}|")
         println("+---------------------------------+")
 

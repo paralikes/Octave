@@ -31,12 +31,9 @@ class Play : Cog {
             return ctx.send("The bot is already playing music in another channel.")
         }
 
-        val manager = Launcher.players.getExisting(ctx.guild)
-
         if (query == null) {
-            if (manager == null) {
-                return ctx.send("There's no music player in this guild.\n\uD83C\uDFB6 `${ctx.trigger}play (song/url)` to start playing some music!")
-            }
+            val manager = Launcher.players.getExisting(ctx.guild)
+                ?: return ctx.send("There's no music player in this guild.\n\uD83C\uDFB6 `${ctx.trigger}play (song/url)` to start playing some music!")
 
             when {
                 manager.player.isPaused -> {
@@ -60,20 +57,19 @@ class Play : Cog {
             return
         }
 
-        val args = query.split(" +".toRegex()).toTypedArray()
+        val args = query.split(" +".toRegex())
+        val hasManager = Launcher.players.contains(ctx.guild!!.idLong)
 
-        prompt(ctx, manager).handle { _, _ ->
-            if (ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false)) {
-                val newManager = try {
-                    Launcher.players.get(ctx.guild)
-                } catch (e: MusicLimitException) {
-                    return@handle e.sendToContext(ctx)
-                }
-
-                startPlayVote(ctx, newManager, args, false, "")
-            } else {
-                play(ctx, args, false, "")
+        prompt(ctx, hasManager).handle { _, _ ->
+            val newManager = try {
+                Launcher.players.get(ctx.guild)
+            } catch (e: MusicLimitException) {
+                // I don't like these try/catches everywhere. They also have a slight impact on performance.
+                // TODO: Figure out a better solution.
+                return@handle e.sendToContext(ctx)
             }
+
+            smartPlay(ctx, newManager, args, false, "")
         }.exceptionally {
             ctx.send("An error occurred!")
             it.printStackTrace()
@@ -81,11 +77,11 @@ class Play : Cog {
         }
     }
 
-    private fun prompt(ctx: Context, manager: MusicManager?): CompletableFuture<Void> {
+    private fun prompt(ctx: Context, hasManager: Boolean): CompletableFuture<Void> {
         val future = CompletableFuture<Void>()
 
         val oldQueue = TrackScheduler.getQueueForGuild(ctx.guild!!.id)
-        if (manager == null && !oldQueue.isEmpty()) {
+        if (!hasManager && !oldQueue.isEmpty()) {
             SelectorBuilder(Launcher.eventWaiter)
                 .setType(Selector.Type.MESSAGE)
                 .title { "Would you like to keep your old queue?" }
@@ -106,7 +102,14 @@ class Play : Cog {
     }
 
     companion object {
-        fun play(ctx: Context, args: Array<String>, isSearchResult: Boolean, uri: String) {
+        fun smartPlay(ctx: Context, manager: MusicManager?, args: List<String>, isSearchResult: Boolean, uri: String) {
+            when {
+                ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false) -> startPlayVote(ctx, manager!!, args, isSearchResult, uri)
+                else -> play(ctx, args, isSearchResult, uri)
+            }
+        }
+
+        fun play(ctx: Context, args: List<String>, isSearchResult: Boolean, uri: String) {
             val manager = try {
                 Launcher.players.get(ctx.guild)
             } catch (e: MusicLimitException) {
@@ -136,7 +139,7 @@ class Play : Cog {
             )
         }
 
-        fun startPlayVote(ctx: Context, manager: MusicManager, args: Array<String>, isSearchResult: Boolean, uri: String) {
+        fun startPlayVote(ctx: Context, manager: MusicManager, args: List<String>, isSearchResult: Boolean, uri: String) {
             if (manager.isVotingToPlay) {
                 return ctx.send("There is already a vote going on!")
             }
