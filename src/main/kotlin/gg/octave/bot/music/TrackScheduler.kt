@@ -49,26 +49,26 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
      * Start the next track, stopping the current one if it is playing.
      */
     fun nextTrack() {
-        if (queue.isEmpty()) {
-            if (manager.discordFMTrack == null) {
-                return manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.guild) }
-            }
-
-            manager.discordFMTrack?.let {
-                it.nextDiscordFMTrack(manager).thenAccept { track ->
-                    if (track == null) {
-                        return@thenAccept Launcher.players.destroy(manager.guild)
-                    }
-
-                    player.startTrack(track, false)
-                }
-            }
+        if (queue.isNotEmpty()) {
+            val track = queue.poll()
+            val decodedTrack = PlaylistUtils.toAudioTrack(track)
+            player.startTrack(decodedTrack, false)
             return
         }
 
-        val track = queue.poll()
-        val decodedTrack = PlaylistUtils.toAudioTrack(track)
-        player.startTrack(decodedTrack, false)
+        if (manager.discordFMTrack == null) {
+            return manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.guild) }
+        }
+
+        manager.discordFMTrack?.let {
+            it.nextDiscordFMTrack(manager).thenAccept { track ->
+                if (track == null) {
+                    return@thenAccept Launcher.players.destroy(manager.guild)
+                }
+
+                player.startTrack(track, false)
+            }
+        }
     }
 
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
