@@ -35,10 +35,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     fun queue(track: AudioTrack, isNext: Boolean) {
         if (!player.startTrack(track, true)) {
             if (isNext) {
-                val tracks = queue.readAll()
-                tracks.add(0, PlaylistUtils.toBase64String(track))
-                queue.clear()
-                queue.addAll(tracks)
+                insertAt(0, track)
             } else {
                 queue.offer(PlaylistUtils.toBase64String(track))
             }
@@ -54,6 +51,10 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             val decodedTrack = PlaylistUtils.toAudioTrack(track)
             player.startTrack(decodedTrack, false)
             return
+        }
+
+        when (repeatOption) {
+            RepeatOption.SONG ->
         }
 
         if (manager.discordFMTrack == null) {
@@ -145,6 +146,13 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     }
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
+
+    fun insertAt(index: Int, element: AudioTrack) {
+        val tracks = queue.readAll()
+        tracks.add(index, PlaylistUtils.toBase64String(element))
+        queue.clear()
+        queue.addAll(tracks)
+    }
 
     fun removeQueueIndex(indexToRemove: Int): String {
         var index = 0
