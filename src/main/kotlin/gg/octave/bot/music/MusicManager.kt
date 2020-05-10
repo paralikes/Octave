@@ -183,7 +183,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
         playerRegistry.destroy(guild)
     }, 30, TimeUnit.SECONDS)
 
-    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null) {
+    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean) {
         playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 cache(trackUrl, track)
@@ -229,7 +229,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 }
 
                 track.userData = trackContext
-                scheduler.queue(track)
+                scheduler.queue(track, isNext)
 
                 ctx.send {
                     setTitle("Music Queue")
@@ -280,7 +280,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
                     track.userData = trackContext
 
-                    scheduler.queue(track)
+                    scheduler.queue(track, isNext)
                     added++
                 }
 

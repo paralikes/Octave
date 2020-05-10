@@ -26,6 +26,6 @@ class PlayNext : Cog {
         }
 
         val args = query.split(" +".toRegex())
-        Play.smartPlay(ctx, manager, args, false, "")
+        Play.smartPlay(ctx, manager, args, false, "", true)
     }
 }

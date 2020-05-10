@@ -47,7 +47,7 @@ class DiscordFm : Cog {
 
         DiscordFMTrackContext(library, ctx.author.idLong, ctx.textChannel!!.idLong).let {
             manager.discordFMTrack = it
-            manager.loadAndPlay(ctx, track, it, "Now streaming random tracks from the `$library` radio station!")
+            manager.loadAndPlay(ctx, track, it, "Now streaming random tracks from the `$library` radio station!", false)
         }
     }
 

@@ -27,7 +27,7 @@ class DiscordFMTrackContext(
         musicManager.playerManager.loadItemOrdered(this, randomSong, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 track.userData = this@DiscordFMTrackContext
-                musicManager.scheduler.queue(track)
+                musicManager.scheduler.queue(track, false)
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) = trackLoaded(playlist.tracks.first())

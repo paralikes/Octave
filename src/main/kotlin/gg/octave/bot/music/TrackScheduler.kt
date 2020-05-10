@@ -32,9 +32,16 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
      *
      * @param track The track to play or add to queue.
      */
-    fun queue(track: AudioTrack) {
+    fun queue(track: AudioTrack, isNext: Boolean) {
         if (!player.startTrack(track, true)) {
-            queue.offer(PlaylistUtils.toBase64String(track))
+            if (isNext) {
+                val tracks = queue.readAll()
+                tracks.add(0, PlaylistUtils.toBase64String(track))
+                queue.clear()
+                queue.addAll(tracks)
+            } else {
+                queue.offer(PlaylistUtils.toBase64String(track))
+            }
         }
     }
 
@@ -93,16 +100,6 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             .withSentryInterface(StackTraceInterface(stackTrace))
 
         Sentry.capture(eventBuilder)
-
-//        val exc = buildString {
-//            append("AudioTrack (${track.info.identifier}) stuck >=${thresholdMs}ms\n")
-//            for (line in stackTrace) {
-//                val trace = line.toString().split('/').last() // java.base@<version>/<info>
-//                append(trace)
-//                append("\n")
-//            }
-//        }
-
         nextTrack()
     }
 

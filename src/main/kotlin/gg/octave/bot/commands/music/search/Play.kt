@@ -107,12 +107,12 @@ class Play : Cog {
     companion object {
         fun smartPlay(ctx: Context, manager: MusicManager?, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean = false) {
             when {
-                ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false) -> startPlayVote(ctx, manager!!, args, isSearchResult, uri)
-                else -> play(ctx, args, isSearchResult, uri)
+                ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false) -> startPlayVote(ctx, manager!!, args, isSearchResult, uri, isNext)
+                else -> play(ctx, args, isSearchResult, uri, isNext)
             }
         }
 
-        fun play(ctx: Context, args: List<String>, isSearchResult: Boolean, uri: String) {
+        fun play(ctx: Context, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean = false) {
             val manager = try {
                 Launcher.players.get(ctx.guild)
             } catch (e: MusicLimitException) {
@@ -138,11 +138,12 @@ class Play : Cog {
                 ctx,
                 query,
                 trackContext,
-                if (!isSearchResult) "You can search and pick results using ${config.prefix}youtube or ${config.prefix}soundcloud while in a channel." else null
+                if (!isSearchResult) "You can search and pick results using ${config.prefix}youtube or ${config.prefix}soundcloud while in a channel." else null,
+                isNext
             )
         }
 
-        fun startPlayVote(ctx: Context, manager: MusicManager, args: List<String>, isSearchResult: Boolean, uri: String) {
+        fun startPlayVote(ctx: Context, manager: MusicManager, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean) {
             if (manager.isVotingToPlay) {
                 return ctx.send("There is already a vote going on!")
             }
@@ -209,7 +210,7 @@ class Play : Cog {
                             buildString {
                                 if (votes > halfPeople) {
                                     appendln("The vote has passed! The song will be queued.")
-                                    play(ctx, args, isSearchResult, uri)
+                                    play(ctx, args, isSearchResult, uri, isNext)
                                 } else {
                                     appendln("The vote has failed! The song will not be queued.")
                                 }
