@@ -116,7 +116,9 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             manager.guild?.getTextChannelById(it)
         } ?: return
 
-        channel.sendMessage(exception.friendlierMessage()).queue()
+        channel.sendMessage(
+            "An unknown error occurred while playing **${track.info.title}**:\n${exception.friendlierMessage()}"
+        ).queue()
     }
 
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
