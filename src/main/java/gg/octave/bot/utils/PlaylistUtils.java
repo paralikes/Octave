@@ -85,7 +85,6 @@ public class PlaylistUtils {
             ByteArrayInputStream bais = new ByteArrayInputStream(b64);
             return playerManager.decodeTrack(new MessageInput(bais)).decodedTrack;
         } catch (Exception e) {
-            System.out.println("oop");
             return null;
         }
     }
