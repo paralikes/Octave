@@ -57,9 +57,9 @@ object Launcher {
         println("+---------------------------------+")
         println("|           O c t a v e           |")
         println("|        Revision ${OctaveBot.GIT_REVISION}        |")
-        println("| JDA: ${JDAInfo.VERSION.padEnd(27)}|")
+        println("| JDA   : ${JDAInfo.VERSION.padEnd(24)}|")
         println("| Flight: ${FlightInfo.VERSION.padEnd(24)}|")
-        println("| LP : ${PlayerLibrary.VERSION.padEnd(27)}|")
+        println("| LP    : ${PlayerLibrary.VERSION.padEnd(24)}|")
         println("+---------------------------------+")
 
         Sentry.init(configuration.sentryDsn)
