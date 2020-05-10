@@ -135,7 +135,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             return false
         }
 
-        if (command.category == "Music" || command.category == "Dj" || command.category == "Search")
+        if (command.category == "Music" || command.category == "Dj" || command.category == "Search") {
             if (ctx.member!!.voiceState?.channel == null) {
                 ctx.send("You're not in a voice channel.")
                 return false
