@@ -54,9 +54,8 @@ class EventWaiter : EventListener {
         var cls: Class<in GenericEvent> = event.javaClass
 
         while (cls.superclass != null) {
-            if (cls in waiters) {
-                waiters[cls]?.removeIf { it?.attempt(event) }
-            }
+            waiters[cls]?.removeIf { it == null } // THIS IS IMPORTANT DO NOT TOUCH
+            waiters[cls]?.removeIf { it.attempt(event) }
 
             cls = cls.superclass
         }
