@@ -107,6 +107,8 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     }
 
     override fun onTrackException(player: AudioPlayer, track: AudioTrack, exception: FriendlyException) {
+        repeatOption = RepeatOption.NONE
+
         if (exception.toString().contains("decoding")) {
             return
         }
