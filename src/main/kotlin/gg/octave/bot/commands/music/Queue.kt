@@ -26,7 +26,7 @@ class Queue : Cog {
                 title { "Music Queue" }
                 color { ctx.selfMember?.color }
                 empty { "**Empty queue.** Add some music with `${ctx.config.prefix}play url|YT search`." }
-                finally { message -> message!!.delete().queue() }
+                finally { message -> message?.delete()?.queue() }
 
                 for (track in queue) {
                     val decodedTrack = PlaylistUtils.toAudioTrack(track)
