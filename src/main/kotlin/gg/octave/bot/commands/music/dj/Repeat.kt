@@ -23,6 +23,6 @@ class Repeat : MusicCog {
             RepeatOption.NONE -> "\u274C"
         }
 
-        ctx.send("$symbol Music player was set to __**${ctx.manager.scheduler.repeatOption.name.toLowerCase()}**__.")
+        ctx.send("$symbol Track repeating was set to __**${ctx.manager.scheduler.repeatOption.name.toLowerCase()}**__.")
     }
 }

@@ -26,6 +26,8 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     var repeatOption = RepeatOption.NONE
     var lastTrack: AudioTrack? = null
         private set
+    var currentTrack: AudioTrack? = null
+        private set
 
     /**
      * Add the next track to queue or play right away if nothing is in the queue.
@@ -47,9 +49,8 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
      */
     fun nextTrack() {
         if (repeatOption != RepeatOption.NONE) {
-            val cloneThis = player.playingTrack
-                ?: lastTrack // playingTrack if skip, lastTrack if ended normally.
-                ?: return // If first track of the queue errors out I guess?
+            val cloneThis = currentTrack
+                ?: return
 
             val cloned = cloneThis.makeClone().also { it.userData = cloneThis.userData }
             // Pretty sure makeClone now copies user data, but better to be safe than sorry.
@@ -124,6 +125,8 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     }
 
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
+        currentTrack = track
+
         if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {
             announceNext(track)
         }
