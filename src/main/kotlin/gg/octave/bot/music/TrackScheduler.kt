@@ -46,15 +46,25 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
      * Start the next track, stopping the current one if it is playing.
      */
     fun nextTrack() {
+        if (repeatOption != RepeatOption.NONE) {
+            val cloneThis = player.playingTrack
+                ?: lastTrack // playingTrack if skip, lastTrack if ended normally.
+                ?: return // If first track of the queue errors out I guess?
+
+            val cloned = cloneThis.makeClone().also { it.userData = cloneThis.userData }
+            // Pretty sure makeClone now copies user data, but better to be safe than sorry.
+
+            if (repeatOption == RepeatOption.SONG) {
+                return player.playTrack(cloned)
+            } else if (repeatOption == RepeatOption.QUEUE) {
+                queue.offer(PlaylistUtils.toBase64String(cloned))
+            } // NONE doesn't need any handling.
+        }
+
         if (queue.isNotEmpty()) {
             val track = queue.poll()
             val decodedTrack = PlaylistUtils.toAudioTrack(track)
-            player.startTrack(decodedTrack, false)
-            return
-        }
-
-        when (repeatOption) {
-            RepeatOption.SONG ->
+            return player.playTrack(decodedTrack)
         }
 
         if (manager.discordFMTrack == null) {
@@ -76,18 +86,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
         this.lastTrack = track
 
         if (endReason.mayStartNext) {
-            when (repeatOption) {
-                RepeatOption.SONG -> {
-                    val newTrack = track.makeClone().also { it.userData = track.userData }
-                    player.startTrack(newTrack, false)
-                }
-                RepeatOption.QUEUE -> {
-                    val newTrack = track.makeClone().also { it.userData = track.userData }
-                    queue.offer(PlaylistUtils.toBase64String(newTrack))
-                    nextTrack()
-                }
-                RepeatOption.NONE -> nextTrack()
-            }
+            nextTrack()
         }
     }
 
