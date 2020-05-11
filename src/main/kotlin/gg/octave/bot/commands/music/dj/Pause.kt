@@ -1,5 +1,6 @@
 package gg.octave.bot.commands.music.dj
 
+import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
 import gg.octave.bot.utils.extensions.manager
 import me.devoxin.flight.api.Context
@@ -10,6 +11,7 @@ class Pause : MusicCog {
     override fun requirePlayingTrack() = true
     override fun requirePlayer() = true
 
+    @DJ
     @Command(description = "Pause or resume the music player.")
     fun pause(ctx: Context) {
         val manager = ctx.manager

@@ -12,6 +12,7 @@ import gg.octave.bot.db.OptionsRegistry
 import gg.octave.bot.music.settings.RepeatOption
 import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.friendlierMessage
+import gg.octave.bot.utils.extensions.insertAt
 import io.sentry.Sentry
 import io.sentry.event.Event
 import io.sentry.event.EventBuilder
@@ -151,29 +152,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
 
-    fun insertAt(index: Int, element: AudioTrack) {
-        val tracks = queue.readAll()
-        tracks.add(index, PlaylistUtils.toBase64String(element))
-        queue.clear()
-        queue.addAll(tracks)
-    }
-
-    fun removeQueueIndex(indexToRemove: Int): String {
-        var index = 0
-        val iterator = queue.iterator()
-        var value = ""
-        while (iterator.hasNext() && index <= indexToRemove) {
-            val currentValue = iterator.next()
-            if (index == indexToRemove) {
-                value = currentValue
-                iterator.remove()
-            }
-
-            index++
-        }
-
-        return value
-    }
+    fun insertAt(index: Int, element: AudioTrack) = queue.insertAt(index, PlaylistUtils.toBase64String(element))
 
     companion object {
         fun getQueueForGuild(guildId: String): RQueue<String> {

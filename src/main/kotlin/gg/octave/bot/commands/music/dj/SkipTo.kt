@@ -5,6 +5,7 @@ import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.manager
+import gg.octave.bot.utils.extensions.removeAt
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 
@@ -27,7 +28,7 @@ class SkipTo : MusicCog {
         }
 
         for (i in 0 until toIndex - 1) {
-            manager.scheduler.removeQueueIndex(0)
+            manager.scheduler.queue.removeAt(0)
         }
 
         manager.scheduler.nextTrack()
