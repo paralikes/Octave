@@ -49,7 +49,7 @@ class Lyrics : Cog {
                     setUser(ctx.author)
                     setEmptyMessage("There should be something here 👀")
                     setItemsPerPage(1)
-                    finally { message -> message!!.delete().queue() }
+                    finally { message -> message?.delete()?.queue() }
                     title { "Lyrics for $fullTitle" }
 
                     for (page in pages) {
