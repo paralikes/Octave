@@ -179,6 +179,8 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         if (Permission.MESSAGE_EMBED_LINKS in permissions) {
             return ctx.send("__Missing Permissions__\n\nThis command requires the following permissions:\n$formatted")
         }
+        // Perhaps the above should be in `preInvoke` with a message when perm is missing?
+        // I'm pretty sure we don't label embed_links as a requirement for all commands anyway.
 
         ctx.send {
             setTitle("Missing Permissions")
