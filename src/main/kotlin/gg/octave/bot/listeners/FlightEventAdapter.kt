@@ -176,6 +176,10 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     override fun onBotMissingPermissions(ctx: Context, command: CommandFunction, permissions: List<Permission>) {
         val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`", transform=Permission::getName)
 
+        if (Permission.MESSAGE_EMBED_LINKS in permissions) {
+            return ctx.send("__Missing Permissions__\n\nThis command requires the following permissions:\n$formatted")
+        }
+
         ctx.send {
             setTitle("Missing Permissions")
             setDescription("I need the following permissions:\n$formatted")
