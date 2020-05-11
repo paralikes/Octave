@@ -29,7 +29,7 @@ class Remove : MusicCog {
             return ctx.send("The queue is empty.")
         }
 
-        val track: String = when (which) {
+        val track = when (which) {
             null -> return ctx.send("You need to specify what to remove. (`first`/`last`/`all`/`1..3`)")
             "first" -> queue.remove() //Remove head
             "last" -> queue.removeAt(queue.size - 1)
@@ -73,6 +73,9 @@ class Remove : MusicCog {
         }
 
         val decodedTrack = PlaylistUtils.toAudioTrack(track)
-        ctx.send("Removed __[${decodedTrack.info.embedTitle}](${decodedTrack.info.embedUri})__ from the queue.")
+        ctx.send {
+            setTitle("Track Removed")
+            setDescription("Removed __[${decodedTrack.info.embedTitle}](${decodedTrack.info.embedUri})__ from the queue.")
+        }
     }
 }
