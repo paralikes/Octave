@@ -90,7 +90,7 @@ class Settings : Cog {
     }
 
     @SubCommand(aliases = ["vc"], description = "Toggles a voice-channel as a dedicated music channel.")
-    fun voicechannel(ctx: Context, channel: VoiceChannel) {
+    fun voicechannel(ctx: Context, @Greedy channel: VoiceChannel) {
         val data = ctx.data
 
         if (channel.id in data.music.channels) {
@@ -109,7 +109,7 @@ class Settings : Cog {
     }
 
     @SubCommand(aliases = ["ac"], description = "Set the music announcement channel. Omit to reset.")
-    fun announcementchannel(ctx: Context, textChannel: TextChannel?) {
+    fun announcementchannel(ctx: Context, @Greedy textChannel: TextChannel?) {
         ctx.data.let {
             it.music.announcementChannel = textChannel?.id
             it.save()
@@ -122,7 +122,7 @@ class Settings : Cog {
     }
 
     @SubCommand(aliases = ["djr", "dr"], description = "Sets the DJ role. Omit to reset.")
-    fun djrole(ctx: Context, role: Role?) {
+    fun djrole(ctx: Context, @Greedy role: Role?) {
         ctx.data.let {
             it.command.djRole = role?.id
             it.save()
