@@ -47,8 +47,7 @@ class Paginator(
 
     fun paginate(channel: TextChannel, page: Int) {
         if (list.isEmpty()) {
-            channel.sendMessage(renderEmptyPage()).queue()
-            return
+            return channel.sendMessage(renderEmptyPage()).queue()
         }
 
         val pageNum = page.coerceIn(1, list.size)

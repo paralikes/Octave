@@ -38,7 +38,7 @@ class EventWaiter : EventListener {
         if (timeout > 0) {
             requireNotNull(unit)
 
-            GlobalScope.launch {
+            GlobalScope.launch { // TODO: bad bad bad bad bad bad
                 delay(unit.toMillis(timeout))
                 if (list.remove(waiter)) {
                     timeoutAction?.invoke()
@@ -55,7 +55,7 @@ class EventWaiter : EventListener {
 
         while (cls.superclass != null) {
             if (cls in waiters) {
-                waiters[cls]?.removeIf { it.attempt(event) }
+                waiters[cls]?.removeIf { it?.attempt(event) }
             }
 
             cls = cls.superclass
@@ -99,7 +99,7 @@ class EventWaiter : EventListener {
             return waiters[cls]?.contains(this) == true
         }
 
-        fun attempt(event: T): Boolean {
+        fun attempt(event: T): Boolean { // predicate(event) && action(event).let { true }
             return if (predicate(event)) {
                 action(event)
                 true
