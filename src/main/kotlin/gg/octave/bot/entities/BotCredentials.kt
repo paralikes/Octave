@@ -39,8 +39,8 @@ class BotCredentials(file: File) {
     val spotifyClientSecret: String? = config["spotify", "clientsecret"].string
     val discordFM: String? = config["discordfm"].string
 
-    /* Database */
-    val databaseURL: String? = config["db", "url"].string
-    val databaseUsername: String? = config["db", "username"].string
-    val databasePassword: String? = config["db", "password"].string
+    /* Rethink */
+    val rethinkHost: String = config["rethink", "host"].string ?: "localhost"
+    val rethinkPort: Int = config["rethink", "port"].getInt(28015)
+    val rethinkAuth: String? = config["rethink", "auth"].string
 }

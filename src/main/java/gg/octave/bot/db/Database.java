@@ -3,10 +3,12 @@ package gg.octave.bot.db;
 import com.rethinkdb.gen.exc.ReqlDriverError;
 import com.rethinkdb.net.Connection;
 import com.rethinkdb.net.Cursor;
+import gg.octave.bot.Launcher;
 import gg.octave.bot.db.guilds.GuildData;
 import gg.octave.bot.db.guilds.UserData;
 import gg.octave.bot.db.premium.PremiumGuild;
 import gg.octave.bot.db.premium.PremiumUser;
+import gg.octave.bot.entities.BotCredentials;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -32,7 +34,18 @@ public class Database {
 
         Connection conn = null;
         try {
-            Connection.Builder builder = r.connection().hostname("localhost").port(28015);
+            BotCredentials creds = Launcher.INSTANCE.getCredentials();
+
+            Connection.Builder builder = r.connection()
+                    .hostname(creds.getRethinkHost())
+                    .port(creds.getRethinkPort());
+
+            String rethinkAuth = creds.getRethinkAuth();
+
+            if (rethinkAuth != null && !rethinkAuth.isEmpty()) {
+                builder.authKey(rethinkAuth);
+            }
+
             // potential spot for authentication
             conn = builder.connect();
             if (r.dbList().<List<String>>run(conn).contains(name)) {

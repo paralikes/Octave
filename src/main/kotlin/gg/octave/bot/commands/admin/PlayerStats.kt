@@ -23,7 +23,6 @@ class PlayerStats : Cog {
             setTitle("$total players")
             addField("Source Insight", bySourceFormatted, true)
             addField("Statistics", "• **$encoding** encoding\n• **$paused** paused\n• **$alone** alone", true)
-            addBlankField(true)
         }
     }
 
