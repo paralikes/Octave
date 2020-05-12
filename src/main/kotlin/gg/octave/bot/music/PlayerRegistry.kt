@@ -1,6 +1,5 @@
 package gg.octave.bot.music
 
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager
@@ -9,14 +8,12 @@ import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceM
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
-import com.sedmelluq.discord.lavaplayer.track.playback.AudioFrameBufferFactory
 import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer
 import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup
 import com.sedmelluq.lava.extensions.youtuberotator.planner.AbstractRoutePlanner
 import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner
 import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block
 import gg.octave.bot.Launcher
-import gg.octave.bot.Launcher.shardManager
 import gg.octave.bot.db.OptionsRegistry.ofGuild
 import gg.octave.bot.music.sources.caching.CachingSourceManager
 import gg.octave.bot.music.sources.spotify.SpotifyAudioSourceManager
@@ -31,34 +28,24 @@ import java.util.concurrent.TimeUnit
 class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorService) {
     private val log = LoggerFactory.getLogger("PlayerRegistry")
 
-    val registry: MutableMap<Long, MusicManager>
-    val playerManager: AudioPlayerManager
+    val registry = ConcurrentHashMap<Long, MusicManager>(bot.configuration.musicLimit)
+    val playerManager = DefaultAudioPlayerManager()
 
     @Throws(MusicLimitException::class)
     fun get(guild: Guild?): MusicManager {
-        var manager = registry[guild!!.idLong]
-
-        if (manager == null) {
+        return registry.computeIfAbsent(guild!!.idLong) {
             if (size() >= bot.configuration.musicLimit && !ofGuild(guild).isPremium) {
                 throw MusicLimitException()
             }
 
-            manager = MusicManager(bot, guild.id, this, playerManager)
-            registry[guild.idLong] = manager
+            MusicManager(bot, guild.id, this, playerManager)
         }
-
-        return manager
     }
 
     fun getExisting(id: Long) = registry[id]
     fun getExisting(guild: Guild?) = getExisting(guild!!.idLong)
-
     fun destroy(id: Long) {
-        val manager = registry[id]
-        if (manager != null) {
-            manager.destroy()
-            registry.remove(id)
-        }
+        registry.remove(id)?.destroy()
     }
 
     fun destroy(guild: Guild?) = destroy(guild!!.idLong)
@@ -74,8 +61,9 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
             val entry = iterator.next()
             try {
                 //Guild was long gone, dangling manager,
-                val musicManager: MusicManager = entry.value
-                if (shardManager.getGuildById(musicManager.guildId) == null) {
+                val musicManager = entry.value
+
+                if (musicManager.guild == null) {
                     return iterator.remove()
                 }
 
@@ -98,14 +86,13 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
     fun size() = registry.size
 
     init {
-        registry = ConcurrentHashMap(bot.configuration.musicLimit)
         executor.scheduleAtFixedRate({ clear(false) }, 20, 10, TimeUnit.MINUTES)
 
-        playerManager = DefaultAudioPlayerManager()
-        playerManager.setFrameBufferDuration(5000)
-        playerManager.getConfiguration().isFilterHotSwapEnabled = true
-        playerManager.getConfiguration().frameBufferFactory =
-                AudioFrameBufferFactory{ bufferDuration, format, stopping -> NonAllocatingAudioFrameBuffer(bufferDuration, format, stopping) }
+        playerManager.frameBufferDuration = 5000
+        playerManager.configuration.apply {
+            isFilterHotSwapEnabled = true
+            setFrameBufferFactory(::NonAllocatingAudioFrameBuffer)
+        }
 
         val youtubeAudioSourceManager = YoutubeAudioSourceManager(true)
         val config = bot.configuration
