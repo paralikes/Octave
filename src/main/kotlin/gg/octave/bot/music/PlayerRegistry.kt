@@ -52,9 +52,7 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
         return manager
     }
 
-    fun getExisting(id: Long): MusicManager? {
-        return registry[id]
-    }
+    fun getExisting(id: Long) = registry[id]
 
     fun getExisting(guild: Guild?): MusicManager? {
         return getExisting(guild!!.idLong)
@@ -68,25 +66,14 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
         }
     }
 
-    fun destroy(guild: Guild?) {
-        destroy(guild!!.idLong)
-    }
-
-    operator fun contains(id: Long): Boolean {
-        return registry.containsKey(id)
-    }
-
-    operator fun contains(guild: Guild): Boolean {
-        return registry.containsKey(guild.idLong)
-    }
-
-    fun shutdown() {
-        clear(true)
-    }
+    fun destroy(guild: Guild?) = destroy(guild!!.idLong)
+    fun contains(id: Long) = registry.containsKey(id)
+    fun contains(guild: Guild) = registry.containsKey(guild.idLong)
 
     fun clear(force: Boolean) {
         log.info("Cleaning up players (forceful: $force)")
         val iterator = registry.entries.iterator()
+        var count = 0
 
         while (iterator.hasNext()) {
             val entry = iterator.next()
@@ -96,23 +83,24 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
                 if (shardManager.getGuildById(musicManager.guildId) == null) {
                     return iterator.remove()
                 }
+
                 if (force || !musicManager.guild!!.selfMember.voiceState!!.inVoiceChannel() || musicManager.player.playingTrack == null) {
                     log.debug("Cleaning player {}", musicManager.guild!!.id)
                     musicManager.scheduler.queue.clear()
                     musicManager.destroy()
                     iterator.remove()
+                    count++
                 }
             } catch (e: Exception) {
                 log.warn("Exception occured while trying to clean up id ${entry.key}", e)
             }
         }
 
-        log.info("Finished cleaning up players.")
+        log.info("Finished cleaning up {} players.", count)
     }
 
-    fun size(): Int {
-        return registry.size
-    }
+    fun shutdown() = clear(true)
+    fun size() = registry.size
 
     init {
         registry = ConcurrentHashMap(bot.configuration.musicLimit)
@@ -142,7 +130,7 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
                 } catch (ex: Exception) {
                     planner = RotatingNanoIpRoutePlanner(blocks)
                     Sentry.capture(ex)
-                    ex.printStackTrace()
+                    log.error("Error setting up IPv6 exclude GW, falling back to registering the whole block", ex)
                 }
             }
 
