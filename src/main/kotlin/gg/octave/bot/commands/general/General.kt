@@ -6,7 +6,7 @@ import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.Permission
 
 class General : Cog {
-    @Command(aliases = ["invitebot"], description = "Get a link to invite the bot to your server.")
+    @Command(aliases = ["invitebot", "add", "link", "links"], description = "Get a link to invite the bot to your server.")
     fun invite(ctx: Context) {
         val link = ctx.jda.getInviteUrl(Permission.ADMINISTRATOR)
 
