@@ -53,10 +53,7 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
     }
 
     fun getExisting(id: Long) = registry[id]
-
-    fun getExisting(guild: Guild?): MusicManager? {
-        return getExisting(guild!!.idLong)
-    }
+    fun getExisting(guild: Guild?) = getExisting(guild!!.idLong)
 
     fun destroy(id: Long) {
         val manager = registry[id]
