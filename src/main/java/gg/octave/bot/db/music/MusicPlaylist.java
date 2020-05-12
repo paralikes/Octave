@@ -34,21 +34,21 @@ public class MusicPlaylist extends ManagedObject {
 
     @JsonIgnore
     public BasicAudioPlaylist toLavaPlaylist() {
-        return PlaylistUtils.decodePlaylist(encodedTracks, name);
+        return PlaylistUtils.INSTANCE.decodePlaylist(encodedTracks, name);
     }
 
     @JsonIgnore
     public void replacePlaylist(BasicAudioPlaylist playlist) {
-        encodedTracks = PlaylistUtils.encodePlaylist(playlist);
+        encodedTracks = PlaylistUtils.INSTANCE.encodePlaylist(playlist);
     }
 
     @JsonIgnore
     public void appendTrack(AudioTrack track) throws IOException {
-        encodedTracks.add(PlaylistUtils.toBase64String(track));
+        encodedTracks.add(PlaylistUtils.INSTANCE.toBase64String(track));
     }
 
     @JsonIgnore
     public void appendTracks(List<AudioTrack> tracks) {
-        tracks.forEach(PlaylistUtils::toBase64String);
+        tracks.forEach(PlaylistUtils.INSTANCE::toBase64String);
     }
 }
