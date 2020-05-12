@@ -49,34 +49,34 @@ public class Database {
 
         redisson = Redisson.create(config);
 
-        Connection conn = null;
         try {
             Connection.Builder builder = r.connection()
                     .hostname(creds.getRethinkHost())
                     .port(creds.getRethinkPort());
 
+            String rethinkUser = creds.getRethinkUsername();
             String rethinkAuth = creds.getRethinkAuth();
 
             if (rethinkAuth != null && !rethinkAuth.isEmpty()) {
-                builder.user(creds.getRethinkUsername(), rethinkAuth);
-                //builder.authKey(rethinkAuth); //maybe?
+                if (rethinkUser != null && !rethinkUser.isEmpty()) {
+                    builder.user(creds.getRethinkUsername(), rethinkAuth);
+                } else {
+                    builder.authKey(rethinkAuth);
+                }
             }
 
-            // potential spot for authentication
             conn = builder.connect();
-            if (r.dbList().<List<String>>run(conn).contains(name)) {
-                LOG.info("Connected to database.");
-                conn.use(name);
-            } else {
-                LOG.info("Rethink Database `" + name + "` is not present. Closing connection.");
-                close();
-                System.exit(0);
+
+            if (!r.dbList().<List<String>>run(conn).contains(name)) {
+                r.dbCreate(name).run(conn);
             }
+
+            LOG.info("Connected to database.");
+            conn.use(name);
         } catch (ReqlDriverError e) {
             LOG.error("Rethink Database connection failed.", e);
             System.exit(0);
         }
-        this.conn = conn;
     }
 
     public Connection getConn() {
