@@ -47,7 +47,9 @@ class BotInfo : Cog {
         ctx.send {
             setTitle("Octave (Revision ${OctaveBot.GIT_REVISION})")
             setThumbnail(ctx.jda.selfUser.avatarUrl)
-            setDescription("Never miss a beat with Octave, a simple and easy to use Discord music bot delivering high quality audio to hundreds of thousands of servers. We support Youtube, Soundcloud, and more!")
+            setDescription("Never miss a beat with Octave, " +
+                    "a simple and easy to use Discord music bot delivering high quality audio to hundreds of thousands of servers." +
+                    " We support Youtube, Soundcloud, and more!")
 
             addField("CPU Usage", "${procCpuUsage}% JVM\n${sysCpuUsage}% SYS", true)
             addField("RAM Usage", "$ramUsedFormatted${ramUsedCalculated.unit} (${ramUsedPercent}%)", true)

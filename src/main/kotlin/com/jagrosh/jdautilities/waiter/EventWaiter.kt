@@ -55,7 +55,6 @@ class EventWaiter : EventListener {
 
         while (cls.superclass != null) {
             waiters[cls]?.removeIf { it == null || it.attempt(event) }
-
             cls = cls.superclass
         }
     }
