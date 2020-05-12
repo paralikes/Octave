@@ -23,7 +23,12 @@ class Stop : MusicCog {
         ctx.guild!!.audioManager.closeAudioConnection()
         Launcher.players.destroy(ctx.guild!!.idLong)
 
-        val extra = if (clear) ", and the queue has been cleared." else ". If you want to clear the queue run `${ctx.trigger}clearqueue` or `${ctx.trigger}stop yes`"
+        val extra = when {
+            karen.scheduler.queue.isEmpty() -> "."
+            clear -> ", and the queue has been cleared."
+            else -> ". If you want to clear the queue run `${ctx.trigger}clearqueue` or `${ctx.trigger}stop yes`"
+        }
+
         ctx.send("Playback has been completely stopped$extra")
     }
 }
