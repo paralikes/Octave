@@ -25,7 +25,7 @@ import static com.rethinkdb.RethinkDB.r;
 
 public class Database {
     private static final Logger LOG = LoggerFactory.getLogger("Database");
-    private final Connection conn;
+    private Connection conn;
     private static JedisPool defaultJedisPool;
     private Config config = new Config();
     private RedissonClient redisson;
@@ -74,6 +74,7 @@ public class Database {
             LOG.info("Connected to database.");
             conn.use(name);
         } catch (ReqlDriverError e) {
+            conn = null;
             LOG.error("Rethink Database connection failed.", e);
             System.exit(0);
         }
