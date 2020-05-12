@@ -126,6 +126,16 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     }
 
     override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
+        if (currentTrack != null) {
+            currentTrack?.let {
+                if (it.identifier == track.identifier) {
+                    manager.loops++
+                } else {
+                    manager.loops = 0
+                }
+            }
+        }
+
         currentTrack = track
 
         if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {

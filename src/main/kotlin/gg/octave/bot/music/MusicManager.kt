@@ -52,11 +52,10 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
     /** @return Audio player for the guild. */
     val player = playerManager.createPlayer()
-
     val dspFilter = DSPFilter(player)
 
     /**  @return Track scheduler for the player.*/
-    val scheduler: TrackScheduler = TrackScheduler(this, player).also(player::addListener)
+    val scheduler = TrackScheduler(this, player).also(player::addListener)
 
     /** @return Wrapper around AudioPlayer to use it as an AudioSendHandler. */
     private val sendHandler: AudioPlayerSendHandler = AudioPlayerSendHandler(player)
@@ -95,6 +94,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
     val guild: Guild?
         get() = Launcher.shardManager.getGuildById(guildId)
+
+    var loops = 0L
 
     /**
      * @return If the user is listening to DiscordFM
