@@ -1,6 +1,6 @@
 ## PR Checklist
 - [ ] I have checked for pull requests aiming to do the same thing.
-- [ ] I have read the [contributing guidelines](/.github/CONTRIBUTING.md).
+- [ ] I have read the [contributing guidelines](../tree/development/.github/CONTRIBUTING.md).
 
 ## Summary
 <!--
