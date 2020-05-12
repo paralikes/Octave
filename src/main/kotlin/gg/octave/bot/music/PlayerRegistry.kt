@@ -27,7 +27,6 @@ import java.net.InetAddress
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
-import javax.annotation.Nonnull
 
 class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorService) {
     private val log = LoggerFactory.getLogger("PlayerRegistry")
@@ -35,9 +34,8 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
     val registry: MutableMap<Long, MusicManager>
     val playerManager: AudioPlayerManager
 
-    @Nonnull
     @Throws(MusicLimitException::class)
-    operator fun get(guild: Guild?): MusicManager {
+    fun get(guild: Guild?): MusicManager {
         var manager = registry[guild!!.idLong]
 
         if (manager == null) {
