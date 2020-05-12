@@ -13,5 +13,5 @@ My PR deletes system32.exe <!-- remove this line -->
 **Fixes issue:** None
 <!--
   Replace the above line with the #number of the GitHub issue
-  your issue fixes, if applicable.
+  your pull request fixes, if applicable.
 -->
