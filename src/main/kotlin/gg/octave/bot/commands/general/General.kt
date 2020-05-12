@@ -23,7 +23,7 @@ class General : Cog {
                 "```prolog\n" +
                     "Shard ID: ${ctx.jda.shardInfo.shardId}\n" +
                     "Latency (HTTP): ${it}ms\n" +
-                    "Latency (WS  ): ${ctx.jda.shardManager!!.averageGatewayPing}ms```"
+                    "Latency (WS  ): ${ctx.jda.shardManager!!.averageGatewayPing.toInt()}ms```"
             )
         }
     }
