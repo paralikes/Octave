@@ -9,9 +9,11 @@ import gg.octave.bot.db.guilds.UserData;
 import gg.octave.bot.db.premium.PremiumGuild;
 import gg.octave.bot.db.premium.PremiumUser;
 import gg.octave.bot.entities.BotCredentials;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
+import org.redisson.config.SingleServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.JedisPool;
@@ -24,18 +26,31 @@ import static com.rethinkdb.RethinkDB.r;
 public class Database {
     private static final Logger LOG = LoggerFactory.getLogger("Database");
     private final Connection conn;
-    private static final JedisPool defaultJedisPool = new JedisPool("localhost", 6379);
+    private static JedisPool defaultJedisPool;
     private Config config = new Config();
     private RedissonClient redisson;
 
     public Database(String name) {
-        config.useSingleServer().setAddress("redis://127.0.0.1:6379");
+        BotCredentials creds = Launcher.INSTANCE.getCredentials();
+
+        String redisHost = creds.getRedisHost();
+        int redisPort = creds.getRedisPort();
+        String redisAuth = creds.getRethinkAuth();
+
+        SingleServerConfig ssc = config.useSingleServer();
+        ssc.setAddress("redis://" + redisHost + ":" + redisPort);
+
+        if (redisAuth != null && !redisAuth.isEmpty()) {
+            defaultJedisPool = new JedisPool(new GenericObjectPoolConfig(), redisHost, redisPort, 2000, redisAuth);
+            ssc.setPassword(redisAuth);
+        } else {
+            defaultJedisPool = new JedisPool(redisHost, redisPort);
+        }
+
         redisson = Redisson.create(config);
 
         Connection conn = null;
         try {
-            BotCredentials creds = Launcher.INSTANCE.getCredentials();
-
             Connection.Builder builder = r.connection()
                     .hostname(creds.getRethinkHost())
                     .port(creds.getRethinkPort());
