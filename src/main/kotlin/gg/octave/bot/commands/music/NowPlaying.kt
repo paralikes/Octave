@@ -67,7 +67,7 @@ class NowPlaying : MusicCog {
                 append(" **%.1f**%%".format(percent * 100))
             }
             addField("Progress", progress, false)
-            setFooter("Use ${ctx.config.prefix}lyrics current to see the lyrics of the song!")
+            setFooter("Use \"${ctx.config.prefix}lyrics\" to see the lyrics of the song!")
         }
     }
 }

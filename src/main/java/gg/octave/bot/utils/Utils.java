@@ -19,9 +19,6 @@ public class Utils {
     private static final Pattern TIME_PATTERN =
             Pattern.compile("(-?\\d+)\\s*((?:d(?:ay(?:s)?)?)|(?:h(?:our(?:s)?)?)|(?:m(?:in(?:ute(?:s)?)?)?)|(?:s(?:ec(?:ond(?:s)?)?)?))?");
 
-    //https://regex101.com/r/VXEl27/1/
-    private static final Pattern ARGUMENT_PATTERN = Pattern.compile("`{3}(?:\\w+\\n)?([\\s\\S]*?)`{3}|`([^`]+)`|(\\S+)");
-
     public static String getTime(long ms) {
         long s = ms / 1000;
         long m = s / 60;
@@ -72,24 +69,6 @@ public class Utils {
             ms += unit.toMillis(Long.parseLong(numStr));
         }
         return ms;
-    }
-
-    public static String[] stringSplit(String s) {
-        List<String> parts = new ArrayList<>();
-
-        Matcher matcher = ARGUMENT_PATTERN.matcher(s);
-        outer:
-        while (matcher.find()) {
-            for (int i = 1; i <= matcher.groupCount(); i++) {
-                String match = matcher.group(i);
-                if (match != null) {
-                    parts.add(StringUtils.stripEnd(match, null));
-                    continue outer;
-                }
-            }
-        }
-
-        return parts.toArray(new String[parts.size()]);
     }
 
     public static String getTimestamp(long ms) {
