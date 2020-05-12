@@ -35,7 +35,7 @@ public class Database {
 
         String redisHost = creds.getRedisHost();
         int redisPort = creds.getRedisPort();
-        String redisAuth = creds.getRethinkAuth();
+        String redisAuth = creds.getRedisAuth();
 
         SingleServerConfig ssc = config.useSingleServer();
         ssc.setAddress("redis://" + redisHost + ":" + redisPort);
@@ -58,7 +58,8 @@ public class Database {
             String rethinkAuth = creds.getRethinkAuth();
 
             if (rethinkAuth != null && !rethinkAuth.isEmpty()) {
-                builder.authKey(rethinkAuth);
+                builder.user(creds.getRethinkUsername(), rethinkAuth);
+                //builder.authKey(rethinkAuth); //maybe?
             }
 
             // potential spot for authentication
