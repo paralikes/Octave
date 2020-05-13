@@ -124,7 +124,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             manager.guild?.getTextChannelById(it)
         } ?: return
 
-        if(errorCount < 20L && (lastErrorAnnounced == 0L || lastErrorAnnounced + 6000 < System.currentTimeMillis())) {
+        if (errorCount < 20L && (lastErrorAnnounced == 0L || lastErrorAnnounced + 6000 < System.currentTimeMillis())) {
             channel.sendMessage(
                     "An unknown error occurred while playing **${track.info.title}**:\n${exception.friendlierMessage()}"
             ).queue {
@@ -164,11 +164,10 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             append(".")
         }
 
-        //Avoid spamming by just sending it if the last time it was announced was more than 10s ago.
-        if(lastTimeAnnounced == 0L || lastTimeAnnounced + 10000 < System.currentTimeMillis()) {
-            channel.sendMessage(EmbedBuilder().apply {
-                setDescription(description)
-            }.build()).queue {
+        // Avoid spamming by just sending it if the last time it was announced was more than 10s ago.
+        if (lastTimeAnnounced == 0L || lastTimeAnnounced + 10000 < System.currentTimeMillis()) {
+            val embed = EmbedBuilder().setDescription(description).build()
+            channel.sendMessage(embed).queue {
                 lastTimeAnnounced = System.currentTimeMillis()
             }
         }
