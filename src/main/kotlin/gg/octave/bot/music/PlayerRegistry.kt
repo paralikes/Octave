@@ -29,7 +29,7 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
     private val log = LoggerFactory.getLogger("PlayerRegistry")
 
     val registry = ConcurrentHashMap<Long, MusicManager>(bot.configuration.musicLimit)
-    val playerManager = DefaultAudioPlayerManager()
+    val playerManager = CustomAudioPlayerManager()
 
     @Throws(MusicLimitException::class)
     fun get(guild: Guild?): MusicManager {
