@@ -125,12 +125,11 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
         } ?: return
 
         if (errorCount < 20L && (lastErrorAnnounced == 0L || lastErrorAnnounced + 6000 < System.currentTimeMillis())) {
-            channel.sendMessage(
-                    "An unknown error occurred while playing **${track.info.title}**:\n${exception.friendlierMessage()}"
-            ).queue {
-                errorCount++
-                lastErrorAnnounced = System.currentTimeMillis()
-            }
+            channel.sendMessage("An unknown error occurred while playing **${track.info.title}**:\n${exception.friendlierMessage()}")
+                .queue {
+                    errorCount++
+                    lastErrorAnnounced = System.currentTimeMillis()
+                }
         }
     }
 
@@ -174,7 +173,6 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     }
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
-
     fun insertAt(index: Int, element: AudioTrack) = queue.insertAt(index, PlaylistUtils.toBase64String(element))
 
     companion object {

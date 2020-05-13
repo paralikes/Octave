@@ -138,8 +138,12 @@ class Settings : Cog {
     fun djrolesadd(ctx: Context, @Greedy role: Role) {
         val data = ctx.data
 
+        if (role.id in data.music.djRoles) {
+            return ctx.send("`${role.name}` is already a DJ role.")
+        }
+
         data.music.djRoles.add(role.id)
-        ctx.send("Added ${role.name} to the DJ roles.")
+        ctx.send("Added `${role.name}` to the DJ roles.")
         data.save()
     }
 
