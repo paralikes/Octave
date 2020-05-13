@@ -10,9 +10,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.util.*
-import java.util.stream.Collectors
 
 object PlaylistUtils {
     private val playerManager = players.playerManager
@@ -66,7 +64,7 @@ object PlaylistUtils {
     fun toAudioTrack(encoded: String): AudioTrack {
         val dec = Base64.getDecoder().decode(encoded)
         return ByteArrayInputStream(dec).use {
-            playerManager.decodeTrack(MessageInput(it)).decodedTrack
+            playerManager.decodeTrack(MessageInput(it))!!.decodedTrack
         }
     }
 
