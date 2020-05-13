@@ -254,7 +254,7 @@ class Settings : Cog {
         data.command.autoDeleteDelay = duration.toMillis()
         data.save()
         //TODO: Make this smarter lol
-        ctx.send("Set auto-delete delay to ${duration.toSeconds()}")
+        ctx.send("Set auto-delete delay to ${duration.toSeconds()} seconds.")
     }
 
     @SubCommand(aliases = ["votequeuecooldown", "vqc", "vpc"], description = "Sets the vote-play cooldown.")
