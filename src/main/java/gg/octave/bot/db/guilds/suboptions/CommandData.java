@@ -10,6 +10,7 @@ public class CommandData {
     private String prefix;
     private String djRole;
     private boolean autoDelete = false;
+    private long autoDeleteDelay = 0L;
     private boolean adminBypass = false;
     private boolean djOnlyMode;
 
@@ -73,5 +74,13 @@ public class CommandData {
 
     public void setDjOnlyMode(boolean djOnlyMode) {
         this.djOnlyMode = djOnlyMode;
+    }
+
+    public long getAutoDeleteDelay() {
+        return autoDeleteDelay;
+    }
+
+    public void setAutoDeleteDelay(long autoDeleteDelay) {
+        this.autoDeleteDelay = autoDeleteDelay;
     }
 }

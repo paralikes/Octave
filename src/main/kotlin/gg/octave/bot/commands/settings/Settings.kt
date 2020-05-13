@@ -1,7 +1,10 @@
 package gg.octave.bot.commands.settings
 
 import gg.octave.bot.db.guilds.GuildData
-import gg.octave.bot.utils.extensions.*
+import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
+import gg.octave.bot.utils.extensions.config
+import gg.octave.bot.utils.extensions.data
+import gg.octave.bot.utils.extensions.premiumGuild
 import gg.octave.bot.utils.toDuration
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
@@ -132,21 +135,21 @@ class Settings : Cog {
     }
 
     @SubCommand(aliases = ["djra", "dra"], description = "Adds extra DJ roles.")
-    fun djrolesadd(ctx: Context, @Greedy role: Role?) {
+    fun djrolesadd(ctx: Context, @Greedy role: Role) {
         val data = ctx.data
 
-        data.music.djRoles.add(role!!.id)
+        data.music.djRoles.add(role.id)
         ctx.send("Added ${role.name} to the DJ roles.")
         data.save()
     }
 
     @SubCommand(aliases = ["djra", "dra"], description = "Removes extra DJ roles.")
-    fun djrolesremove(ctx: Context, @Greedy role: Role?) {
+    fun djrolesremove(ctx: Context, @Greedy role: Role) {
         val data = ctx.data
 
-        data.music.djRoles.removeIf { it.contains(role!!.id) }.also {
+        data.music.djRoles.removeIf { it.contains(role.id) }.also {
             if(it) {
-                ctx.send("Removed ${role!!.name} from the DJ roles.")
+                ctx.send("Removed ${role.name} from the DJ roles.")
                 data.save()
             }
             else {
@@ -236,6 +239,22 @@ class Settings : Cog {
         }
 
         ctx.send("Successfully set queue limit to $qLimit.")
+    }
+
+    @SubCommand(description = "Sets the auto-delete delay.")
+    fun autodeletedelay(ctx: Context, duration: Duration?) {
+        val data = ctx.data
+
+        if(duration == null) {
+            data.command.autoDeleteDelay = 0L
+            data.save()
+            return ctx.send("Reset auto-delete delay.")
+        }
+
+        data.command.autoDeleteDelay = duration.toMillis()
+        data.save()
+        //TODO: Make this smarter lol
+        ctx.send("Set auto-delete delay to ${duration.toSeconds()}")
     }
 
     @SubCommand(aliases = ["votequeuecooldown", "vqc", "vpc"], description = "Sets the vote-play cooldown.")

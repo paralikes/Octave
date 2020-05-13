@@ -218,7 +218,8 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             val extra = when (djRolePresent) {
                 true -> ", or a role called ${djRole?.let { ctx.guild!!.getRoleById(it)?.name }}" +
                         (if (extraRoles) "\nOr any of the following roles: " +
-                                data.music.djRoles.map { ctx.guild!!.getRoleById(it)?.name }.joinToString { ", " } else "")
+                                data.music.djRoles.map { ctx.guild!!.getRoleById(it)?.name }.joinToString { ", " }
+                        else "")
                 false -> ""
             }
 
