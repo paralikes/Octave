@@ -135,9 +135,10 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             }
         }
 
+        val announce = currentTrack?.identifier != track.identifier
         currentTrack = track
 
-        if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {
+        if (announce && OptionsRegistry.ofGuild(manager.guildId).music.announce) {
             announceNext(track)
         }
     }
