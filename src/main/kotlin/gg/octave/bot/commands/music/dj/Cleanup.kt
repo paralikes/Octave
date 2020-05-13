@@ -7,6 +7,7 @@ import gg.octave.bot.music.TrackContext
 import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.manager
+import gg.octave.bot.utils.getDisplayValue
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
@@ -102,7 +103,6 @@ class Cleanup : MusicCog {
             return ctx.send("There are no songs to clear.")
         }
 
-        //TODO make this smarter lol
-        ctx.send("Removed $removed songs longer than ${duration.toMinutes()} minutes.")
+        ctx.send("Removed $removed songs longer than ${getDisplayValue(duration.toMillis())} minutes.")
     }
 }
