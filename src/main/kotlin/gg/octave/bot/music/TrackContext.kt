@@ -6,7 +6,7 @@ open class TrackContext(val requester: Long, val requestedChannel: Long) {
     val requesterMention = if (requester != -1L) "<@$requester>" else ""
     val channelMention = if (requestedChannel != -1L) "<#$requestedChannel>" else ""
 
-    fun serialize(stream: ByteArrayOutputStream) {
+    open fun serialize(stream: ByteArrayOutputStream) {
         val writer = DataOutputStream(stream)
         writer.writeInt(1)
         // 1 => TrackContext

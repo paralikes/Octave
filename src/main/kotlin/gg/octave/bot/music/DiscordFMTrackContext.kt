@@ -5,6 +5,8 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import gg.octave.bot.Launcher
+import java.io.ByteArrayOutputStream
+import java.io.DataOutputStream
 import java.util.concurrent.CompletableFuture
 
 class DiscordFMTrackContext(
@@ -12,9 +14,17 @@ class DiscordFMTrackContext(
     requester: Long,
     requestedChannel: Long
 ) : TrackContext(requester, requestedChannel) {
-    companion object {
-        @JvmStatic
-        val errorTolerance = 3
+    override fun serialize(stream: ByteArrayOutputStream) {
+        fun serialize(stream: ByteArrayOutputStream) {
+            val writer = DataOutputStream(stream)
+            writer.writeInt(2)
+            // 1 => TrackContext
+            // 2 => DiscordFMTrackContext
+            writer.writeLong(requester)
+            writer.writeLong(requestedChannel)
+            writer.writeUTF(station)
+            writer.close() // This invokes flush.
+        }
     }
 
     fun nextDiscordFMTrack(musicManager: MusicManager, errorDepth: Int = 0): CompletableFuture<AudioTrack?> {
@@ -49,5 +59,10 @@ class DiscordFMTrackContext(
         })
 
         return future
+    }
+
+    companion object {
+        @JvmStatic
+        val errorTolerance = 3
     }
 }
