@@ -202,9 +202,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             val data = ctx.data
             val memberSize = ctx.selfMember!!.voiceState?.channel?.members?.size
             val djRole = data.command.djRole
-
-            val djRolePresent = if (djRole != null) ctx.member!!.hasAnyRoleId(djRole) ||
-                    data.music.djRoles.any { ctx.member!!.hasAnyRoleId(it) } else false
+            val djRolePresent = djRole?.let(ctx.member!!::hasAnyRoleId) ?: data.music.djRoles.any { ctx.member!!.hasAnyRoleId(it) }
 
             val memberAmount = if (memberSize != null) memberSize <= 2 else false
             val admin = ctx.member!!.hasPermission(Permission.MANAGE_SERVER)
