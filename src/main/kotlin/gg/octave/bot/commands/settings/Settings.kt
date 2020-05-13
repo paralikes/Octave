@@ -1,10 +1,7 @@
 package gg.octave.bot.commands.settings
 
 import gg.octave.bot.db.guilds.GuildData
-import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
-import gg.octave.bot.utils.extensions.config
-import gg.octave.bot.utils.extensions.data
-import gg.octave.bot.utils.extensions.premiumGuild
+import gg.octave.bot.utils.extensions.*
 import gg.octave.bot.utils.toDuration
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
@@ -134,6 +131,58 @@ class Settings : Cog {
         ctx.send(out)
     }
 
+    @SubCommand(aliases = ["djra", "dra"], description = "Adds extra DJ roles.")
+    fun djrolesadd(ctx: Context, @Greedy role: Role?) {
+        val data = ctx.data
+
+        data.music.djRoles.add(role!!.id)
+        ctx.send("Added ${role.name} to the DJ roles.")
+        data.save()
+    }
+
+    @SubCommand(aliases = ["djra", "dra"], description = "Removes extra DJ roles.")
+    fun djrolesremove(ctx: Context, @Greedy role: Role?) {
+        val data = ctx.data
+
+        data.music.djRoles.removeIf { it.contains(role!!.id) }.also {
+            if(it) {
+                ctx.send("Removed ${role!!.name} from the DJ roles.")
+                data.save()
+            }
+            else {
+                ctx.send("Role wasn't a DJ role.")
+            }
+        }
+    }
+
+    @SubCommand(aliases = ["djrl", "drl"], description = "Lists all of the extra DJ roles you've set")
+    fun djroleslist(ctx: Context) {
+        val data = ctx.data
+        val musicData = data.music
+
+        if(musicData.djRoles.isEmpty()) {
+            return ctx.send("There are no extra DJ roles set.")
+        }
+
+        ctx.send {
+            setTitle("DJ Roles List")
+            //If the default DJ role isn't empty, send it aswell.
+            if(!data.command.djRole.isNullOrEmpty()) {
+                addField("Default DJ role",
+                        ctx.guild!!.getRoleById(data.command.djRole!!)?.asMention ?: "None",
+                        false
+                )
+            }
+
+            val extraDJRoles = musicData.djRoles.map {
+                //Not cached? Shouldn't be.
+                ctx.guild!!.getRoleById(data.command.djRole!!)?.asMention ?: "Unknown"
+            }.joinToString { "\n" }
+
+            addField("Extra DJ roles", extraDJRoles, false)
+        }
+    }
+
     @SubCommand(aliases = ["sl"], description = "Set the maximum song length. \"reset\" to reset.")
     fun songlength(ctx: Context, content: String) {
         val data = ctx.data
@@ -147,7 +196,7 @@ class Settings : Cog {
         val duration = try {
             content.toDuration()
         } catch (e: RuntimeException) {
-            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
+            return ctx.send("Wrong duration specified: Expected something like `40m`")
         }
 
         val premiumGuild = ctx.premiumGuild
@@ -219,7 +268,7 @@ class Settings : Cog {
         val amount = try {
             duration.toDuration()
         } catch (e: RuntimeException) {
-            return ctx.send("Wrong duration specified: Expected something like `40 minutes`")
+            return ctx.send("Wrong duration specified: Expected something like `40m`")
         }
 
         if (amount > limit) {

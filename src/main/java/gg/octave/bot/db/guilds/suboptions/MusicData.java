@@ -20,6 +20,7 @@ public class MusicData {
     private long votePlayDuration;
     private String announcementChannel;
     private boolean disableDj;
+    private Set<String> djRoles = new HashSet<>();
 
     @NotNull
     public final Set<String> getChannels() {
@@ -113,5 +114,13 @@ public class MusicData {
 
     public void setDisableDj(boolean disableDj) {
         this.disableDj = disableDj;
+    }
+
+    public Set<String> getDjRoles() {
+        return djRoles;
+    }
+
+    public void setDjRoles(Set<String> djRoles) {
+        this.djRoles = djRoles;
     }
 }

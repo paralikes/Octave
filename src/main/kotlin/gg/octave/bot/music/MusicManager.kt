@@ -311,7 +311,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
             }
 
             override fun loadFailed(e: FriendlyException) {
-                // No track found and queue is empty
+                // No trlastErrorAnnouncedack found and queue is empty
                 // destroy player
 
                 if (e.message!!.contains("decoding")) {
