@@ -18,11 +18,7 @@ class VoiceListener : EventListener {
     }
 
     private fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-        if (!Launcher.loaded) {
-            return
-        }
-
-        if (event.member.user == event.jda.selfUser) {
+        if (!Launcher.loaded || event.member.user == event.jda.selfUser) {
             return
         }
 
