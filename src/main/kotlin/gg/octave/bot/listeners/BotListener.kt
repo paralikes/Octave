@@ -37,8 +37,8 @@ class BotListener : EventListener {
         if (event.author.isBot && event.author === event.jda.selfUser) {
             val guildOptions = OptionsRegistry.ofGuild(event.guild)
             if (guildOptions.command.isAutoDelete) {
-                val deleteDelay =
-                        if (guildOptions.command.autoDeleteDelay > 0) guildOptions.command.autoDeleteDelay else 10000
+                val deleteDelay = guildOptions.command.autoDeleteDelay.takeIf { it > 0 }
+                    ?: TimeUnit.SECONDS.toMillis(10)
                 event.message.delete().queueAfter(deleteDelay, TimeUnit.MILLISECONDS)
             }
         }
