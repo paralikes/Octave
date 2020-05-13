@@ -1,23 +1,18 @@
 package gg.octave.bot.utils
 
-import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
-import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
 import gg.octave.bot.Launcher.players
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.util.*
 
 object PlaylistUtils {
     private val playerManager = players.playerManager
 
     // Playlists
     fun decodePlaylist(encodedTracks: List<String>, name: String): BasicAudioPlaylist {
-        val decoded = encodedTracks.mapNotNull(::toAudioTrack)
+        val decoded = encodedTracks.mapNotNull(::decodeMaybeNullAudioTrack)
         return BasicAudioPlaylist(name, decoded, decoded[0], false)
     }
 
@@ -32,7 +27,7 @@ object PlaylistUtils {
         val tracks = mutableListOf<AudioTrack>()
 
         for (encodedTrack in encodedTracks) {
-            val decodedTrack = toAudioTrack(encodedTrack as String) ?: continue
+            val decodedTrack = decodeAudioTrack(encodedTrack as String) ?: continue
             tracks.add(decodedTrack)
         }
 
@@ -45,7 +40,7 @@ object PlaylistUtils {
         val tracks = JSONArray()
 
         for (track in playlist.tracks) {
-            val enc = toBase64String(track) ?: continue
+            val enc = encodeAudioTrack(track) ?: continue
             tracks.put(enc)
         }
 
@@ -58,22 +53,12 @@ object PlaylistUtils {
     }
 
     fun encodePlaylist(playlist: BasicAudioPlaylist) = encodePlaylist(playlist.tracks)
-    fun encodePlaylist(playlist: Collection<AudioTrack>): List<String> = playlist.map(::toBase64String)
+    fun encodePlaylist(playlist: Collection<AudioTrack>): List<String> = playlist.map(::encodeAudioTrack)
 
-    // Tracks
-    fun toAudioTrack(encoded: String): AudioTrack {
-        val dec = Base64.getDecoder().decode(encoded)
-        return ByteArrayInputStream(dec).use {
-            playerManager.decodeTrack(MessageInput(it))!!.decodedTrack
-        }
-    }
-
-    fun toBase64String(track: AudioTrack): String {
-        return ByteArrayOutputStream().use {
-            playerManager.encodeTrack(MessageOutput(it), track)
-            Base64.getEncoder().encodeToString(it.toByteArray())
-        }
-    }
+    fun decodeAudioTrack(encoded: String) = playerManager.decodeTrack(encoded)!!
+    // This is used at the top of the file. Don't ask :^)
+    fun decodeMaybeNullAudioTrack(encoded: String) = playerManager.decodeTrack(encoded)
+    fun encodeAudioTrack(track: AudioTrack) = playerManager.encodeTrack(track)
 
     // Misc
     private fun <T: Throwable, R> suppress(exception: Class<out T>, block: () -> R): R? {

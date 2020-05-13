@@ -72,7 +72,7 @@ class Remove : MusicCog {
             }
         }
 
-        val decodedTrack = PlaylistUtils.toAudioTrack(track)
+        val decodedTrack = PlaylistUtils.decodeAudioTrack(track)
         ctx.send {
             setTitle("Track Removed")
             setDescription("Removed __[${decodedTrack.info.embedTitle}](${decodedTrack.info.embedUri})__ from the queue.")

@@ -30,7 +30,7 @@ class Cleanup : MusicCog {
         val oldSize = ctx.manager.scheduler.queue.size
 
         val predicate: (String) -> Boolean = {
-            val track = PlaylistUtils.toAudioTrack(it)
+            val track = PlaylistUtils.decodeAudioTrack(it)
             track.getUserData(TrackContext::class.java)?.requester == member.idLong
         }
 
@@ -51,7 +51,7 @@ class Cleanup : MusicCog {
 
         // Return Boolean: True if track should be removed
         val predicate: (String) -> Boolean = check@{
-            val track = PlaylistUtils.toAudioTrack(it)
+            val track = PlaylistUtils.decodeAudioTrack(it)
             
             val req = track.getUserData(TrackContext::class.java)?.let { m -> ctx.guild?.getMemberById(m.requester) }
                 ?: return@check true
@@ -76,7 +76,7 @@ class Cleanup : MusicCog {
         val tracks = mutableSetOf<String>()
         // Return Boolean: True if track should be removed (could not add to set: already exists).
         val predicate: (String) -> Boolean = {
-            val track = PlaylistUtils.toAudioTrack(it)
+            val track = PlaylistUtils.decodeAudioTrack(it)
             !tracks.add(track.identifier)
         }
 
@@ -94,7 +94,7 @@ class Cleanup : MusicCog {
     fun exceeds(ctx: Context, duration: Duration) {
         val oldSize = ctx.manager.scheduler.queue.size
 
-        ctx.manager.scheduler.queue.removeIf { PlaylistUtils.toAudioTrack(it).duration > duration.toMillis() }
+        ctx.manager.scheduler.queue.removeIf { PlaylistUtils.decodeAudioTrack(it).duration > duration.toMillis() }
         val newSize = ctx.manager.scheduler.queue.size
 
         val removed = oldSize - newSize

@@ -55,7 +55,7 @@ class CachingSourceManager : AudioSourceManager {
                 return PlaylistUtils.decodePlaylist(encoded)
             }
 
-            return PlaylistUtils.toAudioTrack(encoded)
+            return PlaylistUtils.decodeAudioTrack(encoded)
         }
     }
 
@@ -88,7 +88,7 @@ class CachingSourceManager : AudioSourceManager {
 
             if (item is AudioTrack) {
                 jedisPool.resource.use {
-                    val encoded = PlaylistUtils.toBase64String(item)
+                    val encoded = PlaylistUtils.encodeAudioTrack(item)
                     val setParams = SetParams.setParams().nx().px(TRACK_TTL)
                     it.set(identifier, encoded, setParams)
                 }
