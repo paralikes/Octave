@@ -49,6 +49,7 @@ class VoiceListener : EventListener {
         Launcher.players.getExisting(guild.idLong)?.let {
             if (!it.guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
                 Launcher.players.destroy(guild.idLong)
+                // Is this necessary? @ line 44
             } else if (it.isAlone()) {
                 it.queueLeave()
             }
@@ -73,11 +74,7 @@ class VoiceListener : EventListener {
                 val options = OptionsRegistry.ofGuild(event.guild)
                 if (options.music.channels.isNotEmpty()) {
                     if (event.channelJoined.id !in options.music.channels) {
-                        it.currentRequestChannel?.let { requestChannel ->
-                            requestChannel.sendMessage("Cannot join `${event.channelJoined.name}`, it isn't one of the designated music channels.")
-                                .queue()
-                        }
-
+                        it.currentRequestChannel?.sendMessage("Cannot join `${event.channelJoined.name}`, it isn't one of the designated music channels.")?.queue()
                         return Launcher.players.destroy(event.guild.idLong)
                     }
                 }
