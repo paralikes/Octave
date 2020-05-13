@@ -4,7 +4,7 @@
 **Octave** is an open-source Discord bot written in Java and Kotlin, using JDA and Lavaplayer.
 Octave provides a premium music experience.
 
-## The Official Octave
+## Links
 [Click here](https://discordapp.com/oauth2/authorize?client_id=201492375653056512&scope=bot&permissions=8) to add Octave to a server, provided that you have the `Manage Server` permission.
 
 [Click here](https://octave.gg/) to head to Octave's website.
