@@ -1,10 +1,12 @@
 package gg.octave.bot.commands.settings
 
 import gg.octave.bot.db.guilds.GuildData
+import gg.octave.bot.utils.Utils
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.premiumGuild
+import gg.octave.bot.utils.getDisplayValue
 import gg.octave.bot.utils.toDuration
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
@@ -16,6 +18,7 @@ import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 
 class Settings : Cog {
     @Command(aliases = ["setting", "set", "config", "configuration", "configure", "opts", "options"],
@@ -235,16 +238,22 @@ class Settings : Cog {
     fun autodeletedelay(ctx: Context, duration: Duration?) {
         val data = ctx.data
 
-        if(duration == null) {
+        if (duration == null) {
             data.command.autoDeleteDelay = 0L
             data.save()
             return ctx.send("Reset auto-delete delay.")
         }
 
-        data.command.autoDeleteDelay = duration.toMillis()
+        val delayCap = TimeUnit.MINUTES.toMillis(1)
+        val timeMillis = duration.toMillis()
+
+        if (timeMillis > delayCap) {
+            return ctx.send("Auto-delete delay cannot exceed ${getDisplayValue(delayCap)}")
+        }
+
+        data.command.autoDeleteDelay = timeMillis
         data.save()
-        //TODO: Make this smarter lol
-        ctx.send("Set auto-delete delay to ${duration.toSeconds()} seconds.")
+        ctx.send("Set auto-delete delay to ${getDisplayValue(timeMillis)}.")
     }
 
     @SubCommand(aliases = ["votequeuecooldown", "vqc", "vpc"], description = "Sets the vote-play cooldown.")
