@@ -33,7 +33,8 @@ class Queue : Cog {
 
                     entry {
                         buildString {
-                            val req = decodedTrack.getUserData(TrackContext::class.java)?.requesterMention?.plus(" ") ?: ""
+                            val req = decodedTrack.getUserData(TrackContext::class.java)?.requesterMention?.plus(" ")
+                                ?: ""
                             append(req)
                             append("`[").append(Utils.getTimestamp(decodedTrack.duration)).append("]` __[")
                             append(decodedTrack.info.embedTitle)

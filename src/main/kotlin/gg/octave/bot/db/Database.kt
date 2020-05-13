@@ -1,18 +1,16 @@
 package gg.octave.bot.db
 
 import com.rethinkdb.RethinkDB
-import com.rethinkdb.gen.ast.ReqlExpr
+import com.rethinkdb.RethinkDB.r
+import com.rethinkdb.ast.ReqlAst
 import com.rethinkdb.gen.exc.ReqlDriverError
 import com.rethinkdb.net.Connection
 import com.rethinkdb.net.Cursor
-import com.rethinkdb.RethinkDB.r
-import com.rethinkdb.ast.ReqlAst
 import gg.octave.bot.Launcher
 import gg.octave.bot.db.guilds.GuildData
 import gg.octave.bot.db.guilds.UserData
 import gg.octave.bot.db.premium.PremiumGuild
 import gg.octave.bot.db.premium.PremiumUser
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig
 import org.redisson.Redisson
 import org.redisson.api.RedissonClient
 import org.redisson.config.Config
@@ -91,7 +89,9 @@ class Database(private val name: String) {
     fun getPremiumUser(id: String): PremiumUser = query(PremiumUser::class.java) {
         table("premiumusers")[id].default_(r.hashMap("id", id).with("pledgeAmount", "0.0"))
     }!!
-    fun getPremiumUsers() = query<Cursor<PremiumUser>, PremiumUser>(PremiumUser::class.java) { table("premiumusers") }?.toList() ?: emptyList()
+
+    fun getPremiumUsers() = query<Cursor<PremiumUser>, PremiumUser>(PremiumUser::class.java) { table("premiumusers") }?.toList()
+        ?: emptyList()
 
     fun getPremiumGuild(id: String) = get("premiumguilds", id, PremiumGuild::class.java)
     fun getPremiumGuilds(redeemer: String) = query<Cursor<PremiumGuild>, PremiumGuild>(PremiumGuild::class.java) {

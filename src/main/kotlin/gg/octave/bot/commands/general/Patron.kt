@@ -61,7 +61,7 @@ class Patron : Cog {
                     ?: return@thenAccept ctx.send {
                         setDescription(
                             "Couldn't find your pledge.\n" +
-                            "[Re-link your account](https://support.patreon.com/hc/en-us/articles/212052266-Get-my-Discord-role) and try again."
+                                "[Re-link your account](https://support.patreon.com/hc/en-us/articles/212052266-Get-my-Discord-role) and try again."
                         )
                     }
 

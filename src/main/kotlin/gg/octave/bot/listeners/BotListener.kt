@@ -1,7 +1,6 @@
 package gg.octave.bot.listeners
 
 import gg.octave.bot.Launcher
-import gg.octave.bot.db.Database
 import gg.octave.bot.db.OptionsRegistry
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.JDA
@@ -13,7 +12,6 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.EventListener
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
-import redis.clients.jedis.Jedis
 import java.awt.Color
 import java.time.OffsetDateTime
 import java.util.concurrent.TimeUnit

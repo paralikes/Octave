@@ -9,7 +9,7 @@ import gg.octave.bot.db.Database
 import gg.octave.bot.entities.BotCredentials
 import gg.octave.bot.entities.Configuration
 import gg.octave.bot.entities.ExtendedShardManager
-import gg.octave.bot.entities.framework.*
+import gg.octave.bot.entities.framework.DefaultPrefixProvider
 import gg.octave.bot.entities.framework.parsers.*
 import gg.octave.bot.listeners.BotListener
 import gg.octave.bot.listeners.FlightEventAdapter
@@ -19,7 +19,6 @@ import gg.octave.bot.utils.DiscordFM
 import gg.octave.bot.utils.OctaveBot
 import gg.octave.bot.utils.extensions.registerAlmostAllParsers
 import io.sentry.Sentry
-import me.devoxin.flight.FlightInfo
 import me.devoxin.flight.api.CommandClient
 import me.devoxin.flight.api.CommandClientBuilder
 import net.dv8tion.jda.api.JDAInfo

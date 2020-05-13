@@ -52,7 +52,7 @@ class Cleanup : MusicCog {
         // Return Boolean: True if track should be removed
         val predicate: (String) -> Boolean = check@{
             val track = PlaylistUtils.decodeAudioTrack(it)
-            
+
             val req = track.getUserData(TrackContext::class.java)?.let { m -> ctx.guild?.getMemberById(m.requester) }
                 ?: return@check true
 

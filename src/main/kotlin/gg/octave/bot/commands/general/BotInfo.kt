@@ -2,7 +2,6 @@ package gg.octave.bot.commands.general
 
 import com.sun.management.OperatingSystemMXBean
 import gg.octave.bot.Launcher
-import gg.octave.bot.db.Database
 import gg.octave.bot.utils.Capacity
 import gg.octave.bot.utils.OctaveBot
 import me.devoxin.flight.api.Context
@@ -37,7 +36,7 @@ class BotInfo : Cog {
         var users = 0L
 
         Launcher.database.jedisPool.resource.use {
-            for(x in 0 until Launcher.credentials.totalShards) {
+            for (x in 0 until Launcher.credentials.totalShards) {
                 val stats = JSONObject(it.hget("stats", x.toString()));
                 guilds += stats.getLong("guild_count")
                 users += stats.getLong("cached_users")
@@ -48,8 +47,8 @@ class BotInfo : Cog {
             setTitle("Octave (Revision ${OctaveBot.GIT_REVISION})")
             setThumbnail(ctx.jda.selfUser.avatarUrl)
             setDescription("Never miss a beat with Octave, " +
-                    "a simple and easy to use Discord music bot delivering high quality audio to hundreds of thousands of servers." +
-                    " We support Youtube, Soundcloud, and more!")
+                "a simple and easy to use Discord music bot delivering high quality audio to hundreds of thousands of servers." +
+                " We support Youtube, Soundcloud, and more!")
 
             addField("CPU Usage", "${procCpuUsage}% JVM\n${sysCpuUsage}% SYS", true)
             addField("RAM Usage", "$ramUsedFormatted${ramUsedCalculated.unit} (${ramUsedPercent}%)", true)

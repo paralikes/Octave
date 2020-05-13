@@ -116,14 +116,14 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
             }
 
             YoutubeIpRotatorSetup(planner)
-                    .forSource(youtubeAudioSourceManager)
-                    .setup()
+                .forSource(youtubeAudioSourceManager)
+                .setup()
         }
 
         val spotifyAudioSourceManager = SpotifyAudioSourceManager(
-                credentials.spotifyClientId,
-                credentials.spotifyClientSecret,
-                youtubeAudioSourceManager
+            credentials.spotifyClientId,
+            credentials.spotifyClientSecret,
+            youtubeAudioSourceManager
         )
 
         playerManager.registerSourceManager(CachingSourceManager())

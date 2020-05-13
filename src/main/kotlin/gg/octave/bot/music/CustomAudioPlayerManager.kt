@@ -2,15 +2,12 @@ package gg.octave.bot.music
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
-import com.sedmelluq.discord.lavaplayer.tools.DataFormatTools
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
-import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo
-import com.sedmelluq.discord.lavaplayer.track.DecodedTrackHolder
-import java.io.*
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.util.*
-import kotlin.experimental.and
 
 class ExtendedAudioPlayerManager(private val dapm: AudioPlayerManager = DefaultAudioPlayerManager()) : AudioPlayerManager by dapm {
     /**

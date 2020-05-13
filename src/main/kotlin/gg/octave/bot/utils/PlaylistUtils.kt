@@ -56,12 +56,13 @@ object PlaylistUtils {
     fun encodePlaylist(playlist: Collection<AudioTrack>): List<String> = playlist.map(::encodeAudioTrack)
 
     fun decodeAudioTrack(encoded: String) = playerManager.decodeTrack(encoded)!!
+
     // This is used at the top of the file. Don't ask :^)
     fun decodeMaybeNullAudioTrack(encoded: String) = playerManager.decodeTrack(encoded)
     fun encodeAudioTrack(track: AudioTrack) = playerManager.encodeTrack(track)
 
     // Misc
-    private fun <T: Throwable, R> suppress(exception: Class<out T>, block: () -> R): R? {
+    private fun <T : Throwable, R> suppress(exception: Class<out T>, block: () -> R): R? {
         return try {
             block()
         } catch (e: Throwable) {

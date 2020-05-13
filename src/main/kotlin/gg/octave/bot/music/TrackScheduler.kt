@@ -19,7 +19,6 @@ import io.sentry.event.EventBuilder
 import io.sentry.event.interfaces.StackTraceInterface
 import net.dv8tion.jda.api.EmbedBuilder
 import org.redisson.api.RQueue
-import java.util.*
 
 class TrackScheduler(private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
     //Base64 encoded.
