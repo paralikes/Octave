@@ -29,6 +29,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
         private set
     var currentTrack: AudioTrack? = null
         private set
+    var lastTimeAnnounced = 0L
 
     /**
      * Add the next track to queue or play right away if nothing is in the queue.
@@ -155,9 +156,14 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             append(".")
         }
 
-        channel.sendMessage(EmbedBuilder().apply {
-            setDescription(description)
-        }.build()).queue()
+        //Avoid spamming by just sending it if the last time it was announced was more than 10s ago.
+        if(lastTimeAnnounced == 0L || lastTimeAnnounced + 10000 < System.currentTimeMillis()) {
+            channel.sendMessage(EmbedBuilder().apply {
+                setDescription(description)
+            }.build()).queue {
+                lastTimeAnnounced = System.currentTimeMillis()
+            }
+        }
     }
 
     fun shuffle() = (queue as MutableList<*>).shuffle()
