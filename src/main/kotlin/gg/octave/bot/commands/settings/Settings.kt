@@ -1,7 +1,6 @@
 package gg.octave.bot.commands.settings
 
 import gg.octave.bot.db.guilds.GuildData
-import gg.octave.bot.utils.Utils
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.data

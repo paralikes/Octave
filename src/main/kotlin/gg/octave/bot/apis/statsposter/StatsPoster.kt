@@ -2,7 +2,6 @@ package gg.octave.bot.apis.statsposter
 
 import gg.octave.bot.Launcher
 import gg.octave.bot.apis.statsposter.websites.*
-import gg.octave.bot.db.Database
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.util.concurrent.Executors

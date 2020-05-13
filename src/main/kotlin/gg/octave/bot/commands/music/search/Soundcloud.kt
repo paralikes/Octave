@@ -6,7 +6,6 @@ import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
 import gg.octave.bot.music.MusicLimitException
 import gg.octave.bot.utils.Utils
-import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.selfMember
 import gg.octave.bot.utils.extensions.voiceChannel
 import me.devoxin.flight.api.Context

@@ -2,9 +2,7 @@ package gg.octave.bot.listeners
 
 import gg.octave.bot.Launcher
 import gg.octave.bot.db.guilds.GuildData
-import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
-import gg.octave.bot.entities.framework.MusicCog
 import gg.octave.bot.entities.framework.Usage
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.data
@@ -120,8 +118,8 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
         }
 
         if (ctx.member!!.hasPermission(Permission.ADMINISTRATOR)
-                || ctx.member!!.hasPermission(Permission.MANAGE_SERVER)
-                || ctx.author.idLong in ctx.config.admins) {
+            || ctx.member!!.hasPermission(Permission.MANAGE_SERVER)
+            || ctx.author.idLong in ctx.config.admins) {
             return true
         }
 
@@ -162,7 +160,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
 
     private fun isIgnored(ctx: Context, data: GuildData, member: Member): Boolean {
         return member.user.id in data.ignored.users || ctx.textChannel!!.id in data.ignored.channels
-                || data.ignored.roles.any { id -> member.roles.any { it.id == id } }
+            || data.ignored.roles.any { id -> member.roles.any { it.id == id } }
     }
 
 
@@ -171,7 +169,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     }
 
     override fun onBotMissingPermissions(ctx: Context, command: CommandFunction, permissions: List<Permission>) {
-        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`", transform=Permission::getName)
+        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`", transform = Permission::getName)
 
         if (Permission.MESSAGE_EMBED_LINKS in permissions) {
             return ctx.send("__Missing Permissions__\n\nThis command requires the following permissions:\n$formatted")
@@ -186,7 +184,7 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
     }
 
     override fun onUserMissingPermissions(ctx: Context, command: CommandFunction, permissions: List<Permission>) {
-        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`", transform=Permission::getName)
+        val formatted = permissions.joinToString("`\n`", prefix = "`", postfix = "`", transform = Permission::getName)
 
         ctx.send {
             setTitle("Missing Permissions")
@@ -199,7 +197,8 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
             val data = ctx.data
             val memberSize = ctx.selfMember!!.voiceState?.channel?.members?.size
             val djRole = data.command.djRole
-            val djRolePresent = djRole?.let(ctx.member!!::hasAnyRoleId) ?: data.music.djRoles.any(ctx.member!!::hasAnyRoleId)
+            val djRolePresent = djRole?.let(ctx.member!!::hasAnyRoleId)
+                ?: data.music.djRoles.any(ctx.member!!::hasAnyRoleId)
 
             val memberAmount = if (memberSize != null) memberSize <= 2 else false
             val admin = ctx.member!!.hasPermission(Permission.MANAGE_SERVER)
