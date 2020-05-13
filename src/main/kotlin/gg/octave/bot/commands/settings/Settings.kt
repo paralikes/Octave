@@ -150,43 +150,29 @@ class Settings : Cog {
     @SubCommand(aliases = ["djra", "dra"], description = "Removes extra DJ roles.")
     fun djrolesremove(ctx: Context, @Greedy role: Role) {
         val data = ctx.data
+        val removed = data.music.djRoles.remove(role.id)
 
-        data.music.djRoles.removeIf { it.contains(role.id) }.also {
-            if(it) {
-                ctx.send("Removed ${role.name} from the DJ roles.")
-                data.save()
-            }
-            else {
-                ctx.send("Role wasn't a DJ role.")
-            }
+        if (!removed) {
+            return ctx.send("`${role.name}` is not a DJ role.")
         }
+
+        data.save()
+        ctx.send("`${role.name}` is no longer a DJ role.")
     }
 
     @SubCommand(aliases = ["djrl", "drl"], description = "Lists all of the extra DJ roles you've set")
     fun djroleslist(ctx: Context) {
         val data = ctx.data
-        val musicData = data.music
-
-        if(musicData.djRoles.isEmpty()) {
-            return ctx.send("There are no extra DJ roles set.")
-        }
+        val defaultDjRole = data.command.djRole?.let(ctx.guild!!::getRoleById)?.asMention ?: "Default (`DJ`)"
+        val djRoles = data.music.djRoles.mapNotNull(ctx.guild!!::getRoleById)
+            .joinToString("\n") { it.asMention }
+            .takeIf { it.isNotEmpty() }
+            ?: "*No DJ roles. Add some with `${ctx.trigger}settings djrolesadd <role>`*"
 
         ctx.send {
             setTitle("DJ Roles List")
-            //If the default DJ role isn't empty, send it aswell.
-            if(!data.command.djRole.isNullOrEmpty()) {
-                addField("Default DJ role",
-                        ctx.guild!!.getRoleById(data.command.djRole!!)?.asMention ?: "None",
-                        false
-                )
-            }
-
-            val extraDJRoles = musicData.djRoles.map {
-                //Not cached? Shouldn't be.
-                ctx.guild!!.getRoleById(data.command.djRole!!)?.asMention ?: "Unknown"
-            }.joinToString { "\n" }
-
-            addField("Extra DJ roles", extraDJRoles, false)
+            addField("Default DJ Role", defaultDjRole, true)
+            addField("Extra DJ roles", djRoles, true)
         }
     }
 
