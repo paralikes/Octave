@@ -1,10 +1,8 @@
 package com.jagrosh.jdautilities.waiter
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.GenericEvent
 import net.dv8tion.jda.api.hooks.EventListener
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.function.Consumer
 
@@ -22,7 +20,7 @@ import java.util.function.Consumer
  */
 class EventWaiter : EventListener {
     private val waiters = mutableMapOf<Class<*>, MutableList<Waiter<GenericEvent>>>()
-
+    private val scheduledExecutor = Executors.newSingleThreadScheduledExecutor()
     @Suppress("UNCHECKED_CAST")
     fun <T : GenericEvent> waitForEvent(cls: Class<in T>,
                                         predicate: (T) -> Boolean,
@@ -38,12 +36,11 @@ class EventWaiter : EventListener {
         if (timeout > 0) {
             requireNotNull(unit)
 
-            GlobalScope.launch { // TODO: bad bad bad bad bad bad
-                delay(unit.toMillis(timeout))
+            scheduledExecutor.schedule({
                 if (list.remove(waiter)) {
                     timeoutAction?.invoke()
                 }
-            }
+            }, timeout, unit)
         }
 
         return waiter
