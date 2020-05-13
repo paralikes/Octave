@@ -44,11 +44,11 @@ public class MusicPlaylist extends ManagedObject {
 
     @JsonIgnore
     public void appendTrack(AudioTrack track) throws IOException {
-        encodedTracks.add(PlaylistUtils.INSTANCE.toBase64String(track));
+        encodedTracks.add(PlaylistUtils.INSTANCE.encodeAudioTrack(track));
     }
 
     @JsonIgnore
     public void appendTracks(List<AudioTrack> tracks) {
-        tracks.forEach(PlaylistUtils.INSTANCE::toBase64String);
+        tracks.forEach(PlaylistUtils.INSTANCE::encodeAudioTrack);
     }
 }

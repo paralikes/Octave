@@ -30,7 +30,7 @@ class Move : MusicCog {
             ?: return ctx.send("`trackIndex` needs to be ≥ 1, ≤ ${queue.size}, and must not be the same as the index of the track you're moving.")
 
         val moved = queue.move(realIndex, realTo)
-        val track = PlaylistUtils.toAudioTrack(moved)
+        val track = PlaylistUtils.decodeAudioTrack(moved)
 
         ctx.send("Moved **${track.info.title}** to position **$toIndex** in the queue.")
     }

@@ -7,14 +7,14 @@ import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.entities.Cog
 import net.dv8tion.jda.api.JDA
 
-class ShardInfoCommand : Cog {
+class ShardInfo : Cog {
     @Command(aliases = ["shards", "shard"], description = "View shard information.", developerOnly = true)
     suspend fun shardinfo(ctx: Context) {
         val status = ctx.jda.shardManager!!.shards.joinToString("\n", transform = ::formatInfo)
         val pages = TextSplitter.split(status, 1920)
 
         for (page in pages) {
-            ctx.sendAsync("```prolog\n ID |    STATUS |    PING | GUILDS |  USERS | REQUESTS |  VC\n$page```")
+            ctx.sendAsync("```prolog\n ID |    STATUS |    PING | GUILDS |  USERS |  VC\n$page```")
         }
     }
 
@@ -22,7 +22,7 @@ class ShardInfoCommand : Cog {
         val shardId = jda.shardInfo.shardId
         val totalShards = jda.shardInfo.shardTotal
 
-        return "%3d | %9.9s | %7.7s | %6d | %6d | ---- WIP | %3d".format(
+        return "%3d | %9.9s | %7.7s | %6d | %6d | %3d".format(
             shardId,
             jda.status,
             "${jda.gatewayPing}ms",

@@ -43,7 +43,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             if (isNext) {
                 insertAt(0, track)
             } else {
-                queue.offer(PlaylistUtils.toBase64String(track))
+                queue.offer(PlaylistUtils.encodeAudioTrack(track))
             }
         }
     }
@@ -62,13 +62,13 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             if (repeatOption == RepeatOption.SONG) {
                 return player.playTrack(cloned)
             } else if (repeatOption == RepeatOption.QUEUE) {
-                queue.offer(PlaylistUtils.toBase64String(cloned))
+                queue.offer(PlaylistUtils.encodeAudioTrack(cloned))
             } // NONE doesn't need any handling.
         }
 
         if (queue.isNotEmpty()) {
             val track = queue.poll()
-            val decodedTrack = PlaylistUtils.toAudioTrack(track)
+            val decodedTrack = PlaylistUtils.decodeAudioTrack(track)
             return player.playTrack(decodedTrack)
         }
 
@@ -143,9 +143,10 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
             }
         }
 
+        val announce = currentTrack?.identifier != track.identifier
         currentTrack = track
 
-        if (OptionsRegistry.ofGuild(manager.guildId).music.announce) {
+        if (announce && OptionsRegistry.ofGuild(manager.guildId).music.announce) {
             announceNext(track)
         }
     }

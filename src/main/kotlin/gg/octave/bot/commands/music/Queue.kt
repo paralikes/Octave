@@ -29,7 +29,7 @@ class Queue : Cog {
                 finally { message -> message?.delete()?.queue() }
 
                 for (track in queue) {
-                    val decodedTrack = PlaylistUtils.toAudioTrack(track)
+                    val decodedTrack = PlaylistUtils.decodeAudioTrack(track)
 
                     entry {
                         buildString {

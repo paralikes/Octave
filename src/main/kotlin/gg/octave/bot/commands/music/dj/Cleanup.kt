@@ -7,7 +7,6 @@ import gg.octave.bot.music.TrackContext
 import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.manager
-import gg.octave.bot.utils.getDisplayValue
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
@@ -31,7 +30,7 @@ class Cleanup : MusicCog {
         val oldSize = ctx.manager.scheduler.queue.size
 
         val predicate: (String) -> Boolean = {
-            val track = PlaylistUtils.toAudioTrack(it)
+            val track = PlaylistUtils.decodeAudioTrack(it)
             track.getUserData(TrackContext::class.java)?.requester == member.idLong
         }
 
@@ -52,7 +51,7 @@ class Cleanup : MusicCog {
 
         // Return Boolean: True if track should be removed
         val predicate: (String) -> Boolean = check@{
-            val track = PlaylistUtils.toAudioTrack(it)
+            val track = PlaylistUtils.decodeAudioTrack(it)
 
             val req = track.getUserData(TrackContext::class.java)?.let { m -> ctx.guild?.getMemberById(m.requester) }
                 ?: return@check true
@@ -77,7 +76,7 @@ class Cleanup : MusicCog {
         val tracks = mutableSetOf<String>()
         // Return Boolean: True if track should be removed (could not add to set: already exists).
         val predicate: (String) -> Boolean = {
-            val track = PlaylistUtils.toAudioTrack(it)
+            val track = PlaylistUtils.decodeAudioTrack(it)
             !tracks.add(track.identifier)
         }
 
@@ -95,7 +94,7 @@ class Cleanup : MusicCog {
     fun exceeds(ctx: Context, duration: Duration) {
         val oldSize = ctx.manager.scheduler.queue.size
 
-        ctx.manager.scheduler.queue.removeIf { PlaylistUtils.toAudioTrack(it).duration > duration.toMillis() }
+        ctx.manager.scheduler.queue.removeIf { PlaylistUtils.decodeAudioTrack(it).duration > duration.toMillis() }
         val newSize = ctx.manager.scheduler.queue.size
 
         val removed = oldSize - newSize
@@ -103,6 +102,7 @@ class Cleanup : MusicCog {
             return ctx.send("There are no songs to clear.")
         }
 
-        ctx.send("Removed $removed songs longer than ${getDisplayValue(duration.toMillis())} minutes.")
+        //TODO make this smarter lol
+        ctx.send("Removed $removed songs longer than ${duration.toMinutes()} minutes.")
     }
 }
