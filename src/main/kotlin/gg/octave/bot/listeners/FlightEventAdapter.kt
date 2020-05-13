@@ -20,10 +20,7 @@ import me.devoxin.flight.api.exceptions.BadArgument
 import me.devoxin.flight.api.hooks.DefaultCommandEventAdapter
 import me.devoxin.flight.internal.arguments.Argument
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.entities.VoiceChannel
+import net.dv8tion.jda.api.entities.*
 import java.time.Duration
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.hasAnnotation
@@ -211,18 +208,26 @@ class FlightEventAdapter : DefaultCommandEventAdapter() {
                 return true
             }
 
-            val extraRoles = data.music.djRoles.size >= 1
+            val append = if (!djRolePresent) "" else buildString {
+                val roleName = djRole?.let(ctx.guild!!::getRoleById)?.name
+                val moreRoles = data.music.djRoles.mapNotNull(ctx.guild!!::getRoleById)
+                    .joinToString("`, `", prefix = "`", postfix = "`", transform = Role::getName)
 
-            val extra = when (djRolePresent) {
-                true -> ", or a role called ${djRole?.let { ctx.guild!!.getRoleById(it)?.name }}" +
-                        (if (extraRoles) "\nOr any of the following roles: " +
-                                data.music.djRoles.map { ctx.guild!!.getRoleById(it)?.name }.joinToString { ", " }
-                        else "")
-                false -> ""
+                if (!roleName.isNullOrEmpty()) {
+                    append(", or a role called $roleName")
+                }
+
+                if (moreRoles.isNotEmpty()) {
+                    appendln(", or any of the following roles:")
+                    append(moreRoles)
+                }
             }
 
             if (send) {
-                ctx.send("You need a role called DJ$extra.\nThis can be bypassed if you're an admin (either Manage Server or Administrator) or you're alone with the bot.")
+                ctx.send(
+                    "You need a role called DJ$append.\n" +
+                        "This can be bypassed if you're an admin (either Manage Server or Administrator) or you're alone with the bot."
+                )
             }
             return false
         }
