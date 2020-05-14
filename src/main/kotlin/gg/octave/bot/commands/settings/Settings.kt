@@ -149,7 +149,7 @@ class Settings : Cog {
         data.save()
     }
 
-    @SubCommand(aliases = ["djrm", "dra"], description = "Removes extra DJ roles.")
+    @SubCommand(aliases = ["djrm"], description = "Removes extra DJ roles.")
     fun djrolesremove(ctx: Context, @Greedy role: Role) {
         val data = ctx.data
         val removed = data.music.djRoles.remove(role.id)

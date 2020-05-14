@@ -72,7 +72,12 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
         }
 
         if (manager.discordFMTrack == null) {
-            return MusicManager.schedulerThread.execute { manager.playerRegistry.destroy(manager.guild) }
+            return player.stopTrack() // Don't disconnect here. We'll wait for the user to queue more music OR
+            // for them to run the leave command/disconnect from voice channel.
+            // If the user disconnects from the voice channel, the VoiceListener will (read: should) pick up
+            // on this and schedule a disconnect 30 seconds from the time of being alone in vc.
+
+            // return MusicManager.schedulerThread.execute { manager.playerRegistry.destroy(manager.guild) }
         }
 
         manager.discordFMTrack?.let {

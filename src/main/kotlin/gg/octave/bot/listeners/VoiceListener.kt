@@ -4,6 +4,7 @@ import gg.octave.bot.Launcher
 import gg.octave.bot.db.OptionsRegistry
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.events.GenericEvent
+import net.dv8tion.jda.api.events.guild.voice.GenericGuildVoiceEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
@@ -11,7 +12,7 @@ import net.dv8tion.jda.api.hooks.EventListener
 
 class VoiceListener : EventListener {
     override fun onEvent(event: GenericEvent) {
-        if (!Launcher.loaded) {
+        if (event !is GenericGuildVoiceEvent || !Launcher.loaded) {
             return
         }
 
