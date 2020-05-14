@@ -203,7 +203,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 val queueLimit = queueLimit(ctx)
                 val queueLimitDisplay = when (queueLimit) {
                     Integer.MAX_VALUE -> "unlimited"
-                    else -> queueLimit
+                    else -> queueLimit.toString()
                 }
 
                 if (scheduler.queue.size >= queueLimit) {
@@ -254,9 +254,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 val queueLimit = queueLimit(ctx)
                 val queueLimitDisplay = when (queueLimit) {
                     Integer.MAX_VALUE -> "unlimited"
-                    else -> queueLimit
+                    else -> queueLimit.toString()
                 }
-
 
                 if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
                     if (!ctx.member!!.voiceState!!.inVoiceChannel()) {
