@@ -3,6 +3,7 @@ package gg.octave.bot.commands.music
 import com.jagrosh.jdautilities.paginator
 import gg.octave.bot.Launcher
 import gg.octave.bot.music.TrackContext
+import gg.octave.bot.music.settings.AutoShuffle
 import gg.octave.bot.utils.Utils
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.selfMember
@@ -14,7 +15,7 @@ class Queue : Cog {
     @Command(aliases = ["q"], description = "Shows the current queue.")
     fun queue(ctx: Context) {
         val manager = Launcher.players.getExisting(ctx.guild)
-            ?: return ctx.send("There's no music player in this guild.\n$PLAY_MESSAGE")
+                ?: return ctx.send("There's no music player in this guild.\n$PLAY_MESSAGE")
 
         val queue = manager.scheduler.queue
         var queueLength = 0L
@@ -22,7 +23,10 @@ class Queue : Cog {
         ctx.textChannel?.let {
             Launcher.eventWaiter.paginator {
                 setUser(ctx.author)
-                title { "Music Queue" }
+                if (manager.scheduler.autoShuffle == AutoShuffle.ON)
+                    title { "Music Queue (Shuffle enabled, order is not order in which songs are played)" }
+                else
+                    title { "Music Queue" }
                 color { ctx.selfMember?.color }
                 empty { "**Empty queue.** Add some music with `${ctx.config.prefix}play url|YT search`." }
                 finally { message -> message?.delete()?.queue() }
@@ -33,7 +37,7 @@ class Queue : Cog {
                     entry {
                         buildString {
                             val req = decodedTrack.getUserData(TrackContext::class.java)?.requesterMention?.plus(" ")
-                                ?: ""
+                                    ?: ""
                             append(req)
                             append("`[").append(Utils.getTimestamp(decodedTrack.duration)).append("]` __[")
                             append(decodedTrack.info.embedTitle)
