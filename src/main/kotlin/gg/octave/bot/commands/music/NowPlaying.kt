@@ -43,9 +43,15 @@ class NowPlaying : MusicCog {
                 true
             )
             addBlankField(true)
+
+            addField("Volume", "${manager.player.volume}%", true)
+            addBlankField(true)
+            addBlankField(true)
+
             addField("Repeating", manager.scheduler.repeatOption.name.toLowerCase().capitalize(), true)
             addField("Shuffle", manager.scheduler.autoShuffle.name.toLowerCase().capitalize(), true)
-            addField("Volume", "${manager.player.volume}%", true)
+            addBlankField(true)
+
             addField("Bass Boost", manager.dspFilter.bassBoost.name.toLowerCase().capitalize(), true)
             val timeString = if (track.duration == Long.MAX_VALUE) {
                 "`Streaming`"
