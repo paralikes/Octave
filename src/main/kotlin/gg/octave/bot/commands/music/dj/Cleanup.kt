@@ -1,10 +1,10 @@
 package gg.octave.bot.commands.music.dj
 
+import gg.octave.bot.Launcher
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
 import gg.octave.bot.music.TrackContext
-import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.DEFAULT_SUBCOMMAND
 import gg.octave.bot.utils.extensions.manager
 import gg.octave.bot.utils.getDisplayValue
@@ -31,7 +31,7 @@ class Cleanup : MusicCog {
         val oldSize = ctx.manager.scheduler.queue.size
 
         val predicate: (String) -> Boolean = {
-            val track = PlaylistUtils.decodeAudioTrack(it)
+            val track = Launcher.players.playerManager.decodeAudioTrack(it)
             track.getUserData(TrackContext::class.java)?.requester == member.idLong
         }
 
@@ -52,7 +52,7 @@ class Cleanup : MusicCog {
 
         // Return Boolean: True if track should be removed
         val predicate: (String) -> Boolean = check@{
-            val track = PlaylistUtils.decodeAudioTrack(it)
+            val track = Launcher.players.playerManager.decodeAudioTrack(it)
 
             val req = track.getUserData(TrackContext::class.java)?.let { m -> ctx.guild?.getMemberById(m.requester) }
                 ?: return@check true
@@ -77,7 +77,7 @@ class Cleanup : MusicCog {
         val tracks = mutableSetOf<String>()
         // Return Boolean: True if track should be removed (could not add to set: already exists).
         val predicate: (String) -> Boolean = {
-            val track = PlaylistUtils.decodeAudioTrack(it)
+            val track = Launcher.players.playerManager.decodeAudioTrack(it)
             !tracks.add(track.identifier)
         }
 
@@ -94,7 +94,7 @@ class Cleanup : MusicCog {
     fun exceeds(ctx: Context, duration: Duration) {
         val oldSize = ctx.manager.scheduler.queue.size
 
-        ctx.manager.scheduler.queue.removeIf { PlaylistUtils.decodeAudioTrack(it).duration > duration.toMillis() }
+        ctx.manager.scheduler.queue.removeIf { Launcher.players.playerManager.decodeAudioTrack(it).duration > duration.toMillis() }
         val newSize = ctx.manager.scheduler.queue.size
 
         val removed = oldSize - newSize

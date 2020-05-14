@@ -3,7 +3,7 @@ package gg.octave.bot.music.sources.caching
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.track.*
-import gg.octave.bot.utils.PlaylistUtils
+import gg.octave.bot.Launcher
 import org.slf4j.LoggerFactory
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
@@ -52,10 +52,10 @@ class CachingSourceManager : AudioSourceManager {
             successfulHits++
 
             if (encoded.startsWith('{')) { // JSON object representing a playlist.
-                return PlaylistUtils.decodePlaylist(encoded)
+                return Launcher.players.playerManager.decodePlaylist(encoded)
             }
 
-            return PlaylistUtils.decodeAudioTrack(encoded)
+            return Launcher.players.playerManager.decodeAudioTrack(encoded)
         }
     }
 
@@ -88,14 +88,14 @@ class CachingSourceManager : AudioSourceManager {
 
             if (item is AudioTrack) {
                 jedisPool.resource.use {
-                    val encoded = PlaylistUtils.encodeAudioTrack(item)
+                    val encoded = Launcher.players.playerManager.encodeAudioTrack(item)
                     val setParams = SetParams.setParams().nx().px(TRACK_TTL)
                     it.set(identifier, encoded, setParams)
                 }
             } else if (item is AudioPlaylist) {
                 jedisPool.resource.use {
                     val ttl = if (item.isSearchResult) SEARCH_TTL else PLAYLIST_TTL
-                    val encoded = PlaylistUtils.toJsonString(item)
+                    val encoded = Launcher.players.playerManager.toJsonString(item)
                     val setParams = SetParams.setParams().nx().px(ttl)
                     it.set(identifier, encoded, setParams)
                 }

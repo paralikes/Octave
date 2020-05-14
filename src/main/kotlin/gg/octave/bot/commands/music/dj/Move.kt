@@ -1,8 +1,8 @@
 package gg.octave.bot.commands.music.dj
 
+import gg.octave.bot.Launcher
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
-import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.manager
 import gg.octave.bot.utils.extensions.move
 import me.devoxin.flight.api.Context
@@ -30,7 +30,7 @@ class Move : MusicCog {
             ?: return ctx.send("`trackIndex` needs to be ≥ 1, ≤ ${queue.size}, and must not be the same as the index of the track you're moving.")
 
         val moved = queue.move(realIndex, realTo)
-        val track = PlaylistUtils.decodeAudioTrack(moved)
+        val track = Launcher.players.playerManager.decodeAudioTrack(moved)
 
         ctx.send("Moved **${track.info.title}** to position **$toIndex** in the queue.")
     }

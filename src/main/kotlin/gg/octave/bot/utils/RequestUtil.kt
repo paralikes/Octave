@@ -9,7 +9,7 @@ object RequestUtil {
     private val httpClient = OkHttpClient()
 
     /* Media Types */
-    val APPLICATION_JSON = MediaType.get("application/json")
+    val APPLICATION_JSON: MediaType = MediaType.get("application/json")
 
     fun request(options: Request.Builder.() -> Unit): PendingRequest {
         val request = Request.Builder()
@@ -36,7 +36,7 @@ object RequestUtil {
                 it
             }
             .thenApply { it.body()?.string() ?: throw IllegalStateException("ResponseBody was null!") }
-            .thenApply { JSONObject(it) }
+            .thenApply(::JSONObject)
     }
 
     class PendingRequest(private val req: Request) {

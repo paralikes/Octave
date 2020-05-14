@@ -3,7 +3,6 @@ package gg.octave.bot.commands.music
 import com.jagrosh.jdautilities.paginator
 import gg.octave.bot.Launcher
 import gg.octave.bot.music.TrackContext
-import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.Utils
 import gg.octave.bot.utils.extensions.config
 import gg.octave.bot.utils.extensions.selfMember
@@ -29,7 +28,7 @@ class Queue : Cog {
                 finally { message -> message?.delete()?.queue() }
 
                 for (track in queue) {
-                    val decodedTrack = PlaylistUtils.decodeAudioTrack(track)
+                    val decodedTrack = Launcher.players.playerManager.decodeAudioTrack(track)
 
                     entry {
                         buildString {

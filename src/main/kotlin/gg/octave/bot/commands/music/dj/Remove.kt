@@ -1,11 +1,11 @@
 package gg.octave.bot.commands.music.dj
 
+import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
 import gg.octave.bot.entities.framework.CheckVoiceState
 import gg.octave.bot.entities.framework.DJ
 import gg.octave.bot.entities.framework.MusicCog
-import gg.octave.bot.utils.PlaylistUtils
 import gg.octave.bot.utils.extensions.manager
 import gg.octave.bot.utils.extensions.removeAt
 import me.devoxin.flight.api.Context
@@ -72,7 +72,7 @@ class Remove : MusicCog {
             }
         }
 
-        val decodedTrack = PlaylistUtils.decodeAudioTrack(track)
+        val decodedTrack = Launcher.players.playerManager.decodeAudioTrack(track)
         ctx.send {
             setTitle("Track Removed")
             setDescription("Removed __[${decodedTrack.info.embedTitle}](${decodedTrack.info.embedUri})__ from the queue.")

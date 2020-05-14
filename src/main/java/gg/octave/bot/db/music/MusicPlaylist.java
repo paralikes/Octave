@@ -3,8 +3,8 @@ package gg.octave.bot.db.music;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist;
+import gg.octave.bot.Launcher;
 import gg.octave.bot.db.ManagedObject;
-import gg.octave.bot.utils.PlaylistUtils;
 
 import java.beans.ConstructorProperties;
 import java.io.IOException;
@@ -34,21 +34,21 @@ public class MusicPlaylist extends ManagedObject {
 
     @JsonIgnore
     public BasicAudioPlaylist toLavaPlaylist() {
-        return PlaylistUtils.INSTANCE.decodePlaylist(encodedTracks, name);
+        return Launcher.INSTANCE.getPlayers().getPlayerManager().decodePlaylist(encodedTracks, name);
     }
 
     @JsonIgnore
     public void replacePlaylist(BasicAudioPlaylist playlist) {
-        encodedTracks = PlaylistUtils.INSTANCE.encodePlaylist(playlist);
+        encodedTracks = Launcher.INSTANCE.getPlayers().getPlayerManager().encodePlaylist(playlist);
     }
 
     @JsonIgnore
     public void appendTrack(AudioTrack track) throws IOException {
-        encodedTracks.add(PlaylistUtils.INSTANCE.encodeAudioTrack(track));
+        encodedTracks.add(Launcher.INSTANCE.getPlayers().getPlayerManager().encodeAudioTrack(track));
     }
 
     @JsonIgnore
     public void appendTracks(List<AudioTrack> tracks) {
-        tracks.forEach(PlaylistUtils.INSTANCE::encodeAudioTrack);
+        tracks.forEach(Launcher.INSTANCE.getPlayers().getPlayerManager()::encodeAudioTrack);
     }
 }
