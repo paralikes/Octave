@@ -9,7 +9,6 @@ import kotlin.system.exitProcess
 class Shutdown : Cog {
     @Command(description = "Shuts down the bot.", developerOnly = true)
     fun shutdown(ctx: Context) {
-        Launcher.players.shutdown()
         ctx.jda.shardManager?.shutdown() ?: ctx.jda.shutdown()
         exitProcess(21)
     }

@@ -15,7 +15,7 @@ class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorS
     val playerManager = ExtendedAudioPlayerManager()
 
     init {
-        executor.scheduleAtFixedRate({ checkInactive() }, 1, 1, TimeUnit.MINUTES)
+        executor.scheduleAtFixedRate(::checkInactive, 1, 1, TimeUnit.MINUTES)
     }
 
     fun checkInactive() {
