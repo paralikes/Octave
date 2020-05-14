@@ -170,6 +170,9 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
     fun isAlone() = guild?.selfMember?.voiceState?.channel?.members?.none { !it.user.isBot } ?: true
 
+    val leaveQueued: Boolean
+        get() = leaveTask != null
+
     fun queueLeave() {
         leaveTask?.cancel(false)
         leaveTask = createLeaveTask()
