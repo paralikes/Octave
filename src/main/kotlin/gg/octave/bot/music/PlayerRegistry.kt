@@ -5,22 +5,12 @@ import gg.octave.bot.db.OptionsRegistry.ofGuild
 import net.dv8tion.jda.api.entities.Guild
 import org.slf4j.LoggerFactory
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 
-class PlayerRegistry(private val bot: Launcher, val executor: ScheduledExecutorService) {
+class PlayerRegistry(private val bot: Launcher) {
     private val log = LoggerFactory.getLogger("PlayerRegistry")
 
     val registry = ConcurrentHashMap<Long, MusicManager>(bot.configuration.musicLimit)
     val playerManager = ExtendedAudioPlayerManager()
-
-    init {
-        executor.scheduleAtFixedRate(::checkInactive, 1, 1, TimeUnit.MINUTES)
-    }
-
-    fun checkInactive() {
-
-    }
 
     @Throws(MusicLimitException::class)
     fun get(guild: Guild?) = registry.computeIfAbsent(guild!!.idLong) {

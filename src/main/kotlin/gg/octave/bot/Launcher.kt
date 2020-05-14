@@ -38,7 +38,7 @@ object Launcher {
     val statsPoster = StatsPoster("201503408652419073")
     val patreon = PatreonAPI(credentials.patreonAccessToken)
 
-    val players = PlayerRegistry(this, Executors.newSingleThreadScheduledExecutor())
+    val players = PlayerRegistry(this)
     val discordFm = DiscordFM()
 
     lateinit var shardManager: ExtendedShardManager
