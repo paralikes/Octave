@@ -2,18 +2,92 @@ package gg.octave.bot.music
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.beam.BeamAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.getyarn.GetyarnAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageInput
 import com.sedmelluq.discord.lavaplayer.tools.io.MessageOutput
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import com.sedmelluq.discord.lavaplayer.track.BasicAudioPlaylist
+import com.sedmelluq.discord.lavaplayer.track.playback.NonAllocatingAudioFrameBuffer
+import com.sedmelluq.lava.extensions.youtuberotator.YoutubeIpRotatorSetup
+import com.sedmelluq.lava.extensions.youtuberotator.planner.RotatingNanoIpRoutePlanner
+import com.sedmelluq.lava.extensions.youtuberotator.tools.ip.Ipv6Block
+import gg.octave.bot.Launcher
+import gg.octave.bot.music.sources.caching.CachingSourceManager
+import gg.octave.bot.music.sources.spotify.SpotifyAudioSourceManager
+import io.sentry.Sentry
 import org.json.JSONArray
 import org.json.JSONObject
+import org.slf4j.LoggerFactory
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.net.InetAddress
 import java.util.*
 
 class ExtendedAudioPlayerManager(private val dapm: AudioPlayerManager = DefaultAudioPlayerManager()) : AudioPlayerManager by dapm {
+    init {
+        dapm.frameBufferDuration = 5000
+        dapm.configuration.apply {
+            isFilterHotSwapEnabled = true
+            setFrameBufferFactory(::NonAllocatingAudioFrameBuffer)
+        }
+
+        val youtubeAudioSourceManager = YoutubeAudioSourceManager(true)
+        val config = Launcher.configuration
+        val credentials = Launcher.credentials
+
+        if (config.ipv6Block.isNotEmpty()) {
+            val block = config.ipv6Block
+            val blocks = listOf(Ipv6Block(block))
+            val planner = when {
+                config.ipv6Exclude.isEmpty() -> RotatingNanoIpRoutePlanner(blocks)
+                else -> try {
+                    val blacklistedGW = InetAddress.getByName(config.ipv6Exclude)
+                    RotatingNanoIpRoutePlanner(blocks) { it != blacklistedGW }
+                } catch (ex: Exception) {
+                    Sentry.capture(ex)
+                    log.error("Error setting up IPv6 exclude GW, falling back to registering the whole block", ex)
+                    RotatingNanoIpRoutePlanner(blocks)
+                }
+            }
+
+            YoutubeIpRotatorSetup(planner)
+                .forSource(youtubeAudioSourceManager)
+                .setup()
+        }
+
+        val spotifyAudioSourceManager = SpotifyAudioSourceManager(
+            credentials.spotifyClientId,
+            credentials.spotifyClientSecret,
+            youtubeAudioSourceManager
+        )
+
+        registerSourceManagers(
+            CachingSourceManager(),
+            spotifyAudioSourceManager,
+            youtubeAudioSourceManager,
+            SoundCloudAudioSourceManager.createDefault(),
+            GetyarnAudioSourceManager(),
+            BandcampAudioSourceManager(),
+            VimeoAudioSourceManager(),
+            TwitchStreamAudioSourceManager(),
+            BeamAudioSourceManager()
+        )
+    }
+
+    private fun registerSourceManagers(vararg sourceManagers: AudioSourceManager) {
+        for (sm in sourceManagers) {
+            registerSourceManager(sm)
+        }
+    }
+
     /**
      * @return a base64 encoded string containing the track data.
      */
@@ -91,12 +165,14 @@ class ExtendedAudioPlayerManager(private val dapm: AudioPlayerManager = DefaultA
         return BasicAudioPlaylist(name, tracks, selectedTrack, isSearch)
     }
 
-    fun encodePlaylist(playlist: BasicAudioPlaylist) = encodePlaylist(playlist.tracks)
-    fun encodePlaylist(playlist: Collection<AudioTrack>): List<String> = playlist.map(::encodeAudioTrack)
-
+    fun encodePlaylist(playlist: BasicAudioPlaylist) = playlist.tracks.map(::encodeAudioTrack)
     fun encodeAudioTrack(track: AudioTrack) = encodeTrack(track)
 
     // This is used at the top of the file. Don't ask :^)
     fun decodeMaybeNullAudioTrack(encoded: String) = decodeTrack(encoded)
     fun decodeAudioTrack(encoded: String) = decodeTrack(encoded)!!
+
+    companion object {
+        private val log = LoggerFactory.getLogger(ExtendedAudioPlayerManager::class.java)
+    }
 }

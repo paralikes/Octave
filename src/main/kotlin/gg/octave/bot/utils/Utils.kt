@@ -1,7 +1,6 @@
 package gg.octave.bot.utils
 
 import okhttp3.MediaType
-import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
