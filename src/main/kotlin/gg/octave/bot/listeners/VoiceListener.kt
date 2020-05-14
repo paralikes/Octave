@@ -72,8 +72,10 @@ class VoiceListener : EventListener {
             return Launcher.players.destroy(guild.idLong)
         }
 
+        val guildData = Launcher.database.getGuildData(guild.id)
+        val avoidLeave = guildData?.isPremium?.and(guildData.music.isAllDayMusic) ?: false
         when {
-            manager.isAlone() && !manager.leaveQueued -> manager.queueLeave()
+            manager.isAlone() && !manager.leaveQueued && !avoidLeave -> manager.queueLeave()
             !manager.isAlone() && manager.leaveQueued -> manager.cancelLeave()
         }
     }

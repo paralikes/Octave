@@ -255,6 +255,21 @@ class Settings : Cog {
         ctx.send("Set auto-delete delay to ${getDisplayValue(timeMillis)}.")
     }
 
+    @SubCommand(description = "Enable/Disable 24/7 mode. Premium Guilds only.")
+    fun alldaymusic(ctx: Context, toggle: Boolean) {
+        val data = ctx.data
+
+        if(!data.isPremium) {
+            return ctx.send("This server is not premium.")
+        }
+
+        data.music.isAllDayMusic = toggle
+        data.save()
+
+        val send = if (toggle) "Enabled 24/7 mode." else "Disabled 24/7 mode."
+        ctx.send(send)
+    }
+
     @SubCommand(aliases = ["votequeuecooldown", "vqc", "vpc"], description = "Sets the vote-play cooldown.")
     fun voteplaycooldown(ctx: Context, @Greedy duration: String) = durationParseCommand(ctx, duration,
         { music.votePlayCooldown = it }, ctx.config.votePlayCooldown, ctx.config.votePlayCooldownText, "vote-play cooldown")

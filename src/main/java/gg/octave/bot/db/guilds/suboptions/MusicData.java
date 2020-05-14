@@ -21,6 +21,7 @@ public class MusicData {
     private String announcementChannel;
     private boolean disableDj;
     private Set<String> djRoles = new HashSet<>();
+    private boolean allDayMusic;
 
     @NotNull
     public final Set<String> getChannels() {
@@ -122,5 +123,13 @@ public class MusicData {
 
     public void setDjRoles(Set<String> djRoles) {
         this.djRoles = djRoles;
+    }
+
+    public boolean isAllDayMusic() {
+        return allDayMusic;
+    }
+
+    public void setAllDayMusic(boolean allDayMusic) {
+        this.allDayMusic = allDayMusic;
     }
 }
