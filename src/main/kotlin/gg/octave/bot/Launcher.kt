@@ -65,17 +65,18 @@ object Launcher {
         RestAction.setPassContext(false)
 
         commandClient = CommandClientBuilder()
-            .setPrefixProvider(DefaultPrefixProvider())
-            .registerAlmostAllParsers()
-            .addCustomParser(ExtendedMemberParser())
-            .addCustomParser(DurationParser())
-            .addCustomParser(KeyTypeParser())
-            .addCustomParser(BoostSettingParser())
-            .addCustomParser(RepeatOptionParser())
-            .setOwnerIds(*configuration.admins.toLongArray())
-            .addEventListeners(FlightEventAdapter())
-            .configureDefaultHelpCommand { enabled = false }
-            .build()
+                .setPrefixProvider(DefaultPrefixProvider())
+                .registerAlmostAllParsers()
+                .addCustomParser(ExtendedMemberParser())
+                .addCustomParser(DurationParser())
+                .addCustomParser(KeyTypeParser())
+                .addCustomParser(BoostSettingParser())
+                .addCustomParser(RepeatOptionParser())
+                .addCustomParser(AutoShuffleParser())
+                .setOwnerIds(*configuration.admins.toLongArray())
+                .addEventListeners(FlightEventAdapter())
+                .configureDefaultHelpCommand { enabled = false }
+                .build()
 
         shardManager = ExtendedShardManager.create(credentials.token) {
             addEventListeners(eventWaiter, BotListener(), VoiceListener(), commandClient)
