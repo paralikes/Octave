@@ -14,7 +14,7 @@ class Summon : MusicCog {
     override fun requireManager() = false
 
     @DJ
-    @Command(description = "Connects, or moves the bot to a voice channel.")
+    @Command(aliases = ["join", "connect"], description = "Connects, or moves the bot to a voice channel.")
     fun summon(ctx: Context, @Greedy channel: VoiceChannel?) {
         val musicManager = try {
             Launcher.players.get(ctx.guild!!)
