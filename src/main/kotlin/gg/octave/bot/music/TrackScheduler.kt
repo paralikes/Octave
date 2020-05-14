@@ -72,7 +72,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
         }
 
         if (manager.discordFMTrack == null) {
-            return manager.playerRegistry.executor.execute { manager.playerRegistry.destroy(manager.guild) }
+            return MusicManager.schedulerThread.execute { manager.playerRegistry.destroy(manager.guild) }
         }
 
         manager.discordFMTrack?.let {

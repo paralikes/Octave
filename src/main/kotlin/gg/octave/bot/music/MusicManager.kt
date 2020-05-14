@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
+import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
@@ -185,9 +186,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
         player.isPaused = false
     }
 
-    private fun createLeaveTask() = playerRegistry.executor.schedule({
-        playerRegistry.destroy(guild)
-    }, 30, TimeUnit.SECONDS)
+    private fun createLeaveTask() = schedulerThread.schedule({ playerRegistry.destroy(guild) }, 30, TimeUnit.SECONDS)
 
     fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean) {
         playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
@@ -343,6 +342,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
     }
 
     companion object {
+        val schedulerThread = Executors.newSingleThreadScheduledExecutor()
         fun cache(identifier: String, item: AudioItem) = CachingSourceManager.cache(identifier, item)
     }
 }
