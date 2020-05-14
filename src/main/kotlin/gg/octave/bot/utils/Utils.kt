@@ -1,17 +1,12 @@
 package gg.octave.bot.utils
 
-import io.sentry.Sentry
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
-import org.json.JSONObject
-import org.json.JSONTokener
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 object Utils {
-    val httpClient = OkHttpClient()
     private val TIME_PATTERN = Pattern.compile("(-?\\d+)\\s*((?:d(?:ays?)?)|(?:h(?:ours?)?)|(?:m(?:in(?:utes?)?)?)|(?:s(?:ec(?:onds?)?)?))?")
 
     fun parseTime(time: String): Long {
@@ -46,22 +41,10 @@ object Utils {
     }
 
     fun hasteBin(content: String): String? {
-        val request = Request.Builder().url("https://hastebin.com/documents")
-            .header("User-Agent", "Octave")
-            .header("Content-Type", "text/plain")
-            .post(RequestBody.create(null, content))
-            .build()
-
-        try {
-            httpClient.newCall(request).execute().use { response ->
-                val body = response.body() ?: return null
-                val json = body.byteStream().use { JSONObject(JSONTokener(it)) }
-                return "https://hastebin.com/${json["key"]}"
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Sentry.capture(e)
-            return null
-        }
+        return RequestUtil.jsonObject {
+            url("https://hastebin.com/documents")
+            header("User-Agent", "Octave")
+            post(RequestBody.create(MediaType.get("text/plain"), content))
+        }.thenApply { "https://hastebin.com/${it["key"]}" }.get()
     }
 }
