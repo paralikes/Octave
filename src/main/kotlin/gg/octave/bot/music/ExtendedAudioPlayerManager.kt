@@ -60,7 +60,7 @@ class ExtendedAudioPlayerManager(private val dapm: AudioPlayerManager = DefaultA
         val tracks = JSONArray()
 
         for (track in playlist.tracks) {
-            val enc = encodeAudioTrack(track) ?: continue
+            val enc = encodeAudioTrack(track)
             tracks.put(enc)
         }
 
@@ -83,7 +83,7 @@ class ExtendedAudioPlayerManager(private val dapm: AudioPlayerManager = DefaultA
         val tracks = mutableListOf<AudioTrack>()
 
         for (encodedTrack in encodedTracks) {
-            val decodedTrack = decodeAudioTrack(encodedTrack as String) ?: continue
+            val decodedTrack = decodeAudioTrack(encodedTrack as String)
             tracks.add(decodedTrack)
         }
 

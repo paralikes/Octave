@@ -26,7 +26,6 @@ class NowPlaying : MusicCog {
             setTitle("Now Playing")
             setDescription("**[${track.info.embedTitle}](${track.info.embedUri})**")
             manager.discordFMTrack?.let {
-                val member = ctx.guild?.getMemberById(it.requester)
                 val r = buildString {
                     append("Currently streaming music from radio station `${it.station.capitalize()}`")
                     append(", requested by ${it.requesterMention}.")
