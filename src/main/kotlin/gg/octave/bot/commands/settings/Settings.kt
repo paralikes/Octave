@@ -260,7 +260,7 @@ class Settings : Cog {
         val data = ctx.data
 
         if(!data.isPremium) {
-            return ctx.send("This server is not premium.")
+            return ctx.send("This server is not premium. If you've donated, add this server with `${ctx.trigger}patreon servers add`")
         }
 
         data.music.isAllDayMusic = toggle
