@@ -24,7 +24,7 @@ class ActivityUpdater(private val bot: Launcher, private val guildId: String) : 
     }
 
     private fun setActivityForGuild(text: String, shardId: Int): Activity? {
-        // this will not work properly with more than one server per shard
+        // This will not work properly with more than one guild per shard.
         val shard = bot.shardManager.getShardById(shardId)!!
         val hasGuild = shard.guilds.any { it.id == guildId }
 
