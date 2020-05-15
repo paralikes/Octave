@@ -29,7 +29,7 @@ class Shuffle : MusicCog {
         ctx.send("Player has been shuffled")
     }
 
-    @SubCommand(description = "Toggle whether the queue should be shuffled before every play.")
+    @SubCommand(description = "Toggle whether the queue should be shuffled when songs are added.")
     fun auto(ctx: Context, option: AutoShuffle) {
         ctx.manager.scheduler.autoShuffle = option
 
