@@ -10,6 +10,7 @@ import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
 import gg.octave.bot.music.filters.DSPFilter
+import gg.octave.bot.music.settings.AutoShuffle
 import gg.octave.bot.music.sources.caching.CachingSourceManager
 import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.friendlierMessage
@@ -235,6 +236,10 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
                 track.userData = trackContext
                 scheduler.queue(track, isNext)
+
+                if (scheduler.autoShuffle == AutoShuffle.ON) {
+                    scheduler.shuffle()
+                }
 
                 ctx.send {
                     setTitle("Music Queue")

@@ -69,7 +69,6 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
         if (queue.isNotEmpty()) {
             val track = queue.poll()
-            if (autoShuffle == AutoShuffle.ON) shuffle()
 
             val decodedTrack = Launcher.players.playerManager.decodeAudioTrack(track)
             return player.playTrack(decodedTrack)
