@@ -79,9 +79,9 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
     val currentRequestChannel: TextChannel?
         get() {
             return (player.playingTrack ?: scheduler.lastTrack)
-                    ?.getUserData(TrackContext::class.java)
-                    ?.requestedChannel
-                    ?.let { it -> guild?.getTextChannelById(it) }
+                ?.getUserData(TrackContext::class.java)
+                ?.requestedChannel
+                ?.let { it -> guild?.getTextChannelById(it) }
         }
 
     val announcementChannel: TextChannel?
@@ -118,8 +118,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 return false
             }
             channel.userLimit != 0
-                    && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
-                    && channel.members.size >= channel.userLimit -> {
+                && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
+                && channel.members.size >= channel.userLimit -> {
                 ctx.send("The bot can't join due to the user limit.")
                 playerRegistry.destroy(guild)
                 return false
