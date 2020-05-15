@@ -96,8 +96,6 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
         this.lastTrack = track
 
-        Launcher.shardManager.setActivityProvider { Activity.playing(Launcher.configuration.game.format(it)) }
-
         if (endReason.mayStartNext) {
             nextTrack()
         }
@@ -153,8 +151,6 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
         val announce = currentTrack?.identifier != track.identifier
         currentTrack = track
-
-        Launcher.shardManager.setActivity(Activity.playing(track.info.embedTitle))
 
         if (announce && OptionsRegistry.ofGuild(manager.guildId).music.announce) {
             announceNext(track)
