@@ -44,9 +44,7 @@ class NowPlaying : MusicCog {
             )
             addBlankField(true)
 
-            addField("Volume", "${manager.player.volume}%", true)
-            addBlankField(true)
-            addBlankField(true)
+            addField("Volume", "${manager.player.volume}%", false)
 
             addField("Repeating", manager.scheduler.repeatOption.name.toLowerCase().capitalize(), true)
             addField("Shuffle", manager.scheduler.autoShuffle.name.toLowerCase().capitalize(), true)
