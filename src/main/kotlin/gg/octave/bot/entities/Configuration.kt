@@ -22,6 +22,7 @@ class Configuration(file: File) {
     // +--------------+
     val name: String = config["bot", "name"].getString("Octave")
     val game: String = config["bot", "game"].getString("${prefix}help | %d")
+    val setActivityToSong: Boolean = config["bot", "setActivityToSong"].getBoolean(false)
 
     val ipv6Block: String = config["bot", "ipv6block"].getString(null)
     val ipv6Exclude: String = config["bot", "ipv6Exclude"].getString(null)
