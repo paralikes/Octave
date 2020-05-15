@@ -66,6 +66,7 @@ class Queue : Cog {
                 field("Entries", true) { queue.size }
                 field("Total Duration", true) { Utils.getTimestamp(queueLength) }
                 field("Repeating", true) { manager.scheduler.repeatOption.name.toLowerCase().capitalize() }
+                field("Shuffle", true) { manager.scheduler.autoShuffle.name.toLowerCase().capitalize() }
             }.display(it)
         }
     }

@@ -2,16 +2,18 @@ package gg.octave.bot.commands.music.search
 
 import com.jagrosh.jdautilities.menu.Selector
 import com.jagrosh.jdautilities.menu.SelectorBuilder
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack
 import gg.octave.bot.Launcher
 import gg.octave.bot.listeners.FlightEventAdapter
 import gg.octave.bot.music.MusicLimitException
 import gg.octave.bot.music.MusicManager
 import gg.octave.bot.music.TrackContext
 import gg.octave.bot.music.TrackScheduler
-import gg.octave.bot.utils.extensions.config
-import gg.octave.bot.utils.extensions.data
-import gg.octave.bot.utils.extensions.selfMember
-import gg.octave.bot.utils.extensions.voiceChannel
+import gg.octave.bot.music.settings.AutoShuffleSetting
+import gg.octave.bot.utils.extensions.*
 import gg.octave.bot.utils.getDisplayValue
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
@@ -139,7 +141,26 @@ class Play : Cog {
                 query,
                 trackContext,
                 if (!isSearchResult) "You can search and pick results using ${config.prefix}youtube or ${config.prefix}soundcloud while in a channel." else null,
-                isNext
+                isNext,
+                object : AudioLoadResultHandler {
+                    override fun loadFailed(exception: FriendlyException?) {
+                    }
+
+                    override fun trackLoaded(track: AudioTrack?) {
+                        if (ctx.manager.scheduler.autoShuffle == AutoShuffleSetting.ON && !isNext) {
+                            ctx.manager.scheduler.shuffle()
+                        }
+                    }
+
+                    override fun noMatches() {
+                    }
+
+                    override fun playlistLoaded(playlist: AudioPlaylist?) {
+                        if (ctx.manager.scheduler.autoShuffle == AutoShuffleSetting.ON && !isNext) {
+                            ctx.manager.scheduler.shuffle()
+                        }
+                    }
+                }
             )
         }
 

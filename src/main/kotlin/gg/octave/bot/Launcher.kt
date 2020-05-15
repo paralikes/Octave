@@ -72,6 +72,7 @@ object Launcher {
             .addCustomParser(KeyTypeParser())
             .addCustomParser(BoostSettingParser())
             .addCustomParser(RepeatOptionParser())
+            .addCustomParser(AutoShuffleParser())
             .setOwnerIds(*configuration.admins.toLongArray())
             .addEventListeners(FlightEventAdapter())
             .configureDefaultHelpCommand { enabled = false }

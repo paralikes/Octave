@@ -188,7 +188,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
     private fun createLeaveTask() = schedulerThread.schedule({ playerRegistry.destroy(guild) }, 30, TimeUnit.SECONDS)
 
-    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean) {
+    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean, resultHandler: AudioLoadResultHandler? = null) {
         playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 cache(trackUrl, track)
@@ -241,6 +241,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                     setDescription("Added __**[${track.info.embedTitle}](${track.info.embedUri})**__ to queue.")
                     setFooter(footnote)
                 }
+
+                resultHandler?.trackLoaded(track)
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
@@ -299,6 +301,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                     setDescription(desc)
                     setFooter(footnote)
                 }
+
+                resultHandler?.playlistLoaded(playlist)
             }
 
             override fun noMatches() {
@@ -309,6 +313,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 }
 
                 ctx.send("Nothing found by `$trackUrl`")
+
+                resultHandler?.noMatches()
             }
 
             override fun loadFailed(e: FriendlyException) {
@@ -324,6 +330,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 }
 
                 ctx.send(e.friendlierMessage())
+
+                resultHandler?.loadFailed(e)
             }
         })
     }
