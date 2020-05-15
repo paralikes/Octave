@@ -17,8 +17,6 @@ import io.sentry.event.Event
 import io.sentry.event.EventBuilder
 import io.sentry.event.interfaces.StackTraceInterface
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.OnlineStatus
-import net.dv8tion.jda.api.entities.Activity
 import org.redisson.api.RQueue
 
 class TrackScheduler(private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
