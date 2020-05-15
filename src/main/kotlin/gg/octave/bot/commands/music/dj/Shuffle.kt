@@ -33,7 +33,7 @@ class Shuffle : MusicCog {
     fun auto(ctx: Context, option: AutoShuffle) {
         ctx.manager.scheduler.autoShuffle = option
 
-        val send = if (option == AutoShuffle.OFF) "Playlist will no longer be shuffled automatically."
+        val send = if (option == AutoShuffle.OFF) "Queue will no longer be shuffled automatically."
         else "Playlist will be shuffled for every song."
 
         ctx.send(send)
