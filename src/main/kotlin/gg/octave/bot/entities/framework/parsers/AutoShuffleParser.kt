@@ -1,5 +1,5 @@
 package gg.octave.bot.entities.framework.parsers
 
-import gg.octave.bot.music.settings.AutoShuffle
+import gg.octave.bot.music.settings.AutoShuffleSetting
 
-class AutoShuffleParser : EnumParser<AutoShuffle>(AutoShuffle::class.java)
+class AutoShuffleParser : EnumParser<AutoShuffleSetting>(AutoShuffleSetting::class.java)

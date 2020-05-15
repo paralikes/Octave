@@ -10,7 +10,6 @@ import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
 import gg.octave.bot.music.filters.DSPFilter
-import gg.octave.bot.music.settings.AutoShuffle
 import gg.octave.bot.music.sources.caching.CachingSourceManager
 import gg.octave.bot.utils.extensions.data
 import gg.octave.bot.utils.extensions.friendlierMessage

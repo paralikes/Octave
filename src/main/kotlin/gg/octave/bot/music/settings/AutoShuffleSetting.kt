@@ -1,6 +1,6 @@
 package gg.octave.bot.music.settings
 
-enum class AutoShuffle {
+enum class AutoShuffleSetting {
     ON,
     OFF
 }

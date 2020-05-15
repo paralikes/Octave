@@ -9,7 +9,7 @@ import gg.octave.bot.Launcher
 import gg.octave.bot.commands.music.embedTitle
 import gg.octave.bot.commands.music.embedUri
 import gg.octave.bot.db.OptionsRegistry
-import gg.octave.bot.music.settings.AutoShuffle
+import gg.octave.bot.music.settings.AutoShuffleSetting
 import gg.octave.bot.music.settings.RepeatOption
 import gg.octave.bot.utils.extensions.friendlierMessage
 import gg.octave.bot.utils.extensions.insertAt
@@ -24,7 +24,7 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     //Base64 encoded.
     val queue: RQueue<String> = Launcher.db.redisson.getQueue("playerQueue:${manager.guildId}")
     var repeatOption = RepeatOption.NONE
-    var autoShuffle = AutoShuffle.OFF
+    var autoShuffle = AutoShuffleSetting.OFF
     var lastTrack: AudioTrack? = null
         private set
     var currentTrack: AudioTrack? = null

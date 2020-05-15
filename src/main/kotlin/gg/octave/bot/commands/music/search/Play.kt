@@ -12,7 +12,7 @@ import gg.octave.bot.music.MusicLimitException
 import gg.octave.bot.music.MusicManager
 import gg.octave.bot.music.TrackContext
 import gg.octave.bot.music.TrackScheduler
-import gg.octave.bot.music.settings.AutoShuffle
+import gg.octave.bot.music.settings.AutoShuffleSetting
 import gg.octave.bot.utils.extensions.*
 import gg.octave.bot.utils.getDisplayValue
 import me.devoxin.flight.api.Context
@@ -147,7 +147,7 @@ class Play : Cog {
                     }
 
                     override fun trackLoaded(track: AudioTrack?) {
-                        if (ctx.manager.scheduler.autoShuffle == AutoShuffle.ON && !isNext) {
+                        if (ctx.manager.scheduler.autoShuffle == AutoShuffleSetting.ON && !isNext) {
                             ctx.manager.scheduler.shuffle()
                         }
                     }
@@ -156,7 +156,7 @@ class Play : Cog {
                     }
 
                     override fun playlistLoaded(playlist: AudioPlaylist?) {
-                        if (ctx.manager.scheduler.autoShuffle == AutoShuffle.ON && !isNext) {
+                        if (ctx.manager.scheduler.autoShuffle == AutoShuffleSetting.ON && !isNext) {
                             ctx.manager.scheduler.shuffle()
                         }
                     }
