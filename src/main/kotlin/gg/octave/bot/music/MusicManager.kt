@@ -80,9 +80,9 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
     val currentRequestChannel: TextChannel?
         get() {
             return (player.playingTrack ?: scheduler.lastTrack)
-                ?.getUserData(TrackContext::class.java)
-                ?.requestedChannel
-                ?.let { it -> guild?.getTextChannelById(it) }
+                    ?.getUserData(TrackContext::class.java)
+                    ?.requestedChannel
+                    ?.let { it -> guild?.getTextChannelById(it) }
         }
 
     val announcementChannel: TextChannel?
@@ -119,8 +119,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 return false
             }
             channel.userLimit != 0
-                && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
-                && channel.members.size >= channel.userLimit -> {
+                    && guild?.selfMember!!.hasPermission(channel, Permission.VOICE_MOVE_OTHERS)
+                    && channel.members.size >= channel.userLimit -> {
                 ctx.send("The bot can't join due to the user limit.")
                 playerRegistry.destroy(guild)
                 return false
@@ -189,7 +189,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
     private fun createLeaveTask() = schedulerThread.schedule({ playerRegistry.destroy(guild) }, 30, TimeUnit.SECONDS)
 
-    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean) {
+    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean, resultHandler: AudioLoadResultHandler? = null) {
         playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 cache(trackUrl, track)
@@ -237,15 +237,13 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 track.userData = trackContext
                 scheduler.queue(track, isNext)
 
-                if (scheduler.autoShuffle == AutoShuffle.ON && !isNext) {
-                    scheduler.shuffle()
-                }
-
                 ctx.send {
                     setTitle("Music Queue")
                     setDescription("Added __**[${track.info.embedTitle}](${track.info.embedUri})**__ to queue.")
                     setFooter(footnote)
                 }
+
+                resultHandler?.trackLoaded(track)
             }
 
             override fun playlistLoaded(playlist: AudioPlaylist) {
@@ -304,6 +302,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                     setDescription(desc)
                     setFooter(footnote)
                 }
+
+                resultHandler?.playlistLoaded(playlist)
             }
 
             override fun noMatches() {
@@ -314,6 +314,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 }
 
                 ctx.send("Nothing found by `$trackUrl`")
+
+                resultHandler?.noMatches()
             }
 
             override fun loadFailed(e: FriendlyException) {
@@ -329,6 +331,8 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 }
 
                 ctx.send(e.friendlierMessage())
+
+                resultHandler?.loadFailed(e)
             }
         })
     }
