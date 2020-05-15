@@ -237,7 +237,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 track.userData = trackContext
                 scheduler.queue(track, isNext)
 
-                if (scheduler.autoShuffle == AutoShuffle.ON) {
+                if (scheduler.autoShuffle == AutoShuffle.ON && !isNext) {
                     scheduler.shuffle()
                 }
 
