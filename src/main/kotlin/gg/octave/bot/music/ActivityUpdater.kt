@@ -9,15 +9,17 @@ import gg.octave.bot.commands.music.embedTitle
 import net.dv8tion.jda.api.entities.Activity
 
 class ActivityUpdater(private val bot: Launcher, private val guildId: String) : AudioEventAdapter() {
-    override fun onTrackEnd(player: AudioPlayer?, track: AudioTrack?, endReason: AudioTrackEndReason?) {
-        bot.shardManager.setActivityProvider {
-            setActivityForGuild(bot.configuration.game.format(it), it)
+    override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
+        if (!endReason.mayStartNext) {
+            bot.shardManager.setActivityProvider {
+                setActivityForGuild(bot.configuration.game.format(it), it)
+            }
         }
     }
 
-    override fun onTrackStart(player: AudioPlayer?, track: AudioTrack?) {
+    override fun onTrackStart(player: AudioPlayer, track: AudioTrack) {
         bot.shardManager.setActivityProvider {
-            setActivityForGuild(track!!.info.embedTitle, it)
+            setActivityForGuild(track.info.embedTitle, it)
         }
     }
 
