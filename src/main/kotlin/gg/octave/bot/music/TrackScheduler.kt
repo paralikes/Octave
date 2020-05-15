@@ -17,6 +17,8 @@ import io.sentry.event.Event
 import io.sentry.event.EventBuilder
 import io.sentry.event.interfaces.StackTraceInterface
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.OnlineStatus
+import net.dv8tion.jda.api.entities.Activity
 import org.redisson.api.RQueue
 
 class TrackScheduler(private val manager: MusicManager, private val player: AudioPlayer) : AudioEventAdapter() {
@@ -94,6 +96,8 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
     override fun onTrackEnd(player: AudioPlayer, track: AudioTrack, endReason: AudioTrackEndReason) {
         this.lastTrack = track
 
+        Launcher.shardManager.setActivityProvider { Activity.playing(Launcher.configuration.game.format(it)) }
+
         if (endReason.mayStartNext) {
             nextTrack()
         }
@@ -149,6 +153,8 @@ class TrackScheduler(private val manager: MusicManager, private val player: Audi
 
         val announce = currentTrack?.identifier != track.identifier
         currentTrack = track
+
+        Launcher.shardManager.setActivity(Activity.playing(track.info.embedTitle))
 
         if (announce && OptionsRegistry.ofGuild(manager.guildId).music.announce) {
             announceNext(track)
