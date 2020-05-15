@@ -104,7 +104,9 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
     var discordFMTrack: DiscordFMTrackContext? = null
 
     init {
-        player.addListener(ActivityUpdater(bot, guildId))
+        if (bot.configuration.setActivityToSong) {
+            player.addListener(ActivityUpdater(bot, guildId))
+        }
     }
 
     fun destroy() {
