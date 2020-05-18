@@ -62,4 +62,10 @@ class Playlist : Cog {
 
         ctx.send("Playlist saved.")
     }
+
+    @SubCommand
+    fun delete(ctx: Context, name: String) {
+        ctx.db.getPlaylist("${ctx.author.id}:$name")?.delete()
+            ?: ctx.send("Playlist not found.")
+    }
 }
