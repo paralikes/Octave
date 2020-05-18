@@ -86,7 +86,7 @@ class Database(private val name: String) {
     fun getUserData(id: String) = get("users", id, UserData::class.java)
     fun getPatreonEntry(id: String) = get("patreon", id, PatreonEntry::class.java)
     fun hasPremiumUser(id: String) = isOpen && r.table("premiumusers")[id].coerceTo("bool").run(conn)
-    fun getPlaylist(id: String) = get("musicplaylist", id, MusicPlaylist::class.java)
+    fun getPlaylist(id: String) = get("savedplaylists", id, MusicPlaylist::class.java)
 
     fun getPremiumUser(id: String): PremiumUser = query(PremiumUser::class.java) {
         table("premiumusers")[id].default_(r.hashMap("id", id).with("pledgeAmount", "0.0"))

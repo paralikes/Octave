@@ -23,9 +23,7 @@ class Playlist : Cog {
     fun load(ctx: Context, name: String) {
         val formattedName = "${ctx.author.id}:$name"
         val playlist = ctx.db.getPlaylist(formattedName)?.toLavaPlaylist()
-        if (playlist == null) {
-            return ctx.send("Playlist with the name $name could not be found.")
-        }
+            ?: return ctx.send("Playlist with the name $name could not be found.")
 
         val trackContext = TrackContext(ctx.author.idLong, ctx.textChannel!!.idLong)
         val resultHandler = ctx.manager.MusicManagerAudioLoadResultHandler(ctx, formattedName, trackContext, isNext = false)
