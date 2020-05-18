@@ -9,6 +9,7 @@ import com.rethinkdb.net.Cursor
 import gg.octave.bot.Launcher
 import gg.octave.bot.db.guilds.GuildData
 import gg.octave.bot.db.guilds.UserData
+import gg.octave.bot.db.music.MusicPlaylist
 import gg.octave.bot.db.premium.PremiumGuild
 import gg.octave.bot.db.premium.PremiumUser
 import org.redisson.Redisson
@@ -85,6 +86,7 @@ class Database(private val name: String) {
     fun getUserData(id: String) = get("users", id, UserData::class.java)
     fun getPatreonEntry(id: String) = get("patreon", id, PatreonEntry::class.java)
     fun hasPremiumUser(id: String) = isOpen && r.table("premiumusers")[id].coerceTo("bool").run(conn)
+    fun getPlaylist(id: String) = get("musicplaylist", id, MusicPlaylist::class.java)
 
     fun getPremiumUser(id: String): PremiumUser = query(PremiumUser::class.java) {
         table("premiumusers")[id].default_(r.hashMap("id", id).with("pledgeAmount", "0.0"))
