@@ -45,7 +45,7 @@ class Playlist : Cog {
         val trackContext = TrackContext(ctx.author.idLong, ctx.textChannel!!.idLong)
         val resultHandler = ctx.manager.MusicManagerAudioLoadResultHandler(ctx, formattedName, trackContext, isNext = false)
 
-        resultHandler.playlistLoaded(playlist!!)
+        resultHandler.playlistLoaded(playlist)
     }
 
     @SubCommand(aliases = ["s"])
