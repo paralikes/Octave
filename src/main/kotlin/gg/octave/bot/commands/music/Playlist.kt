@@ -34,13 +34,16 @@ class Playlist : Cog {
 
     @SubCommand()
     fun save(ctx: Context, name: String) {
+        val formattedName = "${ctx.author.id}:$name"
+
         val queue = ctx.manager.scheduler.queue.toList()
         if (queue.count() == 0) {
             return ctx.send("Playlist is empty.")
         }
 
-        MusicPlaylist("${ctx.author.id}:$name")
+        MusicPlaylist(formattedName)
             .replacePlaylist(queue)
+            .setName(formattedName)
             .save()
 
         ctx.send("Playlist saved.")

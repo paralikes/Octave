@@ -21,8 +21,9 @@ public class MusicPlaylist extends ManagedObject {
     private String name;
     private List<String> encodedTracks = new ArrayList<>();
 
-    public void setName(String name) {
+    public MusicPlaylist setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getName() {
