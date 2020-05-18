@@ -194,7 +194,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
     private fun createLeaveTask() = schedulerThread.schedule({ playerRegistry.destroy(guild) }, 30, TimeUnit.SECONDS)
 
-    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean, resultHandler: AudioLoadResultHandler? = null) {
+    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean, shuffle: Boolean = false, resultHandler: AudioLoadResultHandler? = null) {
         playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
             override fun trackLoaded(track: AudioTrack) {
                 cache(trackUrl, track)
@@ -284,7 +284,7 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
                 var ignored = 0
 
                 var added = 0
-                for (track in tracks) {
+                for (track in if (shuffle) tracks.shuffled() else tracks) {
                     if (scheduler.queue.size + 1 >= queueLimit) {
                         ignored = tracks.size - added
                         break
