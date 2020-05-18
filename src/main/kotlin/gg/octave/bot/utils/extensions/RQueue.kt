@@ -1,5 +1,6 @@
 package gg.octave.bot.utils.extensions
 
+import org.jetbrains.kotlin.util.collectionUtils.concat
 import org.redisson.api.RQueue
 
 fun RQueue<String>.removeAt(index: Int): String {
@@ -37,4 +38,15 @@ fun <T> RQueue<T>.move(index: Int, to: Int): T {
     this.addAll(elements)
 
     return temp
+}
+
+fun <T> RQueue<T>.moveMany(start: Int, end: Int, to: Int): Iterable<T> {
+    val elements = this.readAll()
+    val elementsInRange = elements.slice(start..end)
+    val elementsReordered = elements.minus(elementsInRange).toMutableList().also { it.addAll(it.indexOf(elements[to]).plus(1), elementsInRange) }
+
+    this.clear()
+    this.addAll(elementsReordered)
+
+    return elementsInRange
 }
