@@ -95,7 +95,7 @@ class VoteSkip : MusicCog {
                     }.build()
                 ).submitAfter(voteSkipDuration, TimeUnit.MILLISECONDS)
             }.thenAccept { m ->
-                val skip = m.reactions.firstOrNull { it.reactionEmote.name == "👍" }?.count ?: 0
+                val skip = m.reactions.firstOrNull { it.reactionEmote.name == "👍" }?.retrieveUsers()?.count { it !== ctx.message.author } ?: 0
 
                 ctx.send {
                     setTitle("Vote Skip")
