@@ -26,7 +26,7 @@ class Playlist : Cog {
                 setUser(ctx.author)
                 title { "Playlists" }
                 color { ctx.selfMember?.color }
-                empty { "**No playlists saved.** Save a playlist with `${ctx.config.prefix}playlist save`." }
+                empty { "**No playlists saved.** \nSave a playlist with `${ctx.config.prefix}playlist save`." }
                 finally { message -> message?.delete()?.queue() }
 
                 for (name in playlists.map { dat -> dat.name }) {
