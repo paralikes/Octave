@@ -10,6 +10,7 @@ import java.beans.ConstructorProperties;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MusicPlaylist extends ManagedObject {
     @ConstructorProperties("id")
@@ -20,8 +21,9 @@ public class MusicPlaylist extends ManagedObject {
     private String name;
     private List<String> encodedTracks = new ArrayList<>();
 
-    public void setName(String name) {
+    public MusicPlaylist setName(String name) {
         this.name = name;
+        return this;
     }
 
     public String getName() {
@@ -40,6 +42,12 @@ public class MusicPlaylist extends ManagedObject {
     @JsonIgnore
     public void replacePlaylist(BasicAudioPlaylist playlist) {
         encodedTracks = Launcher.INSTANCE.getPlayers().getPlayerManager().encodePlaylist(playlist);
+    }
+
+    @JsonIgnore
+    public MusicPlaylist replacePlaylist(List<String> encodedTracks) {
+        this.encodedTracks = encodedTracks;
+        return this;
     }
 
     @JsonIgnore

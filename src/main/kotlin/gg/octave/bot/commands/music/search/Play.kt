@@ -107,14 +107,14 @@ class Play : Cog {
     }
 
     companion object {
-        fun smartPlay(ctx: Context, manager: MusicManager?, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean = false) {
+        fun smartPlay(ctx: Context, manager: MusicManager?, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean = false, shuffle: Boolean = false) {
             when {
                 ctx.data.music.isVotePlay && !FlightEventAdapter.isDJ(ctx, false) -> startPlayVote(ctx, manager!!, args, isSearchResult, uri, isNext)
-                else -> play(ctx, args, isSearchResult, uri, isNext)
+                else -> play(ctx, args, isSearchResult, uri, isNext, shuffle)
             }
         }
 
-        fun play(ctx: Context, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean = false) {
+        fun play(ctx: Context, args: List<String>, isSearchResult: Boolean, uri: String, isNext: Boolean = false, shuffle: Boolean = false) {
             val manager = try {
                 Launcher.players.get(ctx.guild)
             } catch (e: MusicLimitException) {
@@ -142,6 +142,7 @@ class Play : Cog {
                 trackContext,
                 if (!isSearchResult) "You can search and pick results using ${config.prefix}youtube or ${config.prefix}soundcloud while in a channel." else null,
                 isNext,
+                shuffle,
                 object : AudioLoadResultHandler {
                     override fun loadFailed(exception: FriendlyException?) {
                     }
