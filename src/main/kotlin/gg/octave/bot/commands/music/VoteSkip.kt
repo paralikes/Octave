@@ -95,21 +95,23 @@ class VoteSkip : MusicCog {
                     }.build()
                 ).submitAfter(voteSkipDuration, TimeUnit.MILLISECONDS)
             }.thenAccept { m ->
-                val skip = m.reactions.firstOrNull { it.reactionEmote.name == "👍" }?.retrieveUsers()?.count { it !== ctx.message.author } ?: 0
+                m.reactions.firstOrNull { it.reactionEmote.name == "👍" }?.retrieveUsers()?.takeAsync(halfPeople + 1)?.thenAccept { users ->
+                    val skip = users?.count { it !== ctx.message.author } ?: 0
 
-                ctx.send {
-                    setTitle("Vote Skip")
-                    setDescription(
-                        buildString {
-                            if (skip > halfPeople) {
-                                appendln("The vote has passed! The song has been skipped.")
-                                manager.scheduler.nextTrack()
-                            } else {
-                                appendln("The vote has failed! The song will stay.")
+                    ctx.send {
+                        setTitle("Vote Skip")
+                        setDescription(
+                            buildString {
+                                if (skip > halfPeople) {
+                                    appendln("The vote has passed! The song has been skipped.")
+                                    manager.scheduler.nextTrack()
+                                } else {
+                                    appendln("The vote has failed! The song will stay.")
+                                }
                             }
-                        }
-                    )
-                    addField("Results", "__$skip Skip Votes__", false)
+                        )
+                        addField("Results", "__$skip Skip Votes__", false)
+                    }
                 }
             }.whenComplete { _, _ ->
                 manager.isVotingToSkip = false
