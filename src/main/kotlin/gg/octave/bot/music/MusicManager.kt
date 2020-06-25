@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
+import net.dv8tion.jda.internal.audio.AudioConnection
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
@@ -194,152 +195,154 @@ class MusicManager(val bot: Launcher, val guildId: String, val playerRegistry: P
 
     private fun createLeaveTask() = schedulerThread.schedule({ playerRegistry.destroy(guild) }, 30, TimeUnit.SECONDS)
 
-    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean, resultHandler: AudioLoadResultHandler? = null) {
-        playerManager.loadItemOrdered(this, trackUrl, object : AudioLoadResultHandler {
-            override fun trackLoaded(track: AudioTrack) {
-                cache(trackUrl, track)
+    fun loadAndPlay(ctx: Context, trackUrl: String, trackContext: TrackContext, footnote: String? = null, isNext: Boolean, shuffle: Boolean = false, resultHandler: AudioLoadResultHandler? = null) {
+        playerManager.loadItemOrdered(this, trackUrl, MusicManagerAudioLoadResultHandler(ctx, trackUrl, trackContext, footnote, isNext, shuffle, resultHandler))
+    }
 
-                if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) { // wtf is this mess
-                    if (!openAudioConnection(ctx.voiceChannel!!, ctx)) {
-                        return
-                    }
+    inner class MusicManagerAudioLoadResultHandler(val ctx: Context, val trackUrl: String, val trackContext: TrackContext, val footnote: String? = null, val isNext: Boolean, val shuffle: Boolean = false, val resultHandler: AudioLoadResultHandler? = null) : AudioLoadResultHandler {
+        override fun trackLoaded(track: AudioTrack) {
+            cache(trackUrl, track)
+
+            if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) { // wtf is this mess
+                if (!openAudioConnection(ctx.voiceChannel!!, ctx)) {
+                    return
+                }
+            }
+
+            val queueLimit = queueLimit(ctx)
+            val queueLimitDisplay = when (queueLimit) {
+                Integer.MAX_VALUE -> "unlimited"
+                else -> queueLimit.toString()
+            }
+
+            if (scheduler.queue.size >= queueLimit) {
+                return ctx.send("The queue can not exceed $queueLimitDisplay songs.")
+            }
+
+            if (!track.info.isStream) {
+                val data = ctx.data
+                val premiumGuild = ctx.premiumGuild
+                val invalidDuration = premiumGuild == null && data.music.maxSongLength > bot.configuration.durationLimit.toMillis()
+
+                val durationLimit = when {
+                    data.music.maxSongLength != 0L && !invalidDuration -> data.music.maxSongLength
+                    premiumGuild != null -> premiumGuild.songLengthQuota
+                    data.isPremium -> TimeUnit.MINUTES.toMillis(360) //Keep key perks.
+                    else -> bot.configuration.durationLimit.toMillis()
                 }
 
-                val queueLimit = queueLimit(ctx)
-                val queueLimitDisplay = when (queueLimit) {
-                    Integer.MAX_VALUE -> "unlimited"
-                    else -> queueLimit.toString()
+                val durationLimitText = when {
+                    data.music.maxSongLength != 0L && !invalidDuration -> getDisplayValue(data.music.maxSongLength)
+                    premiumGuild != null -> getDisplayValue(premiumGuild.songLengthQuota)
+                    data.isPremium -> getDisplayValue(TimeUnit.MINUTES.toMillis(360)) //Keep key perks.
+                    else -> bot.configuration.durationLimitText
                 }
 
-                if (scheduler.queue.size >= queueLimit) {
-                    return ctx.send("The queue can not exceed $queueLimitDisplay songs.")
+                if (track.duration > durationLimit) {
+                    return ctx.send("The track can not exceed $durationLimitText.")
                 }
+            }
 
-                if (!track.info.isStream) {
-                    val data = ctx.data
-                    val premiumGuild = ctx.premiumGuild
-                    val invalidDuration = premiumGuild == null && data.music.maxSongLength > bot.configuration.durationLimit.toMillis()
+            track.userData = trackContext
+            scheduler.queue(track, isNext)
 
-                    val durationLimit = when {
-                        data.music.maxSongLength != 0L && !invalidDuration -> data.music.maxSongLength
-                        premiumGuild != null -> premiumGuild.songLengthQuota
-                        data.isPremium -> TimeUnit.MINUTES.toMillis(360) //Keep key perks.
-                        else -> bot.configuration.durationLimit.toMillis()
+            ctx.send {
+                setTitle("Music Queue")
+                setDescription("Added __**[${track.info.embedTitle}](${track.info.embedUri})**__ to queue.")
+                setFooter(footnote)
+            }
+
+            resultHandler?.trackLoaded(track)
+        }
+
+        override fun playlistLoaded(playlist: AudioPlaylist) {
+            cache(trackUrl, playlist)
+
+            if (playlist.isSearchResult) {
+                return trackLoaded(playlist.tracks.first())
+            }
+
+            val queueLimit = queueLimit(ctx)
+            val queueLimitDisplay = when (queueLimit) {
+                Integer.MAX_VALUE -> "unlimited"
+                else -> queueLimit.toString()
+            }
+
+            if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
+                if (!ctx.member!!.voiceState!!.inVoiceChannel()) {
+                    ctx.send("You left the channel before the track is loaded.")
+
+                    // Track is not supposed to load and the queue is empty
+                    // destroy player
+                    if (scheduler.queue.isEmpty()) {
+                        playerRegistry.destroy(guild)
                     }
+                    return
+                }
+                if (!openAudioConnection(ctx.voiceChannel!!, ctx)) {
+                    return
+                }
+            }
 
-                    val durationLimitText = when {
-                        data.music.maxSongLength != 0L && !invalidDuration -> getDisplayValue(data.music.maxSongLength)
-                        premiumGuild != null -> getDisplayValue(premiumGuild.songLengthQuota)
-                        data.isPremium -> getDisplayValue(TimeUnit.MINUTES.toMillis(360)) //Keep key perks.
-                        else -> bot.configuration.durationLimitText
-                    }
+            val tracks = playlist.tracks
+            var ignored = 0
 
-                    if (track.duration > durationLimit) {
-                        return ctx.send("The track can not exceed $durationLimitText.")
-                    }
+            var added = 0
+            for (track in if (shuffle) tracks.shuffled() else tracks) {
+                if (scheduler.queue.size + 1 >= queueLimit) {
+                    ignored = tracks.size - added
+                    break
                 }
 
                 track.userData = trackContext
+
                 scheduler.queue(track, isNext)
-
-                ctx.send {
-                    setTitle("Music Queue")
-                    setDescription("Added __**[${track.info.embedTitle}](${track.info.embedUri})**__ to queue.")
-                    setFooter(footnote)
-                }
-
-                resultHandler?.trackLoaded(track)
+                added++
             }
 
-            override fun playlistLoaded(playlist: AudioPlaylist) {
-                cache(trackUrl, playlist)
-
-                if (playlist.isSearchResult) {
-                    return trackLoaded(playlist.tracks.first())
-                }
-
-                val queueLimit = queueLimit(ctx)
-                val queueLimitDisplay = when (queueLimit) {
-                    Integer.MAX_VALUE -> "unlimited"
-                    else -> queueLimit.toString()
-                }
-
-                if (!guild?.selfMember!!.voiceState!!.inVoiceChannel()) {
-                    if (!ctx.member!!.voiceState!!.inVoiceChannel()) {
-                        ctx.send("You left the channel before the track is loaded.")
-
-                        // Track is not supposed to load and the queue is empty
-                        // destroy player
-                        if (scheduler.queue.isEmpty()) {
-                            playerRegistry.destroy(guild)
-                        }
-                        return
-                    }
-                    if (!openAudioConnection(ctx.voiceChannel!!, ctx)) {
-                        return
+            ctx.send {
+                setTitle("Music Queue")
+                val desc = buildString {
+                    append("Added `$added` tracks to queue from playlist `${playlist.name}`.\n")
+                    if (ignored > 0) {
+                        append("Ignored `$ignored` songs as the queue can not exceed `$queueLimitDisplay` songs.")
                     }
                 }
-
-                val tracks = playlist.tracks
-                var ignored = 0
-
-                var added = 0
-                for (track in tracks) {
-                    if (scheduler.queue.size + 1 >= queueLimit) {
-                        ignored = tracks.size - added
-                        break
-                    }
-
-                    track.userData = trackContext
-
-                    scheduler.queue(track, isNext)
-                    added++
-                }
-
-                ctx.send {
-                    setTitle("Music Queue")
-                    val desc = buildString {
-                        append("Added `$added` tracks to queue from playlist `${playlist.name}`.\n")
-                        if (ignored > 0) {
-                            append("Ignored `$ignored` songs as the queue can not exceed `$queueLimitDisplay` songs.")
-                        }
-                    }
-                    setDescription(desc)
-                    setFooter(footnote)
-                }
-
-                resultHandler?.playlistLoaded(playlist)
+                setDescription(desc)
+                setFooter(footnote)
             }
 
-            override fun noMatches() {
-                // No track found and queue is empty
-                // destroy player
-                if (player.playingTrack == null && scheduler.queue.isEmpty()) {
-                    playerRegistry.destroy(guild)
-                }
+            resultHandler?.playlistLoaded(playlist)
+        }
 
-                ctx.send("Nothing found by `$trackUrl`")
-
-                resultHandler?.noMatches()
+        override fun noMatches() {
+            // No track found and queue is empty
+            // destroy player
+            if (player.playingTrack == null && scheduler.queue.isEmpty()) {
+                playerRegistry.destroy(guild)
             }
 
-            override fun loadFailed(e: FriendlyException) {
-                // No track found and queue is empty
-                // destroy player
+            ctx.send("Nothing found by `$trackUrl`")
 
-                if (e.message!!.contains("decoding")) {
-                    return
-                }
+            resultHandler?.noMatches()
+        }
 
-                if (player.playingTrack == null && scheduler.queue.isEmpty()) {
-                    playerRegistry.destroy(guild)
-                }
+        override fun loadFailed(e: FriendlyException) {
+            // No track found and queue is empty
+            // destroy player
 
-                ctx.send(e.friendlierMessage())
-
-                resultHandler?.loadFailed(e)
+            if (e.message!!.contains("decoding")) {
+                return
             }
-        })
+
+            if (player.playingTrack == null && scheduler.queue.isEmpty()) {
+                playerRegistry.destroy(guild)
+            }
+
+            ctx.send(e.friendlierMessage())
+
+            resultHandler?.loadFailed(e)
+        }
     }
 
     fun queueLimit(ctx: Context): Int {
