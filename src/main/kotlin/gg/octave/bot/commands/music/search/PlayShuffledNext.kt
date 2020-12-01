@@ -8,8 +8,9 @@ import gg.octave.bot.utils.extensions.voiceChannel
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
+import me.devoxin.flight.api.entities.Cog
 
-class PlayShuffledNext {
+class PlayShuffledNext : Cog {
     @DJ
     @Command(aliases = ["psn"], description = "Shuffles the songs before adding them to the front of the queue.")
     fun playshufflednext(ctx: Context, @Greedy query: String) {
