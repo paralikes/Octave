@@ -12,7 +12,7 @@ import me.devoxin.flight.api.entities.Cog
 
 class PlayShuffled : Cog {
     @DJ
-    @Command(aliases = ["ps"], description = "Shuffles the songs before adding them to the queue.")
+    @Command(aliases = ["psh"], description = "Shuffles the songs before adding them to the queue.")
     fun playshuffled(ctx: Context, @Greedy query: String) {
         val manager = ctx.existingManager
             ?: return ctx.send("There's no queue here.\n$PLAY_MESSAGE")
