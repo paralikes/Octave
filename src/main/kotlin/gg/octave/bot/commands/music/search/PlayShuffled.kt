@@ -8,10 +8,11 @@ import gg.octave.bot.utils.extensions.voiceChannel
 import me.devoxin.flight.api.Context
 import me.devoxin.flight.api.annotations.Command
 import me.devoxin.flight.api.annotations.Greedy
+import me.devoxin.flight.api.entities.Cog
 
-class PlayShuffled {
+class PlayShuffled : Cog {
     @DJ
-    @Command(aliases = ["ps"], description = "Shuffles the songs before adding them to the queue.")
+    @Command(aliases = ["psh"], description = "Shuffles the songs before adding them to the queue.")
     fun playshuffled(ctx: Context, @Greedy query: String) {
         val manager = ctx.existingManager
             ?: return ctx.send("There's no queue here.\n$PLAY_MESSAGE")
