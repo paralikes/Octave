@@ -1,6 +1,6 @@
 package gg.octave.bot.music.sources.spotify
 
-import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManager
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException
@@ -67,7 +67,7 @@ class SpotifyAudioSourceManager(
         httpInterfaceManager.close()
     }
 
-    override fun loadItem(manager: DefaultAudioPlayerManager, reference: AudioReference): AudioItem? {
+    override fun loadItem(manager: AudioPlayerManager, reference: AudioReference): AudioItem? {
         if (accessToken.isEmpty()) {
             return null
         }
@@ -84,7 +84,7 @@ class SpotifyAudioSourceManager(
         }
     }
 
-    private fun loadItemOnce(manager: DefaultAudioPlayerManager, identifier: String): AudioItem? {
+    private fun loadItemOnce(manager: AudioPlayerManager, identifier: String): AudioItem? {
         for (loader in loaders) {
             val matcher = loader.pattern().matcher(identifier)
 
@@ -96,12 +96,12 @@ class SpotifyAudioSourceManager(
         return null
     }
 
-    internal fun doYoutubeSearch(manager: DefaultAudioPlayerManager, identifier: String): AudioItem? {
+    internal fun doYoutubeSearch(manager: AudioPlayerManager, identifier: String): AudioItem? {
         val reference = AudioReference(identifier, null)
         return youtubeAudioSourceManager.loadItem(manager, reference)
     }
 
-    internal fun queueYoutubeSearch(manager: DefaultAudioPlayerManager, identifier: String): CompletableFuture<AudioItem?> {
+    internal fun queueYoutubeSearch(manager: AudioPlayerManager, identifier: String): CompletableFuture<AudioItem?> {
         val future = CompletableFuture<AudioItem?>()
 
         trackLoaderPool.submit {
