@@ -65,7 +65,7 @@ dependencies {
     compile 'org.json:json:20170516'
 
     // Database
-    compile 'com.rethinkdb:rethinkdb-driver:2.4.0'
+    compile 'com.rethinkdb:rethinkdb-driver:2.4.4'
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.2'
     compile 'redis.clients:jedis:3.2.0'
     compile 'org.redisson:redisson:3.12.4'
