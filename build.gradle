@@ -62,7 +62,7 @@ dependencies {
 
     // Configuration
     compile 'ninja.leaping.configurate:configurate-hocon:3.3'
-    compile 'org.json:json:20170516'
+    compile 'org.json:json:20210307'
 
     // Database
     compile 'com.rethinkdb:rethinkdb-driver:2.4.0'
