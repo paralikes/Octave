@@ -75,7 +75,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.10.3'
 
     // Libraries
-    compile 'org.apache.commons:commons-text:1.1'
+    compile 'org.apache.commons:commons-text:1.9'
     compile 'commons-io:commons-io:2.6'
     compile 'com.google.guava:guava:23.2-jre'
 }
