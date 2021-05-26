@@ -64,7 +64,7 @@ dependencies {
     // Database
     compile 'com.rethinkdb:rethinkdb-driver:2.4.0'
     compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.2'
-    compile 'redis.clients:jedis:3.2.0'
+    compile 'redis.clients:jedis:3.6.0'
     compile 'org.redisson:redisson:3.12.4'
 
     // Networking/Scraping
