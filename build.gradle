@@ -68,7 +68,7 @@ dependencies {
     compile 'org.redisson:redisson:3.12.4'
 
     // Networking/Scraping
-    compile 'com.squareup.okhttp3:okhttp:3.14.2'
+    compile 'com.squareup.okhttp3:okhttp:4.9.1'
     compile 'org.jsoup:jsoup:1.10.3'
 
     // Libraries
