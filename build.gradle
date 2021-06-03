@@ -54,7 +54,7 @@ dependencies {
     compile 'com.datadoghq:java-dogstatsd-client:2.9.0'
 
     // Logging
-    compile 'io.sentry:sentry:1.7.30'
+    compile 'io.sentry:sentry:5.0.0'
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
     // Configuration
