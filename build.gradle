@@ -58,7 +58,7 @@ dependencies {
     compile 'ch.qos.logback:logback-classic:1.2.3'
 
     // Configuration
-    compile 'ninja.leaping.configurate:configurate-hocon:3.3'
+    compile 'ninja.leaping.configurate:configurate-hocon:3.7.1'
     compile 'org.json:json:20170516'
 
     // Database
