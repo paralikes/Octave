@@ -73,7 +73,7 @@ dependencies {
 
     // Libraries
     compile 'org.apache.commons:commons-text:1.1'
-    compile 'commons-io:commons-io:2.6'
+    compile 'commons-io:commons-io:2.11.0'
     compile 'com.google.guava:guava:23.2-jre'
 }
 
